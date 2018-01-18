@@ -1,0 +1,544 @@
+body {
+    --TopMargin: 0px;
+    --BottomMargin: 0px;
+    --LeftMargin: 0px;
+    --RightMargin: 0px;
+    --BorderColour: rgb(75, 90, 97);
+    
+    --HeaderNewsHeight: 50px;
+    --BreadAndPageMenuHeight: 25px;
+    --PageInfoHeight: 50px;
+    
+    --MainMenuWidth: 280px;
+    --UserWidth: 200px;
+    --NormalMenuItemColour: rgb(39,50,56);
+    --HoverMenuItemColour: rgb(35,45,60);
+    --SelectedMenuItemColour:  rgb(47,166,154);
+    --NormalMenuItemTextColour: rgb(201,204,205);   /* red;*/
+    --SelectedOrHoverMenuItemTextColour: rgb(255,255,239); /*white;*/
+    --SidePaddingOfMenuItemIcon: 15px;
+    --GreyBackgroundColor: rgb(245,245,245);
+    --WhiteBackgroundColor: rgb(255,255,255);
+    --PanelBorderColor: rgb(221,221,221);
+    --PanelHeaderHeight: 60px;
+    
+    margin: var(--TopMargin) 
+            var(--RightMargin) 
+            var(--BottomMargin) 
+            var(--LeftMargin);
+    
+    border-color: greenyellow;
+    background-color: white;
+    font-family: Tahoma,Verdana,Segoe,sans-serif; 
+}
+
+.MainWrapper {
+    margin: 0;
+    background-color: yellow;
+}
+
+.wrapper {
+    padding-top: var(--HeaderNewsHeight);
+    display: grid;
+    grid-gap: 0px;
+    grid-template-columns: var(--MainMenuWidth) 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+    /*                  Header BreadAndMenu PageInfo Content    */
+    
+    grid-template-rows: var(--HeaderNewsHeight) var(--BreadAndPageMenuHeight) 70px 1fr;
+
+    /*    grid-template-rows: calc(var(--HeaderNewsHeight)+var(--BreadAndPageMenuHeight)+var(--PageInfoHeight)) 1fr;*/
+    /*    min-height: calc(100vh - var(--TopMargin) - var(--BottomMargin) + 0px);*/
+}
+
+.Section {
+    /*padding: 10px;*/
+}
+.fa
+{
+    display:inline-block;
+    font:normal normal normal 14px/1 FontAwesome;
+    font-size:inherit;
+    text-rendering:auto;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale
+}
+.fa-gear:before
+ {
+    content: "Z";
+}
+
+.Header {
+    position: fixed;
+    height: var(--HeaderNewsHeight);
+    width: 100%;
+    
+    display: grid;
+    grid-template-columns:  calc(var(--MainMenuWidth) - 1px) 1fr var(--UserWidth);
+/*    grid-template-rows:     var(--HeaderNewsHeight);*/
+    
+    grid-column: 1 / span 12;
+    grid-row: 1 / span 1;
+/*    height: auto;*/
+    
+    background-color: rgb(55, 71, 79);
+/*    box-shadow:inset 0px -1px var(--BorderColour);*/
+    /*TODO:
+        -webkit-box-shadow:inset 0px 0px 0px 10px #f00;
+        -moz-box-shadow:inset 0px 0px 0px 10px #f00;
+        box-shadow:inset 0px 0px 0px 10px #f00;
+    */
+    padding: 0px;
+/*    background-color:rgba(0, 0, 0, 0);*/
+    background-color: blueviolet;
+    
+/*                        display: none;*/
+}
+
+    .LogoSection {
+        grid-column: 1 / span 1;
+        grid-row: 1 / span 1;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        color: white;
+        font-family: 'Trocchi', serif;
+        font-size: 1.5em;
+        letter-spacing: 4px;
+/*        display: none;*/
+        background-color: rgb(38,166,154);
+    }
+    .Nada{
+        grid-column: 2 / span 1;
+        grid-row: 1 / span 1;
+        background: green;
+
+        display: flex;
+/*        justify-content: center;*/
+        align-items: center;
+    }
+    .UserSection {
+        grid-column: 3 / span 1;
+        grid-row: 1 / span 1;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        background-color: rgb(195,195,195);
+        box-shadow:inset 1px -1px var(--BorderColour);
+        
+/*        display: none;*/
+    }
+    .NadaUnderMenu{
+        grid-column: 1 / span 1;
+        grid-row: 2 / span 2;
+        background-color:rgba(0, 0, 0, 0);
+        display: none;
+
+    /*    background-color: rgba(255, 255, 255, 1);*/
+    /*    background-color: red;*/
+    }
+
+.MainMenu {
+    grid-column: 1 / span 1;
+    grid-row: 1 / span 3;
+    color: rgb(201,204,205);
+    font-size: 1em;
+    box-shadow:inset -1px 0px var(--BorderColour);
+    padding: 0px;
+}
+
+.BreadAndMenu {
+/*    background-color: rgb(252,252,252);*/
+    background-color: firebrick;
+    /*    font-size: 0.5me;*/
+    box-shadow:inset 0px -1px var(--BorderColour);
+    
+    display: grid;
+    align-items: center;
+    grid-column: 2 / span 11;
+    grid-row: 1 / span 1;
+}
+.PageInfo{
+    background-color: red;
+    box-shadow:inset 0px -1px var(--BorderColour);
+    display: fixed;
+    align-items: center;
+    list-style: none;
+    grid-column: 2 / span 11;
+    grid-row: 2;
+    
+/*    display: none;*/
+}
+
+
+
+
+
+
+
+.Content {
+    
+    grid-column: 2 / span 11;
+    grid-row: 3 ;
+    
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(450px,1fr));
+/*    grid-template-rows: repeat(auto, 300px);*/
+    
+    
+    grid-gap: 10px;
+
+    /*grid-area: Content;*/
+    background-color: var(--GreyBackgroundColor);
+    padding: 10px;
+    
+/*    display: none;*/
+}
+
+    .Panel
+    {
+/*        position: relative;*/
+        padding: 5px;
+        
+/*        z-index: 0;*/
+
+        border-style: solid;
+        border-width: thin;
+        border-color: var(--PanelBorderColor);
+        border-radius: 3px;
+
+        min-height: 200px;
+        min-width: 300px;
+
+        box-shadow: 1px 1px 2px #888888;
+        background-color: var(--WhiteBackgroundColor);
+    }
+    .x1
+    {
+        grid-column: auto / span 1;
+    }
+    .x2
+    {
+        grid-column: auto / span 2;
+    }
+        .Panel-Header
+        {
+            display: grid;
+            grid-template-columns: auto 20px;
+            box-shadow: 0px 1px 0px #888888;
+
+            height: var(--PanelHeaderHeight);
+            margin-left: 10px;
+            margin-right: 10px;
+
+        /*    background-color: darkgrey;*/
+        }
+            .Panel-Header-Left{
+                display: flex;
+                align-items: center;
+/*                font-weight: 550;*/
+                font-size: 20px;
+                
+            }
+            .Panel-Header-Right{
+                display: flex;
+                align-items: center;
+            }
+
+        .Panel-Body
+        {
+            display:block;
+            padding-top: 10px;
+        }
+            .LabelControlDuo
+            {
+                padding: 5px 0px 5px 0px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                
+            }
+                .label 
+                {
+                    width: 30%;
+                    float: left;
+                    text-align: right;
+                }
+                .control 
+                {
+                    width: 65%;
+                    margin-left: 10px;
+                    float:left;
+                }
+                    .CustomTextBox
+                    {
+                        width: 95%;
+    /*                    border:1px solid #d1c7ac;*/
+                    }
+
+
+#MenuIcon{
+    display: none;
+    padding-right: 10px;
+}
+#toggle
+{
+    display: none;
+}
+/*------------------------------------------------------------------*/
+
+/*  ------------------      MEDIA     ---------------------*/
+
+
+
+/*
+https://www.youtube.com/watch?v=xMTs8tAapnQ
+*/
+@media only screen and (max-width:500px)
+{
+    .wrapper
+    {
+        display: grid;
+        grid-template-columns:  40px 1fr 1fr 1fr 1fr;
+        grid-template-rows:     auto auto auto auto;
+        min-height: 0;
+        padding-top: var(--HeaderNewsHeight);
+    }
+    #toggle:checked ~ .wrapper
+    {
+        display: grid;
+        grid-template-columns:  40px 1fr 1fr 1fr 1fr;
+                            /*  Menu Bread Content  */
+        grid-template-rows:     auto auto auto auto;
+    }
+    
+    #MenuIcon
+    {
+        display: block;
+    }
+
+    .Header {
+        grid-template-columns:  150px 1fr 50px;
+    }
+    
+    .MainMenu{
+        display: none;
+    }
+    #toggle:checked ~ .wrapper .MainMenu
+    {
+        display: block;
+        grid-column: 1 / span 5;
+        grid-row: 1;
+    }
+    
+    .BreadAndMenu {
+        grid-column: 1 / span 5;
+        grid-row: 1;
+        background-color: coral;
+    }
+    #toggle:checked ~ .wrapper .BreadAndMenu {
+        grid-row: 2;
+    }
+    
+    
+    .PageInfo{
+        grid-column: 1 / span 5;
+        grid-row: 2;
+    }
+    #toggle:checked ~ .wrapper .PageInfo
+    {
+        grid-column: 1 / span 5;
+        grid-row: 3 / span 1;
+/*        display: none;*/
+    }
+    
+    .Content {
+        grid-column: 1 / span 5;
+        grid-row: 3 / span 2;
+
+        grid-template-columns: 1fr;
+        
+        /*grid-area: Content;*/
+        background-color: rgb(245,245,245);
+    }
+        .x2
+        {
+            grid-column: auto / span 1;
+        }
+
+    #toggle:checked ~ .wrapper .Content {
+        display: block;
+        grid-column: 1 / span 5;
+        grid-row: 4;
+        
+        /*grid-area: Content;*/
+        background-color: rgb(245,245,245);
+    }
+    
+    /*****************************************************/
+    
+    
+
+    
+
+    
+}
+
+
+/*  ------------------      Accordion     ---------------------*/
+.no-js
+{
+    margin: 0px;
+}
+
+#accordion {    
+    /*font-size: 1em; */
+    font-size: 13px;
+    font-weight: 600;
+    
+    font-family: Roboto,Helvetica Neue,Helvetica,Arial,sans-serif;
+    box-shadow:inset -1px 0px var(--BorderColour);
+    padding: 0px 0px 0px 0px;
+}
+
+
+#accordion div {
+    cursor: pointer;
+    padding: 10px 0px 10px 10px;
+    
+    font-family: "Calibri";
+    font-size: 1.1em;
+    letter-spacing: 2px;
+    
+    background-color: rgb(38, 50, 56);
+    color: rgb(201,204,205);
+}
+
+#accordion ul {
+	list-style: none;
+	padding: 0 0 0 0;
+    background-color: var(--NormalMenuItemColour);  /*Je barva mezery mezi selected menu items*/
+}
+
+#accordion li a {
+    display: block;
+    padding: 15px 10px 15px var(--SidePaddingOfMenuItemIcon);
+    
+    margin-bottom: 1px;     /*Udela mezeru mezi selected menu items*/
+    /*margin-top: 1px;        */
+    
+    background: var(--NormalMenuItemColour);
+    color: var(--NormalMenuItemTextColour);
+
+    text-decoration: none;
+}
+
+#accordion li a.HasUL::after {
+    content:"+";
+    float: right;
+    overflow: no-display;
+    font-size: 15px;
+    font-weight: 600;
+    padding-right: 15px;
+}
+/*#accordion li.a::before {
+    content: "aaa";
+    float: left;
+    overflow: no-display;
+    font-size: 15px;
+    font-weight: 600;
+    padding-right: 15px;
+}*/
+#accordion ul li a span {
+    padding-left: var(--SidePaddingOfMenuItemIcon);
+}
+
+#accordion li a.SelectedMenuItem
+{
+    background:  var(--SelectedMenuItemColour);
+    color: var(--SelectedOrHoverMenuItemTextColour);
+}
+    
+#accordion li a.SelectedMenuItem.HasUL::after {
+    /*
+    Lepsi nez mam tedka ja je zde: https://codepen.io/jonneal/pen/kptBs?editors=1100
+    */
+    content:"-";
+    float: right;
+    font-size: 15px;
+    overflow: no-display;
+    padding-right: 17px;
+}
+
+#accordion li a:not(.SelectedMenuItem):hover {
+    background: var(--HoverMenuItemColour);
+    color: var(--SelectedOrHoverMenuItemTextColour);
+    
+    --TransitionDelay: 150ms;
+    -webkit-transition: background-color  var(--TransitionDelay) linear, color var(--TransitionDelay) linear;
+    -moz-transition: background-color  var(--TransitionDelay) linear, color var(--TransitionDelay) linear;
+    -o-transition: background-color  var(--TransitionDelay) linear, color var(--TransitionDelay) linear;
+    -ms-transition: background-color  var(--TransitionDelay) linear, color var(--TransitionDelay) linear;
+}
+
+
+#accordion li ul {
+    display: none;
+}
+
+#accordion a.MainMenuLevel2
+{
+    /*background: var(--NormalMenuItemColour);*/
+    padding-left: 40px;
+    /*color: red;*/
+}
+#accordion a.MainMenuLevel3
+{
+    /*background: var(--NormalMenuItemColour);*/
+    /*color: skyblue;*/
+    padding-left: 50px;
+}
+
+
+#accordion a.active a:not(.pointer) {
+  color:#fff;
+}
+
+/*              OnClick Menu            */
+
+
+.dropbtn {
+    cursor: pointer;
+}
+
+.dropdown {
+    position: relative;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    overflow: auto;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    right: 0;
+}
+
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown a:hover {background-color: #f1f1f1}
+
+.show /*Musi byt pod .dropdown-content*/
+{
+    display:block;
+}
