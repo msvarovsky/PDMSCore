@@ -35,25 +35,13 @@ $(document).ready(function () {
     });
 });
 
+
 //        https://www.w3schools.com/howto/tryit.asp?filename=tryhow_css_js_dropdown
 function myFunction() {
     document.getElementById("myDropdown").classList.toggle("show");
 }
+window.onclick = function () { alert('test'); }
 
-// Close the dropdown if the user clicks outside of it
-window.onclick = function (event) {
-    if (!event.target.matches('.dropbtn')) {
-
-        var dropdowns = document.getElementsByClassName("dropdown-content");
-        var i;
-        for (i = 0; i < dropdowns.length; i++) {
-            var openDropdown = dropdowns[i];
-            if (openDropdown.classList.contains('show')) {
-                openDropdown.classList.remove('show');
-            }
-        }
-    }
-}
 
 $(function () {
     $.datepicker.setDefaults({
@@ -69,3 +57,5 @@ $(function () {
 
     $("#datepicker").datepicker($.datepicker.regional["fr"]);
 });
+
+
