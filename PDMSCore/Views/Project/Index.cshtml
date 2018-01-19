@@ -1,0 +1,45 @@
+﻿@model PDMSCore.BusinessObjects.Project
+@using PDMSCore.HtmlHelpers
+@{
+    ViewBag.Title = "Index";
+}
+
+
+
+<div class="Section Content">
+    @for (int i = 0; i < Model.ToShow.Count; i++)
+    {
+        <div class="Panel @Model.ToShow[i].Size">
+            <div class="Panel-Header">
+                <div class="Panel-Header-Left">
+                    @Model.ToShow[i].Label
+                </div>
+                <div class="Panel-Header-Right">
+                    <i class="fa fa-gear" aria-hidden="true"></i>
+                </div>
+            </div>
+            <div class="Panel-Body">
+                <form action="#">
+
+                    @for (int f = 0; f < Model.ToShow[i].Content.Count; f++)
+                    {
+                        @PDMSCore.HtmlHelpers.MSHelpers.Field(Model.ToShow[i].Content[f]);
+
+                        @*@Html.Field(Model.ToShow[i].Content[f])*@
+
+                    }
+
+                    <div class="LabelControlDuo">
+                        <div class="label">First :</div>
+                        <div class="control"><input type="text" class="CustomTextBox" name="fname"></div>
+                    </div>
+                    <div class="LabelControlDuo">
+                        <div>
+                            <input type="submit" value="Submit">
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    }
+</div>
