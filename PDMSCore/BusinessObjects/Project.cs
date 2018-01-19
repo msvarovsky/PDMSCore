@@ -27,7 +27,16 @@ namespace PDMSCore.BusinessObjects
 
             List<Field> fields = new List<Field>();
 
-            TextBoxField tb = new TextBoxField((randonName++).ToString(), "Pocet projektu", "5");
+            //TextBoxField tb = new TextBoxField((randonName++).ToString(), "Pocet projektu", "5");
+
+            fields.Add(Field.GetRandom());
+            fields.Add(Field.NewLine());
+
+            fields.Add(LabelTextBoxField.GetRandom());
+            fields.Add(LabelTextAreaField.GetRandom());
+            
+
+            fields.Add(Field.NewLine());
 
 
             //fields.Add(new Field { Label = "Pocet projektu", tagName = 1, Type = FieldType.Indicator, Value = "5" });

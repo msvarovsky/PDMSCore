@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using PDMSCore.DataManipulation;
 using System.Web;
@@ -24,8 +25,8 @@ namespace PDMSCore.HtmlHelpers
             tb.Attributes.Add("class", szClass);
             return new MvcHtmlString(tb.ToString());
         }
-
-        public static IHtmlString MSLabelTextBox(this HtmlHelper helper, string lText, string tbHolterText, string lClass, string tbClass, string tbId)
+        */
+        public static string MSLabelTextBox(this HtmlHelper helper, string lText, string tbHolterText, string lClass, string tbClass, string tbId)
         {
             TagBuilder tbLabel = new TagBuilder("label");
             tbLabel.InnerHtml.AppendHtml(lText);
@@ -35,18 +36,20 @@ namespace PDMSCore.HtmlHelpers
             tbTB.Attributes.Add("type", "text");
             tbTB.Attributes.Add("id", tbId);
             tbTB.AddCssClass(tbClass);
-            return new MvcHtmlString(tbLabel.ToString() + System.Environment.NewLine + tbTB.ToString());
+            return (tbLabel.ToString() + System.Environment.NewLine + tbTB.ToString());
         }
-
+        /*
         public static IHtmlString Field(this HtmlHelper helper, Field f)
         {
             return new MvcHtmlString(f.HtmlText());
         }
         */
 
-        public static string Field(Field f)
+        //public static string Field(Field f)
+        public static IHtmlContent Field(Field f)
         {
-            return f.HtmlText().ToString();
+            //return f.HtmlText().ToString();
+            return f.HtmlText();
         }
 
 

@@ -44,7 +44,9 @@ body {
     grid-template-columns: var(--MainMenuWidth) 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
     /*                  Header BreadAndMenu PageInfo Content    */
     
-    grid-template-rows: var(--HeaderNewsHeight) var(--BreadAndPageMenuHeight) 70px 1fr;
+    /*              Z nejakeho duvodu panely funguji spravne pouze kdyz ten radek pod zakomentuju.  */
+    /*grid-template-rows: var(--HeaderNewsHeight) var(--BreadAndPageMenuHeight) 70px 1fr;*/
+
 
     /*    grid-template-rows: calc(var(--HeaderNewsHeight)+var(--BreadAndPageMenuHeight)+var(--PageInfoHeight)) 1fr;*/
     /*    min-height: calc(100vh - var(--TopMargin) - var(--BottomMargin) + 0px);*/
@@ -275,7 +277,8 @@ body {
                 }
                     .CustomTextBox
                     {
-                        width: 95%;
+                        width: 100%;
+                        margin-left: 10px;
     /*                    border:1px solid #d1c7ac;*/
                     }
 
@@ -541,4 +544,18 @@ https://www.youtube.com/watch?v=xMTs8tAapnQ
 .show /*Musi byt pod .dropdown-content*/
 {
     display:block;
+}
+
+
+.labelField {
+    color: black;
+    text-align: right;
+    font-weight: bold;
+    font-size: 75%;
+    width: 300px;
+}
+
+.TextAreaField {
+    width: 100%;
+    margin-left: 10px;
 }

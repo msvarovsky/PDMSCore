@@ -5,14 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - PDMSCore</title>
 
-    <link rel="stylesheet" href="~/css/main.css" />
-    <link href="~/Css/Awesome/font-awesome.css" rel="stylesheet" />
+    
+    
 
     <environment include="Development">
-        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
-        <link rel="stylesheet" href="~/css/site.css" />
+        @*<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />*@
         <link rel="stylesheet" href="~/css/main.css" />
+
+        @*<link href="~/css/font-awesome.css" rel="stylesheet" />*@
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
         <script src="~/js/site.js"></script>
+        <script src="~/js/jquery-1.10.2.js"></script>
+
+
+        @*kvuli kalendari*@
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     </environment>
     <environment exclude="Development">
         <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/css/bootstrap.min.css"
@@ -21,13 +29,12 @@
         <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
 
         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
-        <link rel="stylesheet" href="~/css/site2.css" />
         <link rel="stylesheet" href="~/css/main.css" />
     </environment>
 </head>
 <body>
-    <link href="~/css/main.css" rel="stylesheet" />
-    <link href="~/Css/Awesome/font-awesome.css" rel="stylesheet" />
+    @*<link href="~/css/main.css" rel="stylesheet" />
+    <link href="~/Css/Awesome/font-awesome.css" rel="stylesheet" />*@
 
     <section class="MainWrapper">
         <input type="checkbox" id="toggle" />
