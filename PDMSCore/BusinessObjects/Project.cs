@@ -29,14 +29,22 @@ namespace PDMSCore.BusinessObjects
 
             //TextBoxField tb = new TextBoxField((randonName++).ToString(), "Pocet projektu", "5");
 
-            fields.Add(Field.GetRandom());
+            
+            fields.Add(new LabelField("Normalni text"));
+            fields.Add(Field.NewLine());
+            fields.Add(new LabelField("Bold text",true));
             fields.Add(Field.NewLine());
 
             fields.Add(LabelTextBoxField.GetRandom());
             fields.Add(LabelTextAreaField.GetRandom());
-            
-
             fields.Add(Field.NewLine());
+
+            fields.Add(LabelRBCBControl<LabelRadioButtonField>.GetRandom(5));
+            fields.Add(LabelRBCBControl<LabelCheckBoxField>.GetRandom(10));
+
+
+            /*fields.Add(LabelCheckBoxesControl.GetRandom(2));
+            fields.Add(LabelRadioButtonsControl.GetRandom(2));*/
 
 
             //fields.Add(new Field { Label = "Pocet projektu", tagName = 1, Type = FieldType.Indicator, Value = "5" });
