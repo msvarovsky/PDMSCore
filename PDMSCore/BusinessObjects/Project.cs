@@ -41,6 +41,10 @@ namespace PDMSCore.BusinessObjects
 
             fields.Add(LabelRBCBControl<LabelRadioButtonField>.GetRandom(5));
             fields.Add(LabelRBCBControl<LabelCheckBoxField>.GetRandom(10));
+            fields.Add(LabelDropDownField.GetRandom(5));
+            fields.Add(LabelDatePickerField.GetRandom());
+
+            fields.Add(LabelFileUploadField.GetRandom());
 
 
             /*fields.Add(LabelCheckBoxesControl.GetRandom(2));

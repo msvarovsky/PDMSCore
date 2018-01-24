@@ -275,11 +275,10 @@ body {
                     margin-left: 10px;
                     float:left;
                 }
-                    .CustomTextBox
-                    {
+                    .CustomTextBox, .CustomDatePicker {
                         width: 100%;
                         margin-left: 10px;
-    /*                    border:1px solid #d1c7ac;*/
+                        /*                    border:1px solid #d1c7ac;*/
                     }
 
 
@@ -562,7 +561,7 @@ https://www.youtube.com/watch?v=xMTs8tAapnQ
     margin-left: 10px;
 }
 
-.GroupOfCheckBoxes, .GroupOfRadioButtons {
+.GroupOfCheckBoxes, .GroupOfRadioButtons, .DropDownOptions {
     width: 100%;
     margin-left: 10px;
 }

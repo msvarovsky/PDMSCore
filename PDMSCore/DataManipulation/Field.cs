@@ -23,26 +23,21 @@ namespace PDMSCore.DataManipulation
         Indicator
     }
 
-  /*  public interface IHtmlTag
+    public interface IHtmlTag
     {
-        string HtmlText();
-    }   */
-
+        TagBuilder HtmlText();
+    }
     public abstract class Field
     {
-        public string tagName { get; set; }
         public FieldType Type { get; set; }
         //public string CssClasses { get; set; }
-        protected StringWriter writer;
 
         public abstract TagBuilder HtmlText();
-
 
         public static Field NewLine()
         {
             return new NewLine();
         }
-
     }
 
     public class LabelTextAreaField : Field
@@ -163,17 +158,17 @@ namespace PDMSCore.DataManipulation
             return new LabelField("LabelField");
         }
     }
-
     public class TextBoxField : Field
     {
         public string Text { get; set; }
         public string PlaceHolder { get; set; }
         public string ToolTip { get; set; }
 
-        public TextBoxField(string Text, string PlaceHolder = "")
+        public TextBoxField(string Text, string PlaceHolder = "", string ToolTip="")
         {
             this.Text = Text;
             this.PlaceHolder = PlaceHolder;
+            this.ToolTip = ToolTip;
         }
 
         //public override IHtmlContent HtmlText()
@@ -196,10 +191,203 @@ namespace PDMSCore.DataManipulation
         public override TagBuilder HtmlText()
         {
             TagBuilder tb = new TagBuilder("input");
-            tb.Attributes.Add("type", "text");
             tb.AddCssClass("CustomTextBox");
+            tb.Attributes.Add("type", "text");
+            tb.Attributes.Add("title", ToolTip);
             tb.Attributes.Add("placeholder", PlaceHolder);
+            return tb;
+        }
+    }
 
+    public class FileUploadField : Field
+    {
+        public string Name { get; set; }
+        public string ToolTip { get; set; }
+
+        public FileUploadField(string NameId, string ToolTip = "")
+        {
+            this.Name = NameId;
+            this.ToolTip = ToolTip;
+        }
+
+        public override TagBuilder HtmlText()
+        {
+            TagBuilder tb = new TagBuilder("input");
+            tb.AddCssClass("CustomTextBox");
+            tb.Attributes.Add("name", this.Name);
+            tb.Attributes.Add("type", "file");
+            tb.Attributes.Add("title", ToolTip);
+            return tb;
+        }
+    }
+    public class LabelFileUploadField : Field
+    {
+        private LabelField label;
+        private FileUploadField fu;
+
+        public LabelFileUploadField(string HtmlText, FileUploadField f)
+        {
+            label = new LabelField(HtmlText,true);
+            fu = f;
+        }
+
+        public static Field GetRandom()
+        {
+            LabelFileUploadField a = new LabelFileUploadField("fu",new FileUploadField("fuu"));
+            return a;
+        }
+
+        public override TagBuilder HtmlText()
+        {
+            TagBuilder tb = new TagBuilder("div");
+            tb.AddCssClass("LabelControlDuo");
+            tb.InnerHtml.AppendHtml(label.HtmlText());
+            tb.InnerHtml.AppendHtml(fu.HtmlText());
+            return tb;
+        }
+    }
+
+    public class DatePickerField : IHtmlTag
+    {
+        //  <input type="date" name="bday" value="2013-01-08"> disabled>
+        public string Name { get; set; }
+        public DateTime? Value { get; set; }
+        public DateTime? MinDate { get; set; }
+        public DateTime? MaxDate { get; set; }
+        public bool Enabled { get; set; }
+
+        public DatePickerField(string Id, DateTime? Value = null, DateTime? MinDate = null, DateTime? MaxDate = null, bool Enabled = true)
+        {
+            this.Name = Id;
+            this.Value = Value;
+            this.MinDate = MinDate;
+            this.MaxDate = MaxDate;
+            this.Enabled = Enabled;
+        }
+        //public static Field GetRandom()
+        //{
+        //    //DatePickerField n = new DatePickerField("DP Label", DateTime.Now, DateTime.Now, DateTime.Now + TimeSpan.FromDays(20));
+        //    DatePickerField n = new DatePickerField("DP Label");
+        //    return n;
+        //}
+        public TagBuilder HtmlText()
+        {   
+            TagBuilder tb = new TagBuilder("input");
+            tb.AddCssClass("CustomDatePicker");
+            tb.Attributes.Add("type", "date");
+            tb.Attributes.Add("name", this.Name);
+
+            if (this.Value != null)
+                tb.Attributes.Add("value", this.Value.Value.ToString("yyyy-MM-dd"));
+            if (this.MinDate != null)
+                tb.Attributes.Add("min", this.MinDate.Value.ToString("yyyy-MM-dd"));
+            if (this.MaxDate!= null)
+                tb.Attributes.Add("max", this.MaxDate.Value.ToString("yyyy-MM-dd"));
+
+            if (!Enabled)
+                tb.Attributes.Add("disabled", "");
+            return tb;
+        }
+    }
+    public class LabelDatePickerField : Field
+    {   //    <input type="date" name="bday">
+        private LabelField Label;
+        private DatePickerField DatePicker;
+
+        public LabelDatePickerField(string HtmlLabel, DatePickerField date)
+        {
+            this.Label = new LabelField(HtmlLabel,true);
+            this.DatePicker = date;
+        }
+
+        public static Field GetRandom(DateTime? DefaultValue = null)
+        {
+            DatePickerField d = new DatePickerField("DP Label",DefaultValue);
+            LabelDatePickerField a = new LabelDatePickerField("DP Label", d);
+            return a;
+        }
+
+        public override TagBuilder HtmlText()
+        {
+            TagBuilder tb = new TagBuilder("div");
+            tb.AddCssClass("LabelControlDuo");
+            tb.InnerHtml.AppendHtml(Label.HtmlText());
+            tb.InnerHtml.AppendHtml(DatePicker.HtmlText());
+            return tb;
+        }
+    }
+
+    public class DropDownOption : IHtmlTag
+    {
+        public string Value { get; set; }
+        public string Label { get; set; }
+        public bool Enabled { get; set; }
+
+        public DropDownOption(string ValueId, string Label, bool Enabled = true)
+        {
+            this.Value = ValueId;
+            this.Label = Label;
+            this.Enabled = Enabled;
+        }
+
+        public TagBuilder HtmlText()
+        {   //  <option label="England" value="England"></option>             TagBuilder tb = new TagBuilder("option");
+            tb.Attributes.Add("value", Value);
+            if (!Enabled)
+                tb.Attributes.Add("disabled", "");
+            tb.InnerHtml.AppendHtml(Label);
+            return tb;
+        }
+    }
+    public class LabelDropDownField : Field
+    {
+        public LabelField Label { get; set; }
+        List<DropDownOption> Options { get; set; }
+        public int Size { get; set; }
+        public bool Enabled { get; set; }
+
+        public LabelDropDownField(string label, int VisibleRows = 1, bool Enabled = true)
+        {
+            this.Label = new LabelField(label, true);
+            Options = new List<DropDownOption>();
+            Size = VisibleRows;
+            this.Enabled = Enabled;
+        }
+
+        public void Add(DropDownOption toBeAdded)
+        {
+            Options.Add(toBeAdded);
+        }
+
+        public static Field GetRandom(int count)
+        {
+            LabelDropDownField n = new LabelDropDownField("DropDown ListBox", count - 1, true);
+            for (int i = 0; i < count; i++)
+            {
+                DropDownOption no = new DropDownOption("DD" + i.ToString(), "DD" + i.ToString(), i % 2 == 0);
+                n.Add(no);
+            }
+            return n;
+        }
+
+        public override TagBuilder HtmlText()
+        {
+            TagBuilder tb = new TagBuilder("div");
+            tb.AddCssClass("LabelControlDuo");
+                TagBuilder tbDropDown = new TagBuilder("select");
+                tbDropDown.AddCssClass("DropDownOptions");
+                if (Size > 1)
+                    tbDropDown.Attributes.Add("size", Size.ToString());
+                if (!Enabled)
+                    tbDropDown.Attributes.Add("disabled", "");
+
+                    for (int i = 0; i < Options.Count; i++)
+                    {
+                        TagBuilder t = Options[i].HtmlText();
+                        tbDropDown.InnerHtml.AppendHtml(t);
+                    }
+            tb.InnerHtml.AppendHtml(Label.HtmlText());
+            tb.InnerHtml.AppendHtml(tbDropDown);
             return tb;
         }
     }
@@ -250,68 +438,67 @@ namespace PDMSCore.DataManipulation
             throw new NotImplementedException();
         }
     }
-    public class LabelCheckBoxesControl : Field
-    {
-        public LabelField Label { get; set; }
-        public string Name { get; set; }
+    //public class LabelCheckBoxesControl : Field
+    //{
+    //    public LabelField Label { get; set; }
+    //    public string Name { get; set; }
 
-        List<LabelCheckBoxField> CheckBoxes { get; set; }
+    //    List<LabelCheckBoxField> CheckBoxes { get; set; }
 
-        public LabelCheckBoxesControl(string Id, string HtmlLabel)
-        {
-            this.Name = Id;
-            this.Label = new LabelField(HtmlLabel, true);
-            CheckBoxes = new List<LabelCheckBoxField>();
-        }
+    //    public LabelCheckBoxesControl(string Id, string HtmlLabel)
+    //    {
+    //        this.Name = Id;
+    //        this.Label = new LabelField(HtmlLabel, true);
+    //        CheckBoxes = new List<LabelCheckBoxField>();
+    //    }
 
-        //public void Add(string HtmlLabel, string ValueId, bool bChecked, bool bDisabled)
-        public void Add(LabelCheckBoxField lcbf)
-        {
-            LabelCheckBoxField cb = lcbf;
-            CheckBoxes.Add(cb);
-        }
+    //    //public void Add(string HtmlLabel, string ValueId, bool bChecked, bool bDisabled)
+    //    public void Add(LabelCheckBoxField lcbf)
+    //    {
+    //        LabelCheckBoxField cb = lcbf;
+    //        CheckBoxes.Add(cb);
+    //    }
 
-        public static Field GetRandom(int count)
-        {
-            string GroupName = "lcbc" + DateTime.Now.ToShortDateString();
-            LabelCheckBoxesControl c = new LabelCheckBoxesControl(GroupName,"Checkbox global label");
-            for (int i = 0; i < count; i++)
-            {
-                LabelCheckBoxField cb = new LabelCheckBoxField(GroupName, "LCBC global label", GroupName + i.ToString(), i % 2 == 0, false);
-                c.CheckBoxes.Add(cb);
-            }
-            return c;
-        }
+    //    public static Field GetRandom(int count)
+    //    {
+    //        string GroupName = "lcbc" + DateTime.Now.ToShortDateString();
+    //        LabelCheckBoxesControl c = new LabelCheckBoxesControl(GroupName,"Checkbox global label");
+    //        for (int i = 0; i < count; i++)
+    //        {
+    //            LabelCheckBoxField cb = new LabelCheckBoxField(GroupName, "LCBC global label", GroupName + i.ToString(), i % 2 == 0, false);
+    //            c.CheckBoxes.Add(cb);
+    //        }
+    //        return c;
+    //    }
 
-        public override TagBuilder HtmlText()
-        {
-            TagBuilder tb = new TagBuilder("div");
-            tb.AddCssClass("LabelControlDuo");
+    //    public override TagBuilder HtmlText()
+    //    {
+    //        TagBuilder tb = new TagBuilder("div");
+    //        tb.AddCssClass("LabelControlDuo");
 
-                /*TagBuilder tbControlLabel = new TagBuilder("div");
-                tbControlLabel.InnerHtml.AppendHtml(label.HtmlText());*/
+    //            /*TagBuilder tbControlLabel = new TagBuilder("div");
+    //            tbControlLabel.InnerHtml.AppendHtml(label.HtmlText());*/
 
-                TagBuilder tbControl = new TagBuilder("div");
-                tbControl.AddCssClass("GroupOfCheckBoxes");
+    //            TagBuilder tbControl = new TagBuilder("div");
+    //            tbControl.AddCssClass("GroupOfCheckBoxes");
 
-                    TagBuilder tbForm = new TagBuilder("form");
-                    tbForm.Attributes.Add("action", "#");
-                    tbForm.Attributes.Add("method", "get");
+    //                TagBuilder tbForm = new TagBuilder("form");
+    //                tbForm.Attributes.Add("action", "#");
+    //                tbForm.Attributes.Add("method", "get");
 
-                    //TagBuilder tbCheckboxes = new TagBuilder("div");
-                    for (int i = 0; i < CheckBoxes.Count; i++)
-                        tbForm.InnerHtml.AppendHtml(CheckBoxes[i].HtmlText());
+    //                //TagBuilder tbCheckboxes = new TagBuilder("div");
+    //                for (int i = 0; i < CheckBoxes.Count; i++)
+    //                    tbForm.InnerHtml.AppendHtml(CheckBoxes[i].HtmlText());
                     
-                    //tbForm.InnerHtml.AppendHtml(tbCheckboxes);
+    //                //tbForm.InnerHtml.AppendHtml(tbCheckboxes);
 
-                tbControl.InnerHtml.AppendHtml(tbForm);
+    //            tbControl.InnerHtml.AppendHtml(tbForm);
 
-            tb.InnerHtml.AppendHtml(Label.HtmlText());
-            tb.InnerHtml.AppendHtml(tbControl);
-            return tb;
-        }
-    }
-
+    //        tb.InnerHtml.AppendHtml(Label.HtmlText());
+    //        tb.InnerHtml.AppendHtml(tbControl);
+    //        return tb;
+    //    }
+    //}
     public class LabelRadioButtonField : Field
     {
         public LabelField Label { get; set; }
@@ -358,63 +545,62 @@ namespace PDMSCore.DataManipulation
             throw new NotImplementedException();
         }
     }
-    public class LabelRadioButtonsControl : Field
-    {
-        public LabelField label { get; set; }
-        List<LabelRadioButtonField> RadioButtons { get; set; }
+    //public class LabelRadioButtonsControl : Field
+    //{
+    //    public LabelField label { get; set; }
+    //    List<LabelRadioButtonField> RadioButtons { get; set; }
 
-        public LabelRadioButtonsControl(string label)
-        {
-            this.label = new LabelField(label, true);
-            RadioButtons = new List<LabelRadioButtonField>();
-        }
+    //    public LabelRadioButtonsControl(string label)
+    //    {
+    //        this.label = new LabelField(label, true);
+    //        RadioButtons = new List<LabelRadioButtonField>();
+    //    }
 
-        public void Add(string text, bool bChecked, bool bDisabled)
-        {
-            LabelRadioButtonField cb = new LabelRadioButtonField(tagName, text,"error", bChecked, bDisabled);
-            RadioButtons.Add(cb);
-        }
+    //    public void Add(string text, bool bChecked, bool bDisabled)
+    //    {
+    //        LabelRadioButtonField cb = new LabelRadioButtonField(tagName, text,"error", bChecked, bDisabled);
+    //        RadioButtons.Add(cb);
+    //    }
 
-        public static Field GetRandom(int count)
-        {
-            LabelRadioButtonsControl c = new LabelRadioButtonsControl("Radiobuttons global label");
-            for (int i = 0; i < count; i++)
-            {
-                LabelRadioButtonField cb = new LabelRadioButtonField("cb" + i, "Label cb" + i, "Label cb" + i, i % 2 == 0, false);
-                c.RadioButtons.Add(cb);
-            }
-            return c;
-        }
+    //    public static Field GetRandom(int count)
+    //    {
+    //        LabelRadioButtonsControl c = new LabelRadioButtonsControl("Radiobuttons global label");
+    //        for (int i = 0; i < count; i++)
+    //        {
+    //            LabelRadioButtonField cb = new LabelRadioButtonField("cb" + i, "Label cb" + i, "Label cb" + i, i % 2 == 0, false);
+    //            c.RadioButtons.Add(cb);
+    //        }
+    //        return c;
+    //    }
 
-        public override TagBuilder HtmlText()
-        {
-            TagBuilder tb = new TagBuilder("div");
-            tb.AddCssClass("LabelControlDuo");
+    //    public override TagBuilder HtmlText()
+    //    {
+    //        TagBuilder tb = new TagBuilder("div");
+    //        tb.AddCssClass("LabelControlDuo");
 
-            /*TagBuilder tbControlLabel = new TagBuilder("div");
-            tbControlLabel.InnerHtml.AppendHtml(label.HtmlText());*/
+    //        /*TagBuilder tbControlLabel = new TagBuilder("div");
+    //        tbControlLabel.InnerHtml.AppendHtml(label.HtmlText());*/
 
-            TagBuilder tbControl = new TagBuilder("div");
-            tbControl.AddCssClass("GroupOfCheckBoxes");
+    //        TagBuilder tbControl = new TagBuilder("div");
+    //        tbControl.AddCssClass("GroupOfCheckBoxes");
 
-            TagBuilder tbForm = new TagBuilder("form");
-            tbForm.Attributes.Add("action", "#");
-            tbForm.Attributes.Add("method", "get");
+    //        TagBuilder tbForm = new TagBuilder("form");
+    //        tbForm.Attributes.Add("action", "#");
+    //        tbForm.Attributes.Add("method", "get");
 
-            //TagBuilder tbCheckboxes = new TagBuilder("div");
-            for (int i = 0; i < RadioButtons.Count; i++)
-                tbForm.InnerHtml.AppendHtml(RadioButtons[i].HtmlText());
+    //        //TagBuilder tbCheckboxes = new TagBuilder("div");
+    //        for (int i = 0; i < RadioButtons.Count; i++)
+    //            tbForm.InnerHtml.AppendHtml(RadioButtons[i].HtmlText());
             
-            //tbForm.InnerHtml.AppendHtml(tbCheckboxes);
+    //        //tbForm.InnerHtml.AppendHtml(tbCheckboxes);
 
-            tbControl.InnerHtml.AppendHtml(tbForm);
+    //        tbControl.InnerHtml.AppendHtml(tbForm);
 
-            tb.InnerHtml.AppendHtml(label.HtmlText());
-            tb.InnerHtml.AppendHtml(tbControl);
-            return tb;
-        }
-    }
-
+    //        tb.InnerHtml.AppendHtml(label.HtmlText());
+    //        tb.InnerHtml.AppendHtml(tbControl);
+    //        return tb;
+    //    }
+    //}
     enum GroupControlType
     {
         RadioBoxes,
@@ -460,13 +646,14 @@ namespace PDMSCore.DataManipulation
 
             if (GCType == GroupControlType.CheckBoxes)
                 tbControl.AddCssClass("GroupOfCheckBoxes");
-            else
+            else if (GCType == GroupControlType.RadioBoxes)
                 tbControl.AddCssClass("GroupOfRadioButtons");
+            else
+                return new TagBuilder("error");
 
             TagBuilder tbForm = new TagBuilder("form");
             tbForm.Attributes.Add("action", "#");
             tbForm.Attributes.Add("method", "get");
-
 
             for (int i = 0; i < Options.Count; i++)
             {
