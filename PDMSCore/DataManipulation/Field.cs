@@ -23,14 +23,14 @@ namespace PDMSCore.DataManipulation
         Indicator
     }
 
-    public interface IHtmlTag
-    {
-        TagBuilder HtmlText();
-    }
+    //public interface IHtmlTag
+    //{
+    //    TagBuilder HtmlText();
+    //}
     public abstract class Field
     {
-        public FieldType Type { get; set; }
-        //public string CssClasses { get; set; }
+        public string NameId { get; set; }
+        //public FieldType Type { get; set; }
 
         public abstract TagBuilder HtmlText();
 
@@ -39,51 +39,6 @@ namespace PDMSCore.DataManipulation
             return new NewLine();
         }
     }
-
-    public class LabelTextAreaField : Field
-    {
-        /*
-            <textarea rows="4" cols="50" placeholder="Describe yourself here..."></textarea>
-            <textarea rows="4" cols="50" placeholder="Describe yourself here...">Value</textarea>
-        */
-        public string LabelText { get; set; }
-        public string Text { get; set; }
-        public string Placeholder { get; set; }
-        public string Rows { get; set; }
-
-        public LabelTextAreaField(string LabelText, string Text, string Placeholder="...", string Rows = "4")
-        {
-            this.LabelText = LabelText;
-            this.Text = Text;
-            this.Placeholder = Placeholder;
-            this.Rows = Rows;
-        }
-
-        public override TagBuilder HtmlText()
-        {
-            LabelField lf = new LabelField(LabelText,true);
-
-            TagBuilder tbInner = new TagBuilder("textarea");
-            tbInner.Attributes.Add("rows", Rows);
-            tbInner.AddCssClass("TextAreaField");
-            tbInner.Attributes.Add("placeholder", Placeholder);
-            tbInner.InnerHtml.AppendHtml(WebUtility.HtmlEncode(Text));
-
-            TagBuilder tb = new TagBuilder("div");
-            tb.AddCssClass("LabelControlDuo");
-            tb.InnerHtml.AppendHtml(lf.HtmlText());
-            tb.InnerHtml.AppendHtml(tbInner);
-
-            return tb;
-        }
-
-        public static Field GetRandom()
-        {
-            LabelTextAreaField a = new LabelTextAreaField("TextArea label", null, "holder", "4");
-            return a;
-        }
-    }
-
     public class NewLine : Field
     {
         public static Field GetRandom()
@@ -99,34 +54,6 @@ namespace PDMSCore.DataManipulation
         }
     }
 
-    public class LabelTextBoxField : Field
-    {
-        private LabelField label;
-        private TextBoxField txtb;
-
-        public LabelTextBoxField()
-        {
-            label = new LabelField("LabelText");
-            txtb = new TextBoxField("", "Sem neco napis.");
-        }
-
-        public static Field GetRandom()
-        {
-            LabelTextBoxField a = new LabelTextBoxField();
-            a.label = new LabelField("Random label text",true);
-            a.txtb = new TextBoxField("TextBox text", "place holder");
-            return a;
-        }
-        
-        public override TagBuilder HtmlText()
-        {
-            TagBuilder tb = new TagBuilder("div");
-            tb.AddCssClass("LabelControlDuo");
-            tb.InnerHtml.AppendHtml(label.HtmlText());
-            tb.InnerHtml.AppendHtml(txtb.HtmlText());
-            return tb;
-        }
-    }
     public class LabelField : Field
     {
         public string HtmlLabel { get; set; }
@@ -136,7 +63,7 @@ namespace PDMSCore.DataManipulation
         public string PlaceHolder { get; set; }
         public bool Bold { get; set; }
 
-        public LabelField(string HtmlLabel, bool Bold = false, string For=null)
+        public LabelField(string HtmlLabel, bool Bold = false, string For = null)
         {
             this.Bold = Bold;
             this.HtmlLabel = HtmlLabel;
@@ -146,7 +73,7 @@ namespace PDMSCore.DataManipulation
         public override TagBuilder HtmlText()
         {
             TagBuilder tb = new TagBuilder("label");
-            tb.AddCssClass(Bold? "BoldLabelField" : "LabelField");
+            tb.AddCssClass(Bold ? "BoldLabelField" : "LabelField");
             if (this.For != null)
                 tb.Attributes.Add("for", this.For);
             tb.InnerHtml.AppendHtml(HtmlLabel);
@@ -158,43 +85,108 @@ namespace PDMSCore.DataManipulation
             return new LabelField("LabelField");
         }
     }
+    public class TextAreaField : Field
+    {
+        public int Rows { get; set; }
+        public string Placeholder { get; set; }
+        public string Text { get; set; }
+
+        public TextAreaField(string NameId, string Text, string Placeholder, int Rows)
+        {
+            this.NameId = NameId;
+            this.Text = Text;
+            this.Placeholder = Placeholder;
+            this.Rows = Rows;
+        }
+
+        public override TagBuilder HtmlText()
+        {
+            TagBuilder tb = new TagBuilder("textarea");
+            tb.AddCssClass("TextAreaField");
+            tb.Attributes.Add("name", NameId);
+            tb.Attributes.Add("rows", Rows.ToString());
+            tb.Attributes.Add("placeholder", Placeholder);
+            tb.InnerHtml.AppendHtml(WebUtility.HtmlEncode(Text));
+            return tb;
+        }
+    }
+    public class LabelTextAreaField : Field
+    {   //  <textarea rows="4" cols="50" placeholder="Describe yourself here...">Value</textarea>
+        public LabelField label { get; set; }
+        public TextAreaField textArea { get; set; }
+
+        public LabelTextAreaField(string Id, string LabelText, string Text, string Placeholder = "...", int Rows = 4)
+        {
+            label = new LabelField(LabelText, true);
+            textArea = new TextAreaField(Id, Text, Placeholder, Rows);
+        }
+
+        public override TagBuilder HtmlText()
+        {
+            TagBuilder tb = new TagBuilder("div");
+            tb.AddCssClass("LabelControlDuo");
+            tb.InnerHtml.AppendHtml(label.HtmlText());
+            tb.InnerHtml.AppendHtml(textArea.HtmlText());
+
+            return tb;
+        }
+
+        public static Field GetRandom(string id)
+        {
+            LabelTextAreaField a = new LabelTextAreaField(id,"TextArea label", null, "holder", 4);
+            return a;
+        }
+    }
+
     public class TextBoxField : Field
     {
         public string Text { get; set; }
         public string PlaceHolder { get; set; }
         public string ToolTip { get; set; }
+        public string Name { get; set; }
 
-        public TextBoxField(string Text, string PlaceHolder = "", string ToolTip="")
+        public TextBoxField(string NameId, string Text, string PlaceHolder = "", string ToolTip="")
         {
+            this.Name = NameId;
             this.Text = Text;
             this.PlaceHolder = PlaceHolder;
             this.ToolTip = ToolTip;
         }
 
-        //public override IHtmlContent HtmlText()
-        //{
-        //    TagBuilder tb = new TagBuilder("div");
-        //    tb.AddCssClass("LabelControlDuo");
-
-        //    TagBuilder tb3 = new TagBuilder("input");
-        //    tb3.Attributes.Add("type", "text");
-        //    tb3.Attributes.Add("name", tagName);
-        //    tb3.AddCssClass("CustomTextBox");
-
-        //    TagBuilder tb2 = new TagBuilder("div");
-        //    tb2.AddCssClass("control");
-        //    tb2.InnerHtml.AppendHtml(tb3.ToString());
-
-        //    tb.InnerHtml.AppendHtml(Label.HtmlText() + tb2.ToString());
-        //    return tb;
-        //}
         public override TagBuilder HtmlText()
         {
             TagBuilder tb = new TagBuilder("input");
-            tb.AddCssClass("CustomTextBox");
+            tb.AddCssClass("ControlOfLabelControlDuo");
+            tb.Attributes.Add("name", this.Name);
             tb.Attributes.Add("type", "text");
             tb.Attributes.Add("title", ToolTip);
             tb.Attributes.Add("placeholder", PlaceHolder);
+            return tb;
+        }
+    }
+    public class LabelTextBoxField : Field
+    {
+        private LabelField label;
+        private TextBoxField txtb;
+
+        public LabelTextBoxField(string Id, string LabelText, string Text, string Placeholder="...", string ToolTip="")
+        {
+            label = new LabelField(LabelText,true);
+            txtb = new TextBoxField(Id, Text, Placeholder, ToolTip);
+        }
+
+        public static Field GetRandom(string Id)
+        {
+            LabelTextBoxField a = new LabelTextBoxField(Id,Id+":labelText","","placeholder","tooltip");
+            return a;
+        }
+
+        public override TagBuilder HtmlText()
+        {
+            TagBuilder tb = new TagBuilder("div");
+            tb.AddCssClass("LabelControlDuo");
+            tb.InnerHtml.AppendHtml(label.HtmlText());
+            tb.InnerHtml.AppendHtml(txtb.HtmlText());
             return tb;
         }
     }
@@ -203,20 +195,24 @@ namespace PDMSCore.DataManipulation
     {
         public string Name { get; set; }
         public string ToolTip { get; set; }
+        public bool MultipleFile { get; set; }
 
-        public FileUploadField(string NameId, string ToolTip = "")
+        public FileUploadField(string NameId, bool MultipleFile = false, string ToolTip = "")
         {
             this.Name = NameId;
             this.ToolTip = ToolTip;
+            this.MultipleFile = MultipleFile;
         }
 
         public override TagBuilder HtmlText()
         {
             TagBuilder tb = new TagBuilder("input");
-            tb.AddCssClass("CustomTextBox");
+            tb.AddCssClass("ControlOfLabelControlDuo");
             tb.Attributes.Add("name", this.Name);
             tb.Attributes.Add("type", "file");
             tb.Attributes.Add("title", ToolTip);
+            if (MultipleFile)
+                tb.Attributes.Add("multiple", "");
             return tb;
         }
     }
@@ -231,9 +227,9 @@ namespace PDMSCore.DataManipulation
             fu = f;
         }
 
-        public static Field GetRandom()
+        public static Field GetRandom(bool MultipleUpload=false)
         {
-            LabelFileUploadField a = new LabelFileUploadField("fu",new FileUploadField("fuu"));
+            LabelFileUploadField a = new LabelFileUploadField("fu",new FileUploadField("fuu", MultipleUpload,"Tooltip..."));
             return a;
         }
 
@@ -247,7 +243,62 @@ namespace PDMSCore.DataManipulation
         }
     }
 
-    public class DatePickerField : IHtmlTag
+    public class FileDownloadField : Field
+    {
+        public string Name { get; set; }
+        public string ToolTip { get; set; }
+        public string Path { get; set; }
+
+        public FileDownloadField(string NameId, string Path, string ToolTip = "")
+        {
+            this.Name = NameId;
+            this.ToolTip = ToolTip;
+            this.Path = Path;
+        }
+
+        public override TagBuilder HtmlText()
+        {
+            TagBuilder tb = new TagBuilder("a");
+            tb.AddCssClass("ControlOfLabelControlDuo");
+            tb.Attributes.Add("href", this.Path);
+            tb.Attributes.Add("download","");
+            if (ToolTip=="")
+                tb.Attributes.Add("title", this.ToolTip);
+
+            string aa = System.IO.Path.GetFileName(this.Path);
+
+            tb.InnerHtml.AppendHtml(aa);
+            return tb;
+        }
+    }
+    public class LabelFileDownloadField : Field
+    {
+        private LabelField label;
+        private FileDownloadField fu;
+
+        public LabelFileDownloadField(string HtmlText, FileDownloadField f)
+        {
+            label = new LabelField(HtmlText, true);
+            fu = f;
+        }
+
+        public static Field GetRandom(bool MultipleUpload = false)
+        {
+            LabelFileDownloadField a = new LabelFileDownloadField("fu", new FileDownloadField("fuu", "/images/banner1.svg", "Tooltip..."));
+            return a;
+        }
+
+        public override TagBuilder HtmlText()
+        {
+            TagBuilder tb = new TagBuilder("div");
+            tb.AddCssClass("LabelControlDuo");
+            tb.InnerHtml.AppendHtml(label.HtmlText());
+            tb.InnerHtml.AppendHtml(fu.HtmlText());
+            return tb;
+        }
+    }
+
+    public class DatePickerField : Field
     {
         //  <input type="date" name="bday" value="2013-01-08"> disabled>
         public string Name { get; set; }
@@ -264,16 +315,11 @@ namespace PDMSCore.DataManipulation
             this.MaxDate = MaxDate;
             this.Enabled = Enabled;
         }
-        //public static Field GetRandom()
-        //{
-        //    //DatePickerField n = new DatePickerField("DP Label", DateTime.Now, DateTime.Now, DateTime.Now + TimeSpan.FromDays(20));
-        //    DatePickerField n = new DatePickerField("DP Label");
-        //    return n;
-        //}
-        public TagBuilder HtmlText()
+
+        public override TagBuilder HtmlText()
         {   
             TagBuilder tb = new TagBuilder("input");
-            tb.AddCssClass("CustomDatePicker");
+            tb.AddCssClass("ControlOfLabelControlDuo");
             tb.Attributes.Add("type", "date");
             tb.Attributes.Add("name", this.Name);
 
@@ -294,16 +340,16 @@ namespace PDMSCore.DataManipulation
         private LabelField Label;
         private DatePickerField DatePicker;
 
-        public LabelDatePickerField(string HtmlLabel, DatePickerField date)
+        public LabelDatePickerField(string Id, string HtmlLabel, DateTime? Value = null, DateTime? MinDate = null, DateTime? MaxDate = null)
         {
-            this.Label = new LabelField(HtmlLabel,true);
-            this.DatePicker = date;
+            this.Label = new LabelField(HtmlLabel, true);
+            this.DatePicker = new DatePickerField(Id, Value, MinDate, MaxDate);
         }
 
-        public static Field GetRandom(DateTime? DefaultValue = null)
+        public static Field GetRandom(string Id, DateTime? DefaultValue = null)
         {
-            DatePickerField d = new DatePickerField("DP Label",DefaultValue);
-            LabelDatePickerField a = new LabelDatePickerField("DP Label", d);
+            DefaultValue = (DefaultValue == null ? DateTime.Now : DefaultValue);
+            LabelDatePickerField a = new LabelDatePickerField(Id,"DP Label",DefaultValue );
             return a;
         }
 
@@ -317,41 +363,42 @@ namespace PDMSCore.DataManipulation
         }
     }
 
-    public class DropDownOption : IHtmlTag
+    //public class DropDownOption : IHtmlTag
+    public class DropDownOption : Field
     {
-        public string Value { get; set; }
+        //public string Value { get; set; }
         public string Label { get; set; }
         public bool Enabled { get; set; }
 
         public DropDownOption(string ValueId, string Label, bool Enabled = true)
         {
-            this.Value = ValueId;
+            this.NameId = ValueId;
+            //this.Value = ValueId;
             this.Label = Label;
             this.Enabled = Enabled;
         }
 
-        public TagBuilder HtmlText()
-        {   //  <option label="England" value="England"></option>             TagBuilder tb = new TagBuilder("option");
-            tb.Attributes.Add("value", Value);
+        public override TagBuilder HtmlText()
+        {   //  <option label="England" value="England"></option> 
+            TagBuilder tb = new TagBuilder("option");
+            //tb.Attributes.Add("value", Value);
+            tb.Attributes.Add("value", NameId);
             if (!Enabled)
                 tb.Attributes.Add("disabled", "");
             tb.InnerHtml.AppendHtml(Label);
             return tb;
         }
     }
-    public class LabelDropDownField : Field
+    public class DropDownField : Field
     {
-        public LabelField Label { get; set; }
         List<DropDownOption> Options { get; set; }
         public int Size { get; set; }
-        public bool Enabled { get; set; }
 
-        public LabelDropDownField(string label, int VisibleRows = 1, bool Enabled = true)
+        public DropDownField(string Id, int VisibleRows = 1)
         {
-            this.Label = new LabelField(label, true);
             Options = new List<DropDownOption>();
-            Size = VisibleRows;
-            this.Enabled = Enabled;
+            this.NameId = Id;
+            this.Size = VisibleRows;
         }
 
         public void Add(DropDownOption toBeAdded)
@@ -359,9 +406,9 @@ namespace PDMSCore.DataManipulation
             Options.Add(toBeAdded);
         }
 
-        public static Field GetRandom(int count)
+        public static DropDownField GetRandom(string id, int count)
         {
-            LabelDropDownField n = new LabelDropDownField("DropDown ListBox", count - 1, true);
+            DropDownField n = new DropDownField(id+":DD", count - 1);
             for (int i = 0; i < count; i++)
             {
                 DropDownOption no = new DropDownOption("DD" + i.ToString(), "DD" + i.ToString(), i % 2 == 0);
@@ -372,22 +419,49 @@ namespace PDMSCore.DataManipulation
 
         public override TagBuilder HtmlText()
         {
+            TagBuilder tbDropDown = new TagBuilder("select");
+            tbDropDown.AddCssClass("DropDownOptions");
+
+            tbDropDown.Attributes.Add("name", NameId);
+            if (Size > 1)
+                tbDropDown.Attributes.Add("size", Size.ToString());
+
+            /*if (!Enabled)
+                tbDropDown.Attributes.Add("disabled", "");*/
+
+            for (int i = 0; i < Options.Count; i++)
+            {
+                TagBuilder t = Options[i].HtmlText();
+                tbDropDown.InnerHtml.AppendHtml(t);
+            }
+            return tbDropDown;
+        }
+    }
+    public class LabelDropDownField : Field
+    {
+        public LabelField Label { get; set; }
+        public DropDownField Dropdown { get; set; }
+
+        public LabelDropDownField(string Id, string label, int VisibleRows = 1)
+        {
+            Label = new LabelField(label, true);
+            Dropdown = new DropDownField(Id, VisibleRows);
+        }
+
+        public static Field GetRandom(string id, int count)
+        {
+            LabelDropDownField n = new LabelDropDownField(id, id + ":DDLabel");
+            n.Dropdown = DropDownField.GetRandom(id, count);
+            return n;
+        }
+
+        public override TagBuilder HtmlText()
+        {
             TagBuilder tb = new TagBuilder("div");
             tb.AddCssClass("LabelControlDuo");
-                TagBuilder tbDropDown = new TagBuilder("select");
-                tbDropDown.AddCssClass("DropDownOptions");
-                if (Size > 1)
-                    tbDropDown.Attributes.Add("size", Size.ToString());
-                if (!Enabled)
-                    tbDropDown.Attributes.Add("disabled", "");
-
-                    for (int i = 0; i < Options.Count; i++)
-                    {
-                        TagBuilder t = Options[i].HtmlText();
-                        tbDropDown.InnerHtml.AppendHtml(t);
-                    }
+                
             tb.InnerHtml.AppendHtml(Label.HtmlText());
-            tb.InnerHtml.AppendHtml(tbDropDown);
+            tb.InnerHtml.AppendHtml(Dropdown.HtmlText());
             return tb;
         }
     }
@@ -513,7 +587,7 @@ namespace PDMSCore.DataManipulation
             this.Name = Name;
             this.Id = IndividualValueId;
             this.Value = IndividualValueId;
-            this.Label = new LabelField(Label, false, Name);
+            this.Label = new LabelField(Label, false, IndividualValueId);
             this.Checked = Checked;
             this.Disabled = Disabled;
         }
@@ -612,7 +686,7 @@ namespace PDMSCore.DataManipulation
         List<T> Options { get; set; }
         private GroupControlType GCType { get; set; }
 
-        public LabelRBCBControl(string label)
+        public LabelRBCBControl(string id, string label)
         {
             this.Label = new LabelField(label, true);
             Options = new List<T>();
@@ -624,14 +698,14 @@ namespace PDMSCore.DataManipulation
             Options.Add(toBeAdded);
         }
 
-        public static Field GetRandom(int count)
+        public static Field GetRandom(string id, int count)
         {
-            LabelRBCBControl<T> n = new LabelRBCBControl<T>("control global label");
+            LabelRBCBControl<T> n = new LabelRBCBControl<T>(id, "control global label");
             for (int i = 0; i < count; i++)
             {
                 string Name = typeof(T).ToString() + DateTime.Now.ToLongTimeString();
                 //          string Name, string Label, string IndividualValueId, bool Checked = false, bool Disabled = false
-                T aa = (T)Activator.CreateInstance(typeof(T), Name, Name + i.ToString(), Name + i.ToString(), false, false);
+                T aa = (T)Activator.CreateInstance(typeof(T), Name, typeof(T).ToString() + i.ToString(), typeof(T).ToString() + i.ToString(), false, false);
                 n.Options.Add(aa);
             }
             return n;
@@ -651,17 +725,18 @@ namespace PDMSCore.DataManipulation
             else
                 return new TagBuilder("error");
 
-            TagBuilder tbForm = new TagBuilder("form");
-            tbForm.Attributes.Add("action", "#");
-            tbForm.Attributes.Add("method", "get");
+            //TagBuilder tbForm = new TagBuilder("form");
+            //tbForm.Attributes.Add("action", "#");
+            //tbForm.Attributes.Add("method", "get");
 
             for (int i = 0; i < Options.Count; i++)
             {
                 TagBuilder t = (TagBuilder) Options[i].GetType().GetMethod("HtmlText").Invoke(Options[i], null);
-                tbForm.InnerHtml.AppendHtml(t);
+                //tbForm.InnerHtml.AppendHtml(t);
+                tbControl.InnerHtml.AppendHtml(t);
             }
 
-            tbControl.InnerHtml.AppendHtml(tbForm);
+            //tbControl.InnerHtml.AppendHtml(tbForm);
 
             tb.InnerHtml.AppendHtml(Label.HtmlText());
             tb.InnerHtml.AppendHtml(tbControl);

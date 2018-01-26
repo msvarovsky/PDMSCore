@@ -275,7 +275,8 @@ body {
                     margin-left: 10px;
                     float:left;
                 }
-                    .CustomTextBox, .CustomDatePicker {
+                    /*.CustomTextBox, .CustomDatePicker {*/
+                    .ControlOfLabelControlDuo {
                         width: 100%;
                         margin-left: 10px;
                         /*                    border:1px solid #d1c7ac;*/

@@ -8,7 +8,8 @@ namespace PDMSCore.Controllers
     {
         public IActionResult Index()
         {
-            return View();
+            return this.RedirectToAction("ShowAll", "Project");
+            //return View();
         }
 
         public IActionResult About()
