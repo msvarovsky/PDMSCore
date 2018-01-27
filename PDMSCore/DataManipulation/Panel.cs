@@ -1,5 +1,5 @@
-﻿using PDMSCore.Models;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Microsoft.AspNetCore.Http;
 
 namespace PDMSCore.DataManipulation
 {
@@ -20,6 +20,22 @@ namespace PDMSCore.DataManipulation
             this.Size = "x" + xSize;
 
             this.Content = new List<Field>();
+        }
+
+        public bool Save(IFormCollection fc)
+        {
+            foreach (var FieldId in fc.Keys)
+            {
+                if (FieldId == "PanelId")
+                    continue;
+
+                string FieldValue = fc[FieldId];
+
+
+
+
+            }
+            return false;
         }
 
         public void AddFields(Field newField)

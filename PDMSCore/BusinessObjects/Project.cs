@@ -1,8 +1,8 @@
 ﻿using PDMSCore.DataManipulation;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Primitives;
 
 namespace PDMSCore.BusinessObjects
 {
@@ -23,9 +23,41 @@ namespace PDMSCore.BusinessObjects
             return true;
         }
 
+        public bool SaveFromHtml(IFormCollection fc)
+        {
+            StringValues sv = new StringValues();
+
+            if (!fc.TryGetValue("PanelId", out sv))
+                return false;
+
+            Panel p = GetPanel(sv.ToString());
+            return p.Save(fc);
+        }
+
+        private Panel GetPanel(string id)
+        {
+            int iId;
+            if (Int32.TryParse(id, out iId))
+            {
+                for (int i = 0; i < ToShow.Count; i++)
+                {
+                    if (ToShow[i].id == iId)
+                        return ToShow[i];
+                }
+            }
+            return null;
+        }
+
         public void AddPanel(Panel newPanel)
         {
             ToShow.Add(newPanel);
+        }
+
+        public void GetFieldTemplate()
+        {
+            //GetRandom
+
+
         }
 
         public void GetRandom()
