@@ -12,6 +12,7 @@ namespace PDMSCore.DataManipulation
 
         public Panel(int id, string Label, int xSize)
         {
+            //
             this.id = id;
             this.Label = Label;
 
