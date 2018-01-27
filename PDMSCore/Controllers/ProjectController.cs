@@ -41,9 +41,12 @@ namespace PDMSCore.Controllers
         }
 
         [HttpGet]
-        public ActionResult ShowAll()
+        public ActionResult ShowProject()
         {
-            p = new Project();
+            int PanelID = 1;
+
+            p = Project.GetProject(PanelID);
+
             p.GetRandom();
 
 
