@@ -22,4 +22,9 @@
     <Folder Include="wwwroot\TestDB\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="wwwroot\js\colResizable-1.5.min.js" />
+    <None Include="wwwroot\js\jquery-3.3.1.min.js" />
+  </ItemGroup>
+
 </Project>

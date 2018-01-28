@@ -63,8 +63,9 @@ namespace PDMSCore.DataManipulation
         public string HtmlLabel { get; set; }
         private Field CellField { get; set; }
 
-        public TableCell(ColumnType Type, Field f)
+        public TableCell(ColumnType Type,  Field f, string HeaderText = null)
         {
+            HtmlLabel = HeaderText;
             this.type = Type;
             this.CellField = f;
             this.Tag = "div";
@@ -82,7 +83,7 @@ namespace PDMSCore.DataManipulation
                 tbHeaderLabel.InnerHtml.AppendHtml(HtmlLabel);
 
                 TagBuilder tbHeaderSearch = new TagBuilder("HeaderSearch");
-                TextBoxField t = new TextBoxField("TODO-NameId", "", "...");
+                TextBoxField t = new TextBoxField("TODO-NameId", typeof(TableCell), "", "...");
                 tbHeaderSearch.InnerHtml.AppendHtml(t.HtmlText());
 
                 tb.InnerHtml.AppendHtml(tbHeaderLabel);
@@ -109,13 +110,18 @@ namespace PDMSCore.DataManipulation
     {
         public TableCell Cell;
 
-        public TableColumn(ColumnType ColumnType, TableCell Cell = null)
+        public TableColumn(ColumnType type, TableCell Cell = null)
         {
             this.Cell = Cell;
-            if (ColumnType== ColumnType.Data)
+            if (type == ColumnType.Data)
                 this.Tag = "td";
-            else if (ColumnType == ColumnType.Header)
+            else if (type == ColumnType.Header)
                 this.Tag = "th";
+        }
+
+        public void SetType(ColumnType type)
+        {
+           
         }
 
         public override TagBuilder HtmlText()
@@ -134,6 +140,11 @@ namespace PDMSCore.DataManipulation
         private List<TableColumn> Columns;
         private ColumnType type;
 
+        public TableRow()
+        {
+            Columns = new List<TableColumn>();
+            this.Tag = "tr";
+        }
         public TableRow(ColumnType type)
         {
             Columns = new List<TableColumn>();
@@ -143,7 +154,28 @@ namespace PDMSCore.DataManipulation
 
         public void AddColumn(TableColumn NewColumn)
         {
-            Columns.Add(new TableColumn(this.type, NewColumn.Cell));
+            Columns.Add(NewColumn);
+        }
+
+        public static TableRow GetRandomHeaderRow(int count)
+        {
+            TableRow n = new TableRow(ColumnType.Header);
+            for (int i = 0; i < count; i++)
+            {
+                TableColumn t = new TableColumn(ColumnType.Header, new TableCell(ColumnType.Header,new LabelField("NameID-" + i), "NameID-" + i));
+                n.AddColumn(t);
+            }
+            return n;
+        }
+        public static TableRow GetRandomDataRow(int count)
+        {
+            TableRow n = new TableRow();
+            for (int i = 0; i < count; i++)
+            {
+                TableColumn t = new TableColumn(ColumnType.Data, new TableCell(ColumnType.Data, new TextBoxField("NameID-" + i,typeof(TableRow), "NameID-" + i), "NameID-" + i));
+                n.AddColumn(t);
+            }
+            return n;
         }
 
         public override TagBuilder HtmlText()
@@ -157,54 +189,71 @@ namespace PDMSCore.DataManipulation
 
     public class TableField : Field
     {
-        private List<TableRow> Rows;
+        private TableRow HeaderRow;
+        private List<TableRow> DataRow;
 
         public TableField()
         {
-            Rows = new List<TableRow>();
+            DataRow = new List<TableRow>();
         }
 
-        public void AddHeader(TableRow NewRow)
+        public void SetHeaderRow(TableRow NewRow)
         {
-            NewRow = new TableRow();
-            NewRow.AddColumn()
-
+            HeaderRow = NewRow;
         }
-        public void AddRow()
+        public void AddDataRow(TableRow NewRow)
         {
+            DataRow.Add(NewRow);
+        }
 
+        public static TableField GetRandom()
+        {
+            int ColumnCount = 3;
+            TableField n = new TableField();
+
+            n.SetHeaderRow(TableRow.GetRandomHeaderRow(ColumnCount));
+            for (int i = 0; i < 5; i++)
+                n.AddDataRow(TableRow.GetRandomDataRow(ColumnCount));
+
+            return n;
         }
 
         public override TagBuilder HtmlText()
         {
             TagBuilder tb = new TagBuilder("table");
-            tb.InnerHtml.AppendHtml(label.HtmlText());
-            tb.InnerHtml.AppendHtml(textArea.HtmlText());
+            tb.AddCssClass("GridTable");
+            tb.InnerHtml.AppendHtml(HeaderRow.HtmlText());
+
+            for (int i = 0; i < DataRow.Count; i++)
+                tb.InnerHtml.AppendHtml(DataRow[i].HtmlText());
 
             return tb;
         }
     }
 
     public class GridViewField : Field
-    {   //  <textarea rows="4" cols="50" placeholder="Describe yourself here...">Value</textarea>
+    {
+        public LabelField label { get; set; }
+        public TableField table { get; set; }
 
-        public GridViewField(string Id, string LabelText, string Text, string Placeholder = "...", int Rows = 4)
+        public GridViewField(string LabelText, TableField table)
         {
+            label = new LabelField(LabelText, true);
+            this.table = table;
         }
 
         public override TagBuilder HtmlText()
         {
             TagBuilder tb = new TagBuilder("div");
             tb.InnerHtml.AppendHtml(label.HtmlText());
-            tb.InnerHtml.AppendHtml(textArea.HtmlText());
-
+            tb.InnerHtml.AppendHtml(table.HtmlText());
             return tb;
         }
 
         public static Field GetRandom(string id)
         {
-            LabelTextAreaField a = new LabelTextAreaField(id, "TextArea label", null, "holder", 4);
-            return a;
+            GridViewField n = new GridViewField("Grid", TableField.GetRandom());
+            return n;
         }
     }
 
@@ -246,6 +295,7 @@ namespace PDMSCore.DataManipulation
         public int Rows { get; set; }
         public string Placeholder { get; set; }
         public string Text { get; set; }
+        
 
         public TextAreaField(string NameId, string Text, string Placeholder, int Rows)
         {
@@ -271,8 +321,10 @@ namespace PDMSCore.DataManipulation
         public LabelField label { get; set; }
         public TextAreaField textArea { get; set; }
 
+
         public LabelTextAreaField(string Id, string LabelText, string Text, string Placeholder = "...", int Rows = 4)
         {
+            
             label = new LabelField(LabelText, true);
             textArea = new TextAreaField(Id, Text, Placeholder, Rows);
         }
@@ -289,7 +341,7 @@ namespace PDMSCore.DataManipulation
 
         public static Field GetRandom(string id)
         {
-            LabelTextAreaField a = new LabelTextAreaField(id,"TextArea label", null, "holder", 4);
+            LabelTextAreaField a = new LabelTextAreaField(id, "TextArea label", null, "holder", 4);
             return a;
         }
     }
@@ -300,20 +352,25 @@ namespace PDMSCore.DataManipulation
         public string PlaceHolder { get; set; }
         public string ToolTip { get; set; }
         public string Name { get; set; }
+        private Type ParentControl { get; set; }
 
-        public TextBoxField(string NameId, string Text, string PlaceHolder = "", string ToolTip="")
+        public TextBoxField(string NameId, Type parent, string Text, string PlaceHolder = "", string ToolTip="")
         {
             this.Name = NameId;
             this.Text = Text;
             this.PlaceHolder = PlaceHolder;
             this.ToolTip = ToolTip;
             this.Tag = "input";
+            ParentControl = parent;
         }
 
         public override TagBuilder HtmlText()
         {
             TagBuilder tb = new TagBuilder(this.Tag);
-            tb.AddCssClass("ControlOfLabelControlDuo");
+
+            if (ParentControl == typeof(LabelTextBoxField))
+                tb.AddCssClass("ControlOfLabelControlDuo");
+
             tb.Attributes.Add("name", this.Name);
             tb.Attributes.Add("type", "text");
             tb.Attributes.Add("title", ToolTip);
@@ -329,7 +386,7 @@ namespace PDMSCore.DataManipulation
         public LabelTextBoxField(string Id, string LabelText, string Text, string Placeholder="...", string ToolTip="")
         {
             label = new LabelField(LabelText,true);
-            txtb = new TextBoxField(Id, Text, Placeholder, ToolTip);
+            txtb = new TextBoxField(Id, typeof(LabelTextBoxField), Text, Placeholder, ToolTip);
         }
 
         public static Field GetRandom(string Id)

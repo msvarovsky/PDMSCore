@@ -143,11 +143,11 @@ namespace PDMSCore.BusinessObjects
 
             Panel panel2 = new Panel(2, "Grid", 1);
             List<Field> fields2 = new List<Field>();
-            fields2.Add(La;
-            panel.Content = fields2;
+            fields2.Add(GridViewField.GetRandom("Grid"));
+            panel2.Content = fields2;
 
 
-            ToShow.Add(panel);
+            ToShow.Add(panel2);
         }
 
 
