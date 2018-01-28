@@ -32,6 +32,8 @@ namespace PDMSCore.DataManipulation
         public string NameId { get; set; }
         //public FieldType Type { get; set; }
 
+        public string Tag { get; set; }
+
         public abstract TagBuilder HtmlText();
 
         public static Field NewLine()
@@ -53,6 +55,160 @@ namespace PDMSCore.DataManipulation
             return tb;
         }
     }
+
+
+    public class TableCell: Field
+    {
+        ColumnType type;
+        public string HtmlLabel { get; set; }
+        private Field CellField { get; set; }
+
+        public TableCell(ColumnType Type, Field f)
+        {
+            this.type = Type;
+            this.CellField = f;
+            this.Tag = "div";
+        }
+
+        public override TagBuilder HtmlText()
+        {
+            TagBuilder tb = new TagBuilder(this.Tag);
+
+            if (type == ColumnType.Header)
+            {
+                tb.AddCssClass("HeadCell");
+
+                TagBuilder tbHeaderLabel = new TagBuilder("HeaderLabel");
+                tbHeaderLabel.InnerHtml.AppendHtml(HtmlLabel);
+
+                TagBuilder tbHeaderSearch = new TagBuilder("HeaderSearch");
+                TextBoxField t = new TextBoxField("TODO-NameId", "", "...");
+                tbHeaderSearch.InnerHtml.AppendHtml(t.HtmlText());
+
+                tb.InnerHtml.AppendHtml(tbHeaderLabel);
+                tb.InnerHtml.AppendHtml(tbHeaderSearch);
+            }
+            else if (type == ColumnType.Data)
+            {
+                tb.AddCssClass("Cell");
+                tb.InnerHtml.AppendHtml(CellField.HtmlText());
+            }
+            else
+                throw new NotImplementedException();
+
+            return tb;
+        }
+    }
+
+    public enum ColumnType
+    {
+        Header,
+        Data
+    }
+    public class TableColumn : Field
+    {
+        public TableCell Cell;
+
+        public TableColumn(ColumnType ColumnType, TableCell Cell = null)
+        {
+            this.Cell = Cell;
+            if (ColumnType== ColumnType.Data)
+                this.Tag = "td";
+            else if (ColumnType == ColumnType.Header)
+                this.Tag = "th";
+        }
+
+        public override TagBuilder HtmlText()
+        {
+            TagBuilder tb = new TagBuilder(this.Tag);
+            if (Cell != null)
+                tb.InnerHtml.AppendHtml(this.Cell.HtmlText());
+            else
+                tb.InnerHtml.AppendHtml("Not defined.");
+            return tb;
+        }
+    }
+
+    public class TableRow : Field
+    {
+        private List<TableColumn> Columns;
+        private ColumnType type;
+
+        public TableRow(ColumnType type)
+        {
+            Columns = new List<TableColumn>();
+            this.Tag = "tr";
+            this.type = type;
+        }
+
+        public void AddColumn(TableColumn NewColumn)
+        {
+            Columns.Add(new TableColumn(this.type, NewColumn.Cell));
+        }
+
+        public override TagBuilder HtmlText()
+        {
+            TagBuilder tb = new TagBuilder(this.Tag);
+            for (int i = 0; i < Columns.Count; i++)
+                tb.InnerHtml.AppendHtml(Columns[i].HtmlText());
+            return tb;
+        }
+    }
+
+    public class TableField : Field
+    {
+        private List<TableRow> Rows;
+
+        public TableField()
+        {
+            Rows = new List<TableRow>();
+        }
+
+        public void AddHeader(TableRow NewRow)
+        {
+            NewRow = new TableRow();
+            NewRow.AddColumn()
+
+        }
+        public void AddRow()
+        {
+
+        }
+
+        public override TagBuilder HtmlText()
+        {
+            TagBuilder tb = new TagBuilder("table");
+            tb.InnerHtml.AppendHtml(label.HtmlText());
+            tb.InnerHtml.AppendHtml(textArea.HtmlText());
+
+            return tb;
+        }
+    }
+
+    public class GridViewField : Field
+    {   //  <textarea rows="4" cols="50" placeholder="Describe yourself here...">Value</textarea>
+
+        public GridViewField(string Id, string LabelText, string Text, string Placeholder = "...", int Rows = 4)
+        {
+        }
+
+        public override TagBuilder HtmlText()
+        {
+            TagBuilder tb = new TagBuilder("div");
+            tb.InnerHtml.AppendHtml(label.HtmlText());
+            tb.InnerHtml.AppendHtml(textArea.HtmlText());
+
+            return tb;
+        }
+
+        public static Field GetRandom(string id)
+        {
+            LabelTextAreaField a = new LabelTextAreaField(id, "TextArea label", null, "holder", 4);
+            return a;
+        }
+    }
+
+
 
     public class LabelField : Field
     {
@@ -151,11 +307,12 @@ namespace PDMSCore.DataManipulation
             this.Text = Text;
             this.PlaceHolder = PlaceHolder;
             this.ToolTip = ToolTip;
+            this.Tag = "input";
         }
 
         public override TagBuilder HtmlText()
         {
-            TagBuilder tb = new TagBuilder("input");
+            TagBuilder tb = new TagBuilder(this.Tag);
             tb.AddCssClass("ControlOfLabelControlDuo");
             tb.Attributes.Add("name", this.Name);
             tb.Attributes.Add("type", "text");

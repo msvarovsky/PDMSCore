@@ -32,7 +32,7 @@ namespace PDMSCore.Controllers
         public ActionResult CreateNewProject()
         {
             Project p = new Project();
-            p.
+            
             p.GetRandom();
 
 
@@ -45,7 +45,8 @@ namespace PDMSCore.Controllers
         {
             int PanelID = 1;
 
-            p = Project.GetProject(PanelID);
+            //p = Project.GetProject(PanelID);
+            p = new Project();
 
             p.GetRandom();
 
@@ -54,12 +55,13 @@ namespace PDMSCore.Controllers
             return View(p);
         }
 
+        
         [HttpPost]
         public ActionResult ShowAll(IFormCollection fc)
         {
             
 
-            Project.SaveFromHtml(fc);
+            //Project.SaveFromHtml(fc);
 
             
 

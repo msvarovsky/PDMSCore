@@ -1,0 +1,216 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+
+<head>
+	<script src="jquery-3.3.1.min.js"></script>
+	<script src="colResizable-1.5.min.js"></script>
+	<!-- http://www.bacubacu.com/colresizable/ -->
+</head>
+<script>
+	$(function () {
+		$("table").colResizable({
+			liveDrag: true,
+			postbackSafe: true,
+			partialRefresh: true
+			// headerOnly: true
+		});
+	});
+</script>
+<style>
+	body {
+		background: none;
+		font-family: Tahoma, Geneva, sans-serif;
+		--InnerBorderColor: rgb(212, 212, 212);
+		--ExternalBorderColor: grey;
+		--HeaderBottomBorderColor: black;
+		--CellTopBottomPadding: 3px;
+		--CellRightLeftPadding: 5px;
+		--BorderRadius: 3px;
+
+	}
+
+	table {
+		border: 1px solid var(--ExternalBorderColor);
+		border-radius: var(--BorderRadius);
+		border-collapse: separate;
+		/*musi byt kvuli radiusu*/
+		border-spacing: 0;
+		/*musi byt kvuli collapse*/
+		font-size: 0.9em;
+	}
+
+	th {
+		border-right: 1px solid var(--InnerBorderColor);
+		border-bottom: 1px solid var(--HeaderBottomBorderColor);
+	}
+
+	td {
+		border-bottom: 1px solid var(--InnerBorderColor);
+		border-right: 1px solid var(--InnerBorderColor);
+
+		padding-top: var(--CellTopBottomPadding);
+		padding-bottom: var(--CellTopBottomPadding);
+	}
+
+	td:last-child,
+	th:last-child {
+		/* To aby zmizel pravy okraj posledniho sloupc. */
+		border-right: 0;
+	}
+
+	tr:last-child td {
+		border-bottom: 0;
+	}
+
+	th {
+		background: rgb(63, 182, 255);
+		color: white;
+		font-weight: 900;
+	}
+
+	table tr:hover {
+		background-color: #d8d8d8;
+	}
+
+	tr:nth-child(even) {
+		background: rgb(245, 245, 245);
+	}
+
+	tr:nth-child(odd) {
+		background: #FFF;
+	}
+
+	th:first-child {
+		border-radius: var(--BorderRadius) 0 0 0;
+	}
+
+	th:last-child {
+		border-radius: 0 var(--BorderRadius) 0 0;
+	}
+
+	tr:last-child td:first-child {
+		border-radius: 0 0 0 var(--BorderRadius);
+	}
+
+	tr:last-child td:last-child {
+		border-radius: 0 0 var(--BorderRadius) 0;
+	}
+
+	/* 	HeaderCell {
+		padding-left: 5px;
+		padding-right: 2px;
+		padding-top: 100px;
+		padding-bottom: 2px;
+		text-align: left;
+		color: black;
+	} */
+
+	HeaderSearch input {
+		width: 100%;
+	}
+
+	.Cell {
+		padding-right: var(--CellRightLeftPadding);
+		padding-left: var(--CellRightLeftPadding);
+	}
+
+	.HeadCell {
+		padding-left: var(--CellRightLeftPadding);
+		padding-right: var(--CellRightLeftPadding);
+		padding-top: var(--CellTopBottomPadding);
+		padding-bottom: var(--CellTopBottomPadding);
+		text-align: left;
+		color: black;
+	}
+
+	.tbDataGrid {
+		border: 0px solid #000000;
+		width: 100%;
+	}
+</style>
+
+<body>
+	<table width="100%">
+		<tr>
+			<th>
+				<div class="HeadCell">
+					<HeaderLabel>Project</HeaderLabel>
+					<HeaderSearch>
+						<input type="text" value="Ahoj">
+					</HeaderSearch>
+				</div>
+			</th>
+			<th>
+				<div class="HeadCell">
+					<HeaderLabel>Manager</HeaderLabel>
+					<HeaderSearch>
+						<input type="text" value="Ahoj">
+					</HeaderSearch>
+				</div>
+			</th>
+			<th>
+				<div class="HeadCell">
+					<HeaderLabel>Supplier</HeaderLabel>
+					<HeaderSearch>
+						<input type="text" value="Ahoj">
+					</HeaderSearch>
+				</div>
+			</th>
+		</tr>
+		<tr>
+			<td>
+				<div class="Cell">
+					<input type="text" class="tbDataGrid">
+				</div>
+			</td>
+			<td>
+				<div class="Cell">
+					Cell
+				</div>
+			</td>
+			<td>
+				<div class="Cell">
+					Cell
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<div class="Cell">
+					Cell
+				</div>
+			</td>
+			<td>
+				<div class="Cell">
+					Cell
+				</div>
+			</td>
+			<td>
+				<div class="Cell">
+					Cell
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<div class="Cell">
+					Cell
+				</div>
+			</td>
+			<td>
+				<div class="Cell">
+					Cell
+				</div>
+			</td>
+			<td>
+				<div class="Cell">
+					Cell
+				</div>
+			</td>
+		</tr>
+
+	</table>
+</body>
+
+
+</html>
