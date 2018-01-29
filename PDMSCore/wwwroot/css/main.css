@@ -21,12 +21,12 @@ body {
     --PanelHeaderHeight: 60px;
     /*GridView*/
     --InnerBorderColor: rgb(212, 212, 212);
+    /*--InnerBorderColor: blue;*/
     --ExternalBorderColor: grey;
     --HeaderBottomBorderColor: black;
     --CellTopBottomPadding: 3px;
     --CellRightLeftPadding: 5px;
     --BorderRadius: 3px;
-
     margin: var(--TopMargin) var(--RightMargin) var(--BottomMargin) var(--LeftMargin);
     border-color: greenyellow;
     background-color: white;
@@ -195,8 +195,10 @@ th {
 td {
     border-bottom: 1px solid var(--InnerBorderColor);
     border-right: 1px solid var(--InnerBorderColor);
-    padding-top: var(--CellTopBottomPadding);
-    padding-bottom: var(--CellTopBottomPadding);
+    /*padding-top: var(--CellTopBottomPadding);
+    padding-bottom: var(--CellTopBottomPadding);*/
+    padding-top: 0px;
+    padding-bottom: 0px;
 }
 
     td:last-child,
@@ -209,21 +211,27 @@ tr:last-child td {
     border-bottom: 0;
 }
 
+tr, td {
+    height: 25px;
+}
+
 th {
-    background: rgb(63, 182, 255);
+    /*background: rgb(63, 182, 255);*/
+    background: #539ab5;
     color: white;
     font-weight: 900;
 }
 
-.GridTable tr:hover {
-    background-color: #d8d8d8;
+.GridTable tr:hover input.TableTextBoxData {
+    /*background-color: #d8d8d8;*/
+    background-color: #e8f8ff;
 }
 
-tr:nth-child(even) {
+tr:nth-child(even) input {
     background: rgb(245, 245, 245);
 }
 
-tr:nth-child(odd) {
+tr:nth-child(odd) input {
     background: #FFF;
 }
 
@@ -243,13 +251,14 @@ tr:last-child td:last-child {
     border-radius: 0 0 var(--BorderRadius) 0;
 }
 
-HeaderSearch input {
-    width: 100%;
-}
+
 
 .Cell {
-    padding-right: var(--CellRightLeftPadding);
-    padding-left: var(--CellRightLeftPadding);
+    /*padding-right: var(--CellRightLeftPadding);
+    padding-left: var(--CellRightLeftPadding);*/
+    padding-right: 0px;
+    padding-left: 0px;
+    height:100%;
 }
 
 .HeadCell {
@@ -258,7 +267,6 @@ HeaderSearch input {
     padding-top: var(--CellTopBottomPadding);
     padding-bottom: var(--CellTopBottomPadding);
     text-align: left;
-    color: black;
 }
 
 .tbDataGrid {
@@ -656,6 +664,39 @@ https://www.youtube.com/watch?v=xMTs8tAapnQ
     width: 100%;
     margin-left: 10px;
     /*                    border:1px solid #d1c7ac;*/
+}
+
+.HeaderSrchCl {
+    padding-left: 0px;
+    padding-right: 0px;
+    margin-left: 0px;
+    margin-right: 0px;
+    width: 100%;
+    border-spacing: 0px;
+    text-align: center;
+}
+
+/*HeaderSearch input {
+    width: 100%;
+}*/
+
+.TableTextBoxData {
+    border: none;
+    /*background-color: red;*/
+    width: 100%;
+    height: 100%;
+    padding-left: 3px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+}
+
+.TableTextBoxHeader {
+    width: 100%;
+    height: 100%;
+    padding-left: 0px;
+    padding-right: 0px;
+    padding-top: 0px;
+    padding-bottom: 0px;
 }
 
 /*input[type=text]:focus, textarea:focus {

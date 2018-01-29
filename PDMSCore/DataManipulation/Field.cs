@@ -83,7 +83,8 @@ namespace PDMSCore.DataManipulation
                 tbHeaderLabel.InnerHtml.AppendHtml(HtmlLabel);
 
                 TagBuilder tbHeaderSearch = new TagBuilder("HeaderSearch");
-                TextBoxField t = new TextBoxField("TODO-NameId", typeof(TableCell), "", "...");
+                TextBoxField t = new TextBoxField("TODO-NameId", "TableTextBoxHeader", "", "...");
+                tbHeaderSearch.AddCssClass("HeaderSrchCl");
                 tbHeaderSearch.InnerHtml.AppendHtml(t.HtmlText());
 
                 tb.InnerHtml.AppendHtml(tbHeaderLabel);
@@ -172,7 +173,7 @@ namespace PDMSCore.DataManipulation
             TableRow n = new TableRow();
             for (int i = 0; i < count; i++)
             {
-                TableColumn t = new TableColumn(ColumnType.Data, new TableCell(ColumnType.Data, new TextBoxField("NameID-" + i,typeof(TableRow), "NameID-" + i), "NameID-" + i));
+                TableColumn t = new TableColumn(ColumnType.Data, new TableCell(ColumnType.Data, new TextBoxField("NameID-" + i, "TableTextBoxData", "NameID-" + i), "NameID-" + i));
                 n.AddColumn(t);
             }
             return n;
@@ -352,29 +353,35 @@ namespace PDMSCore.DataManipulation
         public string PlaceHolder { get; set; }
         public string ToolTip { get; set; }
         public string Name { get; set; }
-        private Type ParentControl { get; set; }
+        private string CSS { get; set; }
 
-        public TextBoxField(string NameId, Type parent, string Text, string PlaceHolder = "", string ToolTip="")
+        public TextBoxField(string NameId, string CSS, string Text, string PlaceHolder = "", string ToolTip="")
         {
             this.Name = NameId;
             this.Text = Text;
             this.PlaceHolder = PlaceHolder;
             this.ToolTip = ToolTip;
             this.Tag = "input";
-            ParentControl = parent;
+            this.CSS = CSS;
         }
 
         public override TagBuilder HtmlText()
         {
             TagBuilder tb = new TagBuilder(this.Tag);
 
-            if (ParentControl == typeof(LabelTextBoxField))
+            if (CSS == "") 
                 tb.AddCssClass("ControlOfLabelControlDuo");
+            else
+                tb.AddCssClass(CSS);
+
+
 
             tb.Attributes.Add("name", this.Name);
             tb.Attributes.Add("type", "text");
-            tb.Attributes.Add("title", ToolTip);
-            tb.Attributes.Add("placeholder", PlaceHolder);
+            if (ToolTip != "") 
+                tb.Attributes.Add("title", ToolTip);
+            if (PlaceHolder != "")
+                tb.Attributes.Add("placeholder", PlaceHolder);
             return tb;
         }
     }
@@ -386,7 +393,7 @@ namespace PDMSCore.DataManipulation
         public LabelTextBoxField(string Id, string LabelText, string Text, string Placeholder="...", string ToolTip="")
         {
             label = new LabelField(LabelText,true);
-            txtb = new TextBoxField(Id, typeof(LabelTextBoxField), Text, Placeholder, ToolTip);
+            txtb = new TextBoxField(Id, "ControlOfLabelControlDuo", Text, Placeholder, ToolTip);
         }
 
         public static Field GetRandom(string Id)

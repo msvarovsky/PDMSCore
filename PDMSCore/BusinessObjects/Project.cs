@@ -139,7 +139,7 @@ namespace PDMSCore.BusinessObjects
 
             Panel panel = new Panel(1,"GetRandom",1);
             panel.Content = fields;
-            ToShow.Add(panel);
+            //ToShow.Add(panel);
 
             Panel panel2 = new Panel(2, "Grid", 1);
             List<Field> fields2 = new List<Field>();
