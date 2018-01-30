@@ -39,12 +39,15 @@
                 </form>
             </div>
         </div>
-
-
-        <input class="AutoComplete" type="text" id="id1" name="jmeno1" placeholder="ph1" label="MujLabel1" />
-        <input class="AutoComplete" type="text" id="id2" name="jmeno2" placeholder="ph2" label="MujLabel2" />
-        <input class="AutoComplete" type="text" id="id3" name="jmeno3" placeholder="ph3" label="MujLabel3" />
-
+        <div>
+            <form method="post">
+                <input class="AutoComplete" type="text" id="id1" name="jmeno1" placeholder="ph1" label="MujLabel1" />
+                <input class="AutoComplete" type="text" id="id2" name="jmeno2" placeholder="ph2" label="MujLabel2" />
+                <input class="AutoComplete" type="text" id="id3" name="jmeno3" placeholder="ph3" label="MujLabel3" />
+                <input type="submit">
+            </form>
+            
+        </div>
         @*<input type="checkbox" id="checkbox" />
             <input type="number" id="number" />
             <button onclick="submit()">Post with jQuery AJAX</button>*@
@@ -70,14 +73,9 @@
         }
     }
 
-    //$(function () {
-        
-    //    AutoComplete("dotmatch", "dotnumber", "/AutoSuggestJSTest/AutoSuggest.asmx/DOTList");
-    //});
-
     $(document).ready(function () {
         $(".AutoComplete").autocomplete({
-            minLength: 2,
+            minLength: 1,
             source: function (request, response) {
                 $.ajax({
                     url: "/Project/Ajax/",
@@ -86,7 +84,7 @@
                     data: { prefix: request.term, id: $(this.element).prop("id") },
                     success: function (data) {
                         response($.map(data, function (item) {
-                            return { label: item, value: item};
+                            return { label: item.ID, value: item.Value};
                         }))
                     }
                 })
