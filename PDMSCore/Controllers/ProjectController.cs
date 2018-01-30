@@ -1,6 +1,7 @@
 ﻿using PDMSCore.BusinessObjects;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
+using System.Collections.Generic;
 
 namespace PDMSCore.Controllers
 {
@@ -55,7 +56,18 @@ namespace PDMSCore.Controllers
             return View(p);
         }
 
-        
+        public JsonResult Ajax(string prefix, string id)
+        {
+            List<string> allCompanyName = new List<string>();
+             
+            
+            allCompanyName.Add(id + ":ahoj-1");
+            allCompanyName.Add(id + "ahoj-2");
+            allCompanyName.Add(id + "ahoj-3");
+            
+            return Json(allCompanyName);
+        }
+
         [HttpPost]
         public ActionResult ShowAll(IFormCollection fc)
         {

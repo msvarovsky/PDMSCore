@@ -138,11 +138,15 @@ namespace PDMSCore.BusinessObjects
             //fields.Add(new Field { Label = "Pocet otevrenych projektu", tagName = 2, Type = FieldType.Indicator, Value = "5" });
 
             Panel panel = new Panel(1,"GetRandom",1);
+            //panel.Content = fields;
+            fields = new List<Field>();
+            fields.Add(LabelTextBoxField.GetRandom((id++).ToString()));
             panel.Content = fields;
             //ToShow.Add(panel);
 
             Panel panel2 = new Panel(2, "Grid", 1);
             List<Field> fields2 = new List<Field>();
+            fields2.Add(LabelTextBoxField.GetRandom((id++).ToString()));
             fields2.Add(GridViewField.GetRandom("Grid"));
             panel2.Content = fields2;
 

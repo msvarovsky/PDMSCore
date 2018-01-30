@@ -6,6 +6,9 @@
     ViewBag.Title = "Index";
 }
 
+<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+
 <div class="Section Content">
     @for (int i = 0; i < Model.ToShow.Count; i++)
     {
@@ -36,9 +39,19 @@
                 </form>
             </div>
         </div>
+
+
+        <input class="AutoComplete" type="text" id="id1" name="jmeno1" placeholder="ph1" label="MujLabel1" />
+        <input class="AutoComplete" type="text" id="id2" name="jmeno2" placeholder="ph2" label="MujLabel2" />
+        <input class="AutoComplete" type="text" id="id3" name="jmeno3" placeholder="ph3" label="MujLabel3" />
+
+        @*<input type="checkbox" id="checkbox" />
+            <input type="number" id="number" />
+            <button onclick="submit()">Post with jQuery AJAX</button>*@
+
+
     }
 </div>
-
 
 <script type="text/javascript">
     // Close the dropdown if the user clicks outside of it
@@ -56,4 +69,33 @@
             }
         }
     }
+
+    //$(function () {
+        
+    //    AutoComplete("dotmatch", "dotnumber", "/AutoSuggestJSTest/AutoSuggest.asmx/DOTList");
+    //});
+
+    $(document).ready(function () {
+        $(".AutoComplete").autocomplete({
+            minLength: 2,
+            source: function (request, response) {
+                $.ajax({
+                    url: "/Project/Ajax/",
+                    type: "POST",
+                    dataType: "json",
+                    data: { prefix: request.term, id: $(this.element).prop("id") },
+                    success: function (data) {
+                        response($.map(data, function (item) {
+                            return { label: item, value: item};
+                        }))
+                    }
+                })
+            },
+            messages: {
+                noResults: "", results: ""
+            }
+        });
+    })
+
+    
 </script>
