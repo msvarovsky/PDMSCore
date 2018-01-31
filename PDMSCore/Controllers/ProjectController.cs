@@ -104,7 +104,14 @@ namespace PDMSCore.Controllers
             //string r = ToJson<List<JsonItem>>(results, Encoding.UTF8);
             //return Json(results);
             //return Json(r.Trim());
-            return Json("{ \"ID \" : \"Name\"");
+            //return Json("{ \"ID \" : \"Name\"");
+            //  "[{"ID":"idecko1","Value":"hodnota1"},{"ID":"idecko2","Value":"hodnota2"}]"
+            //return Json("[{\"ID\":\"idecko1\",\"Value\":\"hodnota1\"},{\"ID\":\"idecko2\",\"Value\":\"hodnota2\"}]");
+
+            //{ label: "Choice1", value: "value1" }
+            //  "[{"label":"idecko1","value":"hodnota1"},{"label":"idecko2","value":"hodnota2"}]"
+
+            return Json("{\"label\":\"idecko1\",\"value\":\"hodnota1\"},{\"label\":\"idecko2\",\"value\":\"hodnota2\"}");
         }
 
         public static string ToJson<T>(/* this */ T value, Encoding encoding)

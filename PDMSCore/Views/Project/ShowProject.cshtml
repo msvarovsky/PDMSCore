@@ -80,13 +80,16 @@
                 $.ajax({
                     url: "/Project/Ajax/",
                     type: "POST",
+                    //highlightPhrase: false,
                     dataType: "json",
                     data: { prefix: request.term, id: $(this.element).prop("id") },
+
                     success: function (data) {
                         response($.map(data, function (item) {
-                            return { label: item.ID, value: item.Value};
+                            return { label: item.label, value: item.value};
                         }))
-                    }
+
+                    }  
                 })
             },
             messages: {
