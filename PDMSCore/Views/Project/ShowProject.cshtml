@@ -8,32 +8,102 @@
 
 <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
 <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+<script type="text/javascript">
+    // Close the dropdown if the user clicks outside of it
+    /*Z nejakeho duvodu to funguje pouze kdyz je to tady a ne v site.js.*/
+    document.onclick = function (event) {
+        if (!event.target.matches('.dd-menu-btn')) {
+
+            var dropdowns = document.getElementsByClassName("dd-menu-content");
+            var i;
+            for (i = 0; i < dropdowns.length; i++) {
+                var openDropdown = dropdowns[i];
+                if (openDropdown.classList.contains('show')) {
+                    openDropdown.classList.remove('show');
+                }
+            }
+        }
+    }
+
+    function MonkeyPatchAutocomplete() {
+        // Musi byt zde a ne v site.js.
+        // https://stackoverflow.com/questions/2435964/how-can-i-custom-format-the-autocomplete-plug-in-results
+        // Don't really need to save the old fn,
+        // but I could chain if I wanted to
+        var oldFn = $.ui.autocomplete.prototype._renderItem;
+        $.ui.autocomplete.prototype._renderItem = function (ul, item) {
+            var re = new RegExp("^" + this.term, "i");
+            var t = item.label.replace(re, "<span style='font-weight:bold;'>" + this.term + "</span>");
+            return $("<li></li>")
+                .data("item.autocomplete", item)
+                .append("<a>" + t + "</a>")
+                .appendTo(ul);
+        };
+    }
+    function Autocomplete() {
+        // Musi byt zde a ne v site.js.
+        $(".AutoComplete").autocomplete({
+            minLength: 1,
+            autoFocus: true,
+            source: function (request, response) {
+                $.ajax({
+                    url: "/Project/AjaxAutoComplete/",
+                    type: "POST",
+                    highlightPhrase: false,
+                    dataType: "json",
+                    data: { prefix: request.term, id: $(this.element).prop("id") },
+                    success: function (data) {
+                        response($.map(data, function (item) {
+                            // properties "item" musi zacinat malym pismenem !!!
+                            // A pokud se do "value" dam hodnotu (jako "item.id"),
+                            // tak se pri submitu posle na server pouze tato hodnota (id) a ne ten text v item.suggestion.
+                            return { label: item.suggestion/*, value: item.id */ };
+                        }))
+                    }
+                })
+            },
+            messages: {
+                noResults: "", results: ""
+            }
+        });
+    }
+
+    $(document).ready(function () {
+        MonkeyPatchAutocomplete();
+        Autocomplete();
+    })
+</script>
 
 <div class="Section Content">
-    @for (int i = 0; i < Model.ToShow.Count; i++)
+    @for (int i = 0; i < Model.PanelList.Count; i++)
     {
-        <div class="Panel @Model.ToShow[i].Size">
+        <div class="Panel @Model.PanelList[i].Size">
             <div class="Panel-Header">
+
                 <div class="Panel-Header-Left">
-                    @Model.ToShow[i].Label
+                    @Model.PanelList[i].Label
                 </div>
+
                 <div class="Panel-Header-Right">
-                    <div class="dropdown">
-                        <i class="fa fa-gear dropbtn" onclick="myFunction()" aria-hidden="true"></i>
-                        <div id="myDropdown" class="dropdown-content">
+                    @Model.PanelList[i].menu.HtmlText()
+
+                    @*<div class="dd-menu">
+                        <i class="fa fa-gear dd-menu-btn" onclick="onPanelMenuClick()" aria-hidden="true"></i>
+                        <div id="myDropdown" class="dd-menu-content">
                             <a href="#">Link 1-</a>
                             <a href="#">Link 2-</a>
                             <a href="#">Link 3-</a>
                         </div>
-                    </div>
+                    </div>*@
                 </div>
+
             </div>
             <div class="Panel-Body">
                 <form method="post">
-                    <input name="PanelId" hidden type="text" value="@Model.ToShow[i].id " />
-                    @for (int f = 0; f < Model.ToShow[i].Content.Count; f++)
+                    <input name="PanelId" hidden type="text" value="@Model.PanelList[i].id " />
+                    @for (int f = 0; f < Model.PanelList[i].Content.Count; f++)
                     {
-                        @MSHelpers.Field(Model.ToShow[i].Content[f]);
+                        @MSHelpers.Field(Model.PanelList[i].Content[f]);
                     }
                     <input type="submit">
                 </form>
@@ -48,57 +118,6 @@
             </form>
             
         </div>
-        @*<input type="checkbox" id="checkbox" />
-            <input type="number" id="number" />
-            <button onclick="submit()">Post with jQuery AJAX</button>*@
-
-
     }
 </div>
 
-<script type="text/javascript">
-    // Close the dropdown if the user clicks outside of it
-    /*Z nejakeho duvodu to funguje pouze kdyz je to tady a ne v site.js.*/
-    document.onclick = function (event) {
-        if (!event.target.matches('.dropbtn')) {
-
-            var dropdowns = document.getElementsByClassName("dropdown-content");
-            var i;
-            for (i = 0; i < dropdowns.length; i++) {
-                var openDropdown = dropdowns[i];
-                if (openDropdown.classList.contains('show')) {
-                    openDropdown.classList.remove('show');
-                }
-            }
-        }
-    }
-
-    $(document).ready(function () {
-        $(".AutoComplete").autocomplete({
-            minLength: 1,
-            source: function (request, response) {
-                $.ajax({
-                    url: "/Project/Ajax/",
-                    type: "POST",
-                    //highlightPhrase: false,
-                    dataType: "json",
-                    data: { prefix: request.term, id: $(this.element).prop("id") },
-                    
-                    success: function (data) {
-                        response($.map(data, function (item) {
-                            //return { label: item.label, value: item.value};
-                            //debugger;
-                            return { label: item.gameName, value: item.Id };
-                        }))
-
-                    }  
-                })
-            },
-            messages: {
-                noResults: "", results: ""
-            }
-        });
-    })
-
-    
-</script>

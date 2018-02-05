@@ -10,11 +10,11 @@ namespace PDMSCore.BusinessObjects
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public List<Panel> ToShow { get; set; }
+        public List<Panel> PanelList { get; set; }
 
         public Project()
         {
-            ToShow = new List<Panel>();
+            PanelList = new List<Panel>();
         }
         public bool Create()
         {
@@ -39,10 +39,10 @@ namespace PDMSCore.BusinessObjects
             int iId;
             if (Int32.TryParse(id, out iId))
             {
-                for (int i = 0; i < ToShow.Count; i++)
+                for (int i = 0; i < PanelList.Count; i++)
                 {
-                    if (ToShow[i].id == iId)
-                        return ToShow[i];
+                    if (PanelList[i].id == iId)
+                        return PanelList[i];
                 }
             }
             return null;
@@ -50,7 +50,7 @@ namespace PDMSCore.BusinessObjects
 
         public void AddPanel(Panel newPanel)
         {
-            ToShow.Add(newPanel);
+            PanelList.Add(newPanel);
         }
 
         public void GetFieldTemplate()
@@ -147,11 +147,15 @@ namespace PDMSCore.BusinessObjects
             Panel panel2 = new Panel(2, "Grid", 1);
             List<Field> fields2 = new List<Field>();
             fields2.Add(LabelTextBoxField.GetRandom((id++).ToString()));
-            fields2.Add(GridViewField.GetRandom("Grid"));
+            fields2.Add(LabelDataGridField.GetRandom("Grid"));
             panel2.Content = fields2;
+            panel2.menu = new PanelMenu();
+            panel2.menu.AddMenuItem(new PanelMenuItem("ahoj", "tralala"));
+            panel2.menu.AddMenuItem(new PanelMenuItem("cau", "buja"));
+            panel2.menu.AddMenuItem(new PanelMenuItem("hola", "kasa"));
 
 
-            ToShow.Add(panel2);
+            PanelList.Add(panel2);
         }
 
 

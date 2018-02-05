@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace PDMSCore.DataManipulation
 {
@@ -9,6 +10,7 @@ namespace PDMSCore.DataManipulation
         public string Size { get; set; }
         public string Label { get; set; }
         public List<Field> Content { get; set; }
+        public PanelMenu menu { get; set; }
 
         public Panel(int id, string Label, int xSize)
         {
@@ -20,6 +22,7 @@ namespace PDMSCore.DataManipulation
             this.Size = "x" + xSize;
 
             this.Content = new List<Field>();
+            menu = new PanelMenu();
         }
 
         //private bool AuthUser()
@@ -66,10 +69,6 @@ namespace PDMSCore.DataManipulation
                     continue;
 
                 string FieldValue = fc[FieldId];
-
-
-
-
             }
             return false;
         }
@@ -77,6 +76,78 @@ namespace PDMSCore.DataManipulation
         public void AddFields(Field newField)
         {
             this.Content.Add(newField);
+        }
+    }
+
+    public class PanelMenuItem : IHtmlTag
+    {/*     <a href="#">Link 1-</a>
+                <a href="#">Link 3-</a>     */
+        public string ItemText { get; set; }
+        public string ItemLink { get; set; }
+
+        public PanelMenuItem(string Text, string Link)
+        {
+            ItemText = Text;
+            ItemLink = Link;
+        }
+
+        public TagBuilder HtmlText()
+        {
+            TagBuilder tb = new TagBuilder("a");
+            tb.Attributes.Add("href", ItemLink);
+            tb.InnerHtml.AppendHtml(ItemText);
+            return tb;
+        }
+    }
+
+    public class PanelMenu : IHtmlTag
+    {   
+        /*
+            <div class="dd-menu">
+                <i class="fa fa-gear dd-menu-btn" onclick="onPanelMenuClick()" aria-hidden="true"></i>
+                <div id="myDropdown" class="dd-menu-content">
+                    
+                </div>
+            </div>          */
+
+        public List<PanelMenuItem> items { get; set; }
+
+        public PanelMenu()
+        {
+            items = new List<PanelMenuItem>();
+        }
+
+        public void AddMenuItem(PanelMenuItem pmi)
+        {
+            items.Add(pmi);
+        }
+
+        public TagBuilder HtmlText()
+        {
+            TagBuilder tbDiv = new TagBuilder("div");
+            tbDiv.AddCssClass("dd-menu");
+
+            TagBuilder tbI = new TagBuilder("i");
+            tbI.AddCssClass("fa fa-gear dd-menu-btn");
+            tbI.Attributes.Add("onclick", "onPanelMenuClick()");
+            tbI.Attributes.Add("aria-hidden", "true");
+            tbI.RenderSelfClosingTag();
+
+            TagBuilder tbDivContent = new TagBuilder("div");
+            tbDivContent.Attributes.Add("id", "myDropdown");
+            tbDivContent.AddCssClass("dd-menu-content");
+
+
+            for (int i = 0; i < items.Count; i++)
+            {
+                tbDivContent.InnerHtml.AppendHtml(items[i].HtmlText());
+            }
+
+
+            tbDiv.InnerHtml.AppendHtml(tbI);
+            tbDiv.InnerHtml.AppendHtml(tbDivContent);
+
+            return tbDiv;
         }
     }
 }

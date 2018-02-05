@@ -37,7 +37,7 @@ $(document).ready(function () {
 
 
 //        https://www.w3schools.com/howto/tryit.asp?filename=tryhow_css_js_dropdown
-function myFunction() {
+function onPanelMenuClick() {
     document.getElementById("myDropdown").classList.toggle("show");
 }
 window.onclick = function () { alert('test'); }

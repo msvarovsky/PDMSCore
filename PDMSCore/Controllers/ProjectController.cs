@@ -13,10 +13,10 @@ using System.Linq;
 
 namespace PDMSCore.Controllers
 {
-    public class Games
+    public class AutoCompleteSuggestion
     {
         public int Id { get; set; }
-        public string GameName {get;set; }  
+        public string Suggestion {get;set; }  
     }  
 
     public class ProjectController : Controller
@@ -50,9 +50,15 @@ namespace PDMSCore.Controllers
             
             p.GetRandom();
 
-
-
             return View(p);
+        }
+
+        [HttpPost]
+        public ActionResult ShowAll(IFormCollection fc)
+        {
+            //Project.SaveFromHtml(fc);
+
+            return RedirectToAction("Index");
         }
 
         [HttpGet]
@@ -85,90 +91,37 @@ namespace PDMSCore.Controllers
         }
 
 
-
-
-        public JsonResult Ajax2(string prefix, string id)
-        {
-            List<JsonItem> results = new List<JsonItem>();
-
-            int i = 0;
-
-            results.Add(new JsonItem(i++.ToString(), "Value-" + i));
-            results.Add(new JsonItem(i++.ToString(), "Value-" + i));
-            results.Add(new JsonItem(i++.ToString(), "Value-" + i));
-
-            dynamic product = new JObject();
-            product.ProductName = "Elbow Grease";
-            product.Enabled = true;
-            product.Price = 4.90m;
-            product.StockCount = 9000;
-            product.StockValue = 44100;
-            product.Tags = new JArray("Real", "OnSale");
-            Console.WriteLine(product.ToString());
-
-            string r = JsonConvert.SerializeObject(results, Formatting.Indented);
-
-            //string r = ToJson<List<JsonItem>>(results, Encoding.UTF8);
-            //return Json(results);
-            //return Json(r.Trim());
-            //return Json("{ \"ID \" : \"Name\"");
-            //  "[{"ID":"idecko1","Value":"hodnota1"},{"ID":"idecko2","Value":"hodnota2"}]"
-            //return Json("[{\"ID\":\"idecko1\",\"Value\":\"hodnota1\"},{\"ID\":\"idecko2\",\"Value\":\"hodnota2\"}]");
-
-            //{ label: "Choice1", value: "value1" }
-            //  "[{"label":"idecko1","value":"hodnota1"},{"label":"idecko2","value":"hodnota2"}]"
-
-            //return Json("[{\"label\":\"idecko1\",\"value\":\"hodnota1\"},{\"label\":\"idecko2\",\"value\":\"hodnota2\"}]");
-
-            //return Json("{ \"name\":\"John\" }");
-            return Json("{ 'name':'John' }");
-
-        }
-
         [HttpPost]
-        public JsonResult Ajax(string prefix, string id)
+        public JsonResult AjaxAutoComplete(string prefix, string id)
         {
             //  http://www.c-sharpcorner.com/blogs/how-to-create-autocomplete-textbox-in-asp-net-mvc-5
 
             //This can be replaced with database call.  
-            List<Games> objGameList = new List<Games>()
+            List<AutoCompleteSuggestion> objGameList = new List<AutoCompleteSuggestion>()
             {
-                new Games { Id = 1, GameName = "Cricket" },  
-                new Games { Id = 2, GameName = "CFootball" }
+                new AutoCompleteSuggestion { Id = 1, Suggestion = "Leden" },
+                new AutoCompleteSuggestion { Id = 2, Suggestion = "Unor" },
+                new AutoCompleteSuggestion { Id = 3, Suggestion = "Brezen" },
+                new AutoCompleteSuggestion { Id = 4, Suggestion = "Duben" },
+                new AutoCompleteSuggestion { Id = 5, Suggestion = "Kveten" },
+                new AutoCompleteSuggestion { Id = 6, Suggestion = "Cerven" },
+                new AutoCompleteSuggestion { Id = 7, Suggestion = "Cervenec" },
+                new AutoCompleteSuggestion { Id = 8, Suggestion = "Srpen" },
+                new AutoCompleteSuggestion { Id = 9, Suggestion = "Zari" },
+                new AutoCompleteSuggestion { Id = 10, Suggestion = "Rijen" },
+                new AutoCompleteSuggestion { Id = 11, Suggestion = "Listopad" },
+                new AutoCompleteSuggestion { Id = 12, Suggestion = "Prosinec" }
             };
-            var result = (from a in objGameList where a.GameName.ToLower().StartsWith("C".ToLower())
-                          select new
-                          {
-                              a.GameName
-                          });
-            return Json(objGameList);
+
+            //var result = (from a in objGameList where a.Suggestion.ToLower().StartsWith(prefix.ToLower()) select new { a.Suggestion });
+            var result = (from a in objGameList where a.Suggestion.ToLower().Contains(prefix.ToLower()) select new { a.Suggestion });
+
+
+
+            //return Json(objGameList);
+            return Json(result);
         }
 
-        public static string ToJson<T>(/* this */ T value, Encoding encoding)
-        {
-            var serializer = new DataContractJsonSerializer(typeof(T));
 
-            using (var stream = new MemoryStream())
-            {
-                using (var writer = JsonReaderWriterFactory.CreateJsonWriter(stream, encoding))
-                {
-                    serializer.WriteObject(writer, value);
-                }
-
-                return encoding.GetString(stream.ToArray());
-            }
-        }
-
-        [HttpPost]
-        public ActionResult ShowAll(IFormCollection fc)
-        {
-            
-
-            //Project.SaveFromHtml(fc);
-
-            
-
-            return RedirectToAction("Index");
-        }
     }
 }
