@@ -9,9 +9,16 @@ using System.Runtime.Serialization.Json;
 using System.IO;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
+using System.Linq;
 
 namespace PDMSCore.Controllers
 {
+    public class Games
+    {
+        public int Id { get; set; }
+        public string GameName {get;set; }  
+    }  
+
     public class ProjectController : Controller
     {
         Project p;
@@ -80,7 +87,7 @@ namespace PDMSCore.Controllers
 
 
 
-        public JsonResult Ajax(string prefix, string id)
+        public JsonResult Ajax2(string prefix, string id)
         {
             List<JsonItem> results = new List<JsonItem>();
 
@@ -111,7 +118,30 @@ namespace PDMSCore.Controllers
             //{ label: "Choice1", value: "value1" }
             //  "[{"label":"idecko1","value":"hodnota1"},{"label":"idecko2","value":"hodnota2"}]"
 
-            return Json("{\"label\":\"idecko1\",\"value\":\"hodnota1\"},{\"label\":\"idecko2\",\"value\":\"hodnota2\"}");
+            //return Json("[{\"label\":\"idecko1\",\"value\":\"hodnota1\"},{\"label\":\"idecko2\",\"value\":\"hodnota2\"}]");
+
+            //return Json("{ \"name\":\"John\" }");
+            return Json("{ 'name':'John' }");
+
+        }
+
+        [HttpPost]
+        public JsonResult Ajax(string prefix, string id)
+        {
+            //  http://www.c-sharpcorner.com/blogs/how-to-create-autocomplete-textbox-in-asp-net-mvc-5
+
+            //This can be replaced with database call.  
+            List<Games> objGameList = new List<Games>()
+            {
+                new Games { Id = 1, GameName = "Cricket" },  
+                new Games { Id = 2, GameName = "CFootball" }
+            };
+            var result = (from a in objGameList where a.GameName.ToLower().StartsWith("C".ToLower())
+                          select new
+                          {
+                              a.GameName
+                          });
+            return Json(objGameList);
         }
 
         public static string ToJson<T>(/* this */ T value, Encoding encoding)
