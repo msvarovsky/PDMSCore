@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>hamburger slide accordion menu</title>
+
+
+  <!-- <link rel='stylesheet prefetch' href='https://fonts.googleapis.com/css?family=Dosis'> -->
+
+  <link rel="stylesheet" href="css/style.css">
+
+
+</head>
+
+<body>
+  <div id="menu-container">
+    <div id="menu-wrapper">
+      <div id="hamburger-menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+      <!-- hamburger-menu -->
+    </div>
+    <!-- menu-wrapper -->
+    <ul class="menu-list accordion">
+      <li class="accordion-toggle">
+        <!-- <span class="icon-plus"></span> -->
+        <a class="menu-link" href="#">Menu1</a>
+      </li>
+      <!-- accordion-toggle -->
+      <ul class="menu-submenu accordion-content">
+        <li>
+          <a class="head" href="#">Submenu1</a>
+        </li>
+        <li>
+          <a class="head" href="#">Submenu2</a>
+        </li>
+        <li>
+          <a class="head" href="#">Submenu3</a>
+        </li>
+      </ul>
+      <!-- menu-submenu accordon-content-->
+      <li id="nav2" class="toggle accordion-toggle">
+        <span class="icon-plus"></span>
+        <a class="menu-link" href="#">Menu2</a>
+      </li>
+      <!-- accordion-toggle -->
+      <ul class="menu-submenu accordion-content">
+        <li>
+          <a class="head" href="#">Submenu1</a>
+        </li>
+        <li>
+          <a class="head" href="#">Submenu2</a>
+        </li>
+      </ul>
+      <!-- menu-submenu accordon-content-->
+      <li id="nav3" class="toggle accordion-toggle">
+        <!-- <span class="icon-plus"></span> -->
+        <a class="menu-link" href="#">Menu3-MS</a>
+
+        <!-- accordion-toggle -->
+        <ul class="menu-submenu accordion-content">
+          <li>
+            <a class="head" href="#">Submenu1</a>
+          </li>
+          <li>
+            <a class="head" href="#">Submenu2</a>
+          </li>
+          <li>
+            <a class="head" href="#">Submenu3</a>
+          </li>
+          <li>
+            <a class="head" href="#">Submenu4</a>
+          </li>
+          <ul class="menu-list accordion">
+            <li class="accordion-toggle">
+              <!-- <span class="icon-plus"></span> -->
+              <a class="menu-link" href="#">Menu1</a>
+            </li>
+            <!-- accordion-toggle -->
+            <ul class="menu-submenu accordion-content">
+              <li>
+                <a class="head" href="#">Submenu1</a>
+              </li>
+            </ul>
+            <!-- menu-submenu accordon-content-->
+            <li class="accordion-toggle">
+              <span class="icon-plus"></span>
+              <a class="menu-link" href="#">Menu2</a>
+            </li>
+            <!-- accordion-toggle -->
+            <ul class="menu-submenu accordion-content">
+              <li>
+                <a class="head" href="#">Submenu1</a>
+              </li>
+            </ul>
+            <!-- menu-submenu accordon-content-->
+          </ul>
+        </ul>
+        <!-- menu-submenu accordon-content-->
+      </li>
+    </ul>
+    <!-- menu-list accordion-->
+  </div>
+  <!-- menu-container -->
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js'></script>
+
+  <script src="js/index.js"></script>
+
+</body>
+
+</html>
