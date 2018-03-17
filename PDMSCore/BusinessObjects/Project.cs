@@ -148,6 +148,7 @@ namespace PDMSCore.BusinessObjects
             List<Field> fields2 = new List<Field>();
             fields2.Add(LabelTextBoxField.GetRandom((id++).ToString()));
             fields2.Add(LabelDataGridField.GetRandom("Grid"));
+
             panel2.Content = fields2;
             panel2.menu = new PanelMenu();
             panel2.menu.AddMenuItem(new PanelMenuItem("ahoj", "tralala"));

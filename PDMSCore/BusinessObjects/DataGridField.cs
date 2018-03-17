@@ -5,6 +5,12 @@ using System.Collections.Generic;
 
 namespace PDMSCore.BusinessObjects
 {
+    public enum RowType
+    {
+        Header,
+        Data
+    }
+
     public class DataGridField : Field
     {
         private TableRow HeaderRow;
@@ -49,21 +55,13 @@ namespace PDMSCore.BusinessObjects
         }
     }
 
-    public class TableRow : Field
+    public class TableRow : IHtmlTag
     {
         private List<TableColumn> Columns;
-        private ColumnType type;
 
         public TableRow()
         {
             Columns = new List<TableColumn>();
-            this.Tag = "tr";
-        }
-        public TableRow(ColumnType type)
-        {
-            Columns = new List<TableColumn>();
-            this.Tag = "tr";
-            this.type = type;
         }
 
         public void AddColumn(TableColumn NewColumn)
@@ -73,10 +71,10 @@ namespace PDMSCore.BusinessObjects
 
         public static TableRow GetRandomHeaderRow(int count)
         {
-            TableRow n = new TableRow(ColumnType.Header);
+            TableRow n = new TableRow();
             for (int i = 0; i < count; i++)
             {
-                TableColumn t = new TableColumn(ColumnType.Header, new TableCell(ColumnType.Header, new LabelField("NameID-" + i), "NameID-" + i));
+                TableColumn t = new TableColumn(RowType.Header, new TableCell(RowType.Header, new LabelField("NameID-" + i), "NameID-" + i));
                 n.AddColumn(t);
             }
             return n;
@@ -86,47 +84,43 @@ namespace PDMSCore.BusinessObjects
             TableRow n = new TableRow();
             for (int i = 0; i < count; i++)
             {
-                TableColumn t = new TableColumn(ColumnType.Data, new TableCell(ColumnType.Data, new TextBoxField("NameID-" + i, "TableTextBoxData", "NameID-" + i), "NameID-" + i));
+                TableColumn t = new TableColumn(RowType.Data, new TableCell(RowType.Data, new TextBoxField("NameID-" + i, "TableTextBoxData", "NameID-" + i), "NameID-" + i));
                 n.AddColumn(t);
             }
             return n;
         }
 
-        public override TagBuilder HtmlText()
+        public TagBuilder HtmlText()
         {
-            TagBuilder tb = new TagBuilder(this.Tag);
+            TagBuilder tb = new TagBuilder("tr");
             for (int i = 0; i < Columns.Count; i++)
                 tb.InnerHtml.AppendHtml(Columns[i].HtmlText());
             return tb;
         }
     }
 
-    public enum ColumnType
-    {
-        Header,
-        Data
-    }
-    public class TableColumn : Field
+    public class TableColumn : IHtmlTag
     {
         public TableCell Cell;
+        private RowType TableRowType;
 
-        public TableColumn(ColumnType type, TableCell Cell = null)
+        public TableColumn(RowType type, TableCell Cell = null)
         {
+            TableRowType = type;
             this.Cell = Cell;
-            if (type == ColumnType.Data)
-                this.Tag = "td";
-            else if (type == ColumnType.Header)
-                this.Tag = "th";
         }
 
-        public void SetType(ColumnType type)
+        public TagBuilder HtmlText()
         {
+            TagBuilder tb;
+            if (TableRowType == RowType.Header)
+                tb = new TagBuilder("th");
+            else if (TableRowType == RowType.Data)
+                tb = new TagBuilder("td");
+            else
+                return null;
 
-        }
 
-        public override TagBuilder HtmlText()
-        {
-            TagBuilder tb = new TagBuilder(this.Tag);
             if (Cell != null)
                 tb.InnerHtml.AppendHtml(this.Cell.HtmlText());
             else
@@ -135,25 +129,24 @@ namespace PDMSCore.BusinessObjects
         }
     }
 
-    public class TableCell : Field
+    public class TableCell : IHtmlTag
     {
-        ColumnType type;
+        RowType type;
         public string HtmlLabel { get; set; }
         private Field CellField { get; set; }
 
-        public TableCell(ColumnType Type, Field f, string HeaderText = null)
+        public TableCell(RowType Type, Field f, string HeaderText = null)
         {
             HtmlLabel = HeaderText;
             this.type = Type;
             this.CellField = f;
-            this.Tag = "div";
         }
 
-        public override TagBuilder HtmlText()
+        public TagBuilder HtmlText()
         {
-            TagBuilder tb = new TagBuilder(this.Tag);
+            TagBuilder tb = new TagBuilder("div");
 
-            if (type == ColumnType.Header)
+            if (type == RowType.Header)
             {
                 tb.AddCssClass("HeadCell");
 
@@ -168,7 +161,7 @@ namespace PDMSCore.BusinessObjects
                 tb.InnerHtml.AppendHtml(tbHeaderLabel);
                 tb.InnerHtml.AppendHtml(tbHeaderSearch);
             }
-            else if (type == ColumnType.Data)
+            else if (type == RowType.Data)
             {
                 tb.AddCssClass("Cell");
                 tb.InnerHtml.AppendHtml(CellField.HtmlText());
