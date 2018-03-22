@@ -15,6 +15,9 @@ namespace PDMSCore.DataManipulation
         public bool Empty { get; set; }
         public bool Selected { get; set; }
 
+        public MenuHeading()
+        {
+        }
         public MenuHeading(string Label, int Level, string Url, bool Expanded, bool Empty, bool Selected)
         {
             this.Label = Label;
@@ -76,9 +79,32 @@ namespace PDMSCore.DataManipulation
 
 
 
-            tbContent.InnerHtml.AppendHtml(HtmlLabel);
             return tbContent;
         }
+    }
+
+    public class MenuItem
+    {
+        public MenuHeading MIHeading { get; set; }
+        public MenuContent MIContent { get; set; }
+
+        public MenuItem()
+        {
+            MIHeading = new MenuHeading();
+            MIContent = new MenuContent();
+        }
+        public MenuItem(MenuHeading mh, MenuContent mc)
+        {
+            MIHeading = mh;
+            MIContent = mc;
+        }
+
+        public void AddMenuItem(MenuItem md)
+        {
+            MIContent.AddMenuItem(md);
+        }
+
+
     }
 
     public class MenuContent
@@ -90,37 +116,52 @@ namespace PDMSCore.DataManipulation
         public bool Empty { get; set; }
         public bool Selected { get; set; }
 
-        //private List<MenuItem> SubMenus { get; set; }
-
-        public MenuHeading MIHeading { get; set; }
-        public List<MenuContent> MIContent { get; set; }
-
-
-        public MenuContent(int Level)
+        public List<MenuItem> MenuItems { get; set; }
+        public MenuContent(int Level=-1)
         {
             ID = -1;
             Label = "not defined";
             Url = "not defined";
-            MIHeading = new MenuHeading("",Level,);
-            MIContent = new List<MenuContent>();
+            MenuItems = new List<MenuItem>();
+
+            /*MIHeading = new MenuHeading("",Level,);
+            MIContent = new List<MenuContent>();*/
         }
 
-        public void AddSubMenu(MenuContent content)
+        public void AddMenuItem(MenuItem md)
         {
-            MIContent.Add(content);
+            MenuItems.Add(md);
         }
-
-
 
         public TagBuilder HtmlText()
         {
-            MIHeading.HtmlText();
             return null;
         }
     }
 
     public class Menu
     {
+        /*
+            1   1.1     1.1.1
+                        1.1.2
+                1.2     1.2.1
+        */
 
+        public List<MenuItem> MIContent { get; set; }
+
+        public Menu()
+        {
+            MIContent = new List<MenuItem>();
+
+            MIContent.Add(new MenuItem(new MenuHeading(), new MenuContent(1)));                                    //1
+            MIContent[0].AddMenuItem(new MenuItem(new MenuHeading(), new MenuContent(2)));                           //1.1
+            MIContent[0].MIContent.MenuItems[0].AddMenuItem(new MenuItem(new MenuHeading(), new MenuContent(3)));      //1.1.1
+            MIContent[0].MIContent.MenuItems[0].AddMenuItem(new MenuItem(new MenuHeading(), new MenuContent(3)));      //1.1.2
+
+            MIContent[0].AddMenuItem(new MenuItem(new MenuHeading(), new MenuContent(2)));                           //1.2
+            MIContent[0].MIContent.MenuItems[1].AddMenuItem(new MenuItem(new MenuHeading(), new MenuContent(3)));      //1.2.1
+
+
+        }
     }
 }
