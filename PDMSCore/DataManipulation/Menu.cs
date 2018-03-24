@@ -6,6 +6,44 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace PDMSCore.DataManipulation
 {
+    public class MenuItem
+    {
+        public MenuHeading MIHeading { get; set; }
+        public MenuContent MIContent { get; set; }
+        public int Level { get; set; }
+
+        public MenuItem()
+        {
+            MIHeading = new MenuHeading();
+            MIContent = new MenuContent();
+            Level = 0;
+        }
+        public MenuItem(MenuHeading mh, MenuContent mc)
+        {
+            MIHeading = mh;
+            MIContent = mc;
+        }
+
+        public MenuItem GetSubMenu(int index)
+        {
+            return MIContent.GetMenuItem(index);
+        }
+        public MenuItem GetLastSubMenu()
+        {
+            return MIContent.GetLastMenuItem();
+        }
+
+
+
+
+        public void AddMenuItem(MenuItem md)
+        {
+            md.Level = Level + 1;
+            MIContent.AddMenuItem(md);
+        }
+
+    }
+
     public class MenuHeading
     {
         public string Label { get; set; }
@@ -28,7 +66,6 @@ namespace PDMSCore.DataManipulation
             this.Selected = Selected;
         }
 
-
         public TagBuilder TagA(string Classes, string InnerHtml)
         {
             TagBuilder tb = new TagBuilder("a");
@@ -46,8 +83,6 @@ namespace PDMSCore.DataManipulation
             return tb;
         }
 
-
-
         public TagBuilder TagDivChevronArea()
         {
             TagBuilder tb = new TagBuilder("div");
@@ -60,7 +95,6 @@ namespace PDMSCore.DataManipulation
             tb.InnerHtml.AppendHtml(tbMIChevron);
             return tb;
         }
-
 
         public TagBuilder HtmlText()
         {
@@ -75,38 +109,10 @@ namespace PDMSCore.DataManipulation
 
             TagBuilder tbDivMIChevron = TagDiv("MIChevron", "");
 
-
-
-
-
             return tbContent;
         }
     }
-
-    public class MenuItem
-    {
-        public MenuHeading MIHeading { get; set; }
-        public MenuContent MIContent { get; set; }
-
-        public MenuItem()
-        {
-            MIHeading = new MenuHeading();
-            MIContent = new MenuContent();
-        }
-        public MenuItem(MenuHeading mh, MenuContent mc)
-        {
-            MIHeading = mh;
-            MIContent = mc;
-        }
-
-        public void AddMenuItem(MenuItem md)
-        {
-            MIContent.AddMenuItem(md);
-        }
-
-
-    }
-
+    
     public class MenuContent
     {
         public int ID { get; set; }
@@ -116,8 +122,10 @@ namespace PDMSCore.DataManipulation
         public bool Empty { get; set; }
         public bool Selected { get; set; }
 
-        public List<MenuItem> MenuItems { get; set; }
-        public MenuContent(int Level=-1)
+        private int Level { get; set; }
+
+        private List<MenuItem> MenuItems { get; set; }
+        public MenuContent(int Level = 0)
         {
             ID = -1;
             Label = "not defined";
@@ -128,10 +136,28 @@ namespace PDMSCore.DataManipulation
             MIContent = new List<MenuContent>();*/
         }
 
+        public MenuItem GetMenuItem(int index)
+        {
+            return MenuItems[index];
+        }
+
+        public MenuItem GetLastMenuItem()
+        {
+            return MenuItems[MenuItems.Count-1];
+        }
+
         public void AddMenuItem(MenuItem md)
         {
+            md.Level = this.Level + 1;
+
             MenuItems.Add(md);
         }
+    /*
+        public void AddMenuItem(int index, MenuItem md, int level)
+        {
+            md.Level = level;
+            MenuItems.Add(md);
+        }*/
 
         public TagBuilder HtmlText()
         {
@@ -147,21 +173,25 @@ namespace PDMSCore.DataManipulation
                 1.2     1.2.1
         */
 
-        public List<MenuItem> MIContent { get; set; }
+        MenuItem root { get; set; }
 
         public Menu()
         {
-            MIContent = new List<MenuItem>();
-
-            MIContent.Add(new MenuItem(new MenuHeading(), new MenuContent(1)));                                    //1
-            MIContent[0].AddMenuItem(new MenuItem(new MenuHeading(), new MenuContent(2)));                           //1.1
-            MIContent[0].MIContent.MenuItems[0].AddMenuItem(new MenuItem(new MenuHeading(), new MenuContent(3)));      //1.1.1
-            MIContent[0].MIContent.MenuItems[0].AddMenuItem(new MenuItem(new MenuHeading(), new MenuContent(3)));      //1.1.2
-
-            MIContent[0].AddMenuItem(new MenuItem(new MenuHeading(), new MenuContent(2)));                           //1.2
-            MIContent[0].MIContent.MenuItems[1].AddMenuItem(new MenuItem(new MenuHeading(), new MenuContent(3)));      //1.2.1
-
-
+            root = new MenuItem();
+            Test();
         }
+
+        public void Test()
+        {
+            root.AddMenuItem(new MenuItem());                               //1
+            root.GetLastSubMenu().AddMenuItem(new MenuItem());                  //1.1
+            root.GetLastSubMenu().GetLastSubMenu().AddMenuItem(new MenuItem());     //1.1.1
+            root.GetLastSubMenu().GetLastSubMenu().AddMenuItem(new MenuItem());     //1.1.2
+
+            root.GetLastSubMenu().AddMenuItem(new MenuItem());                  //1.2
+            root.GetLastSubMenu().GetLastSubMenu().AddMenuItem(new MenuItem());     //1.2.1
+        }
+
+      
     }
 }
