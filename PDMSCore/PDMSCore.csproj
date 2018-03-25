@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="wwwroot\css\SideMenuStyles.css" />
     <Content Remove="wwwroot\css\site.css" />
     <Content Remove="wwwroot\css\site.min.css" />
   </ItemGroup>
@@ -24,6 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="wwwroot\css\SideMenuStyles.css" />
     <None Include="wwwroot\js\colResizable-1.5.min.js" />
     <None Include="wwwroot\js\jquery-3.3.1.min.js" />
   </ItemGroup>

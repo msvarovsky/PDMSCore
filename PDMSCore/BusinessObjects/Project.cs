@@ -11,10 +11,12 @@ namespace PDMSCore.BusinessObjects
         public int Id { get; set; }
         public string Name { get; set; }
         public List<Panel> PanelList { get; set; }
+        public Menu SideMenu { get; set; }
 
         public Project()
         {
             PanelList = new List<Panel>();
+            SideMenu = new Menu();
         }
         public bool Create()
         {

@@ -1,14 +1,11 @@
-* {
-  margin: 0; padding: 0;
-  font-family: Bookman Old Style; 
-}
-body {
-  font-size: 100%;
-}
 
 .Accordion{
+  font-size: 100%;
+  margin: 0; padding: 0;
+  
   min-width: 200px;
   width: 80%;
+  font-family: Bookman Old Style; 
   /* margin: 2px auto; */
 }
 

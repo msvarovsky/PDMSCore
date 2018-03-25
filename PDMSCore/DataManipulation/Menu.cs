@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Text.Encodings.Web;
+using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace PDMSCore.DataManipulation
@@ -9,45 +8,86 @@ namespace PDMSCore.DataManipulation
     public class MenuItem
     {
         public MenuHeading MIHeading { get; set; }
-        public MenuContent MIContent { get; set; }
+        private List<MenuItem> SubMenu { get; set; }
         public int Level { get; set; }
 
         public MenuItem()
         {
-            MIHeading = new MenuHeading();
-            MIContent = new MenuContent();
             Level = 0;
-        }
-        public MenuItem(MenuHeading mh, MenuContent mc)
-        {
-            MIHeading = mh;
-            MIContent = mc;
+
+            MIHeading = new MenuHeading();
+            SubMenu = new List<MenuItem>();
+            
         }
 
         public MenuItem GetSubMenu(int index)
         {
-            return MIContent.GetMenuItem(index);
+            if (index >= SubMenu.Count)
+                return null;
+            return SubMenu[index];
         }
+
         public MenuItem GetLastSubMenu()
         {
-            return MIContent.GetLastMenuItem();
+            return SubMenu[SubMenu.Count - 1];
         }
-
-
-
 
         public void AddMenuItem(MenuItem md)
         {
             md.Level = Level + 1;
-            MIContent.AddMenuItem(md);
+            SubMenu.Add(md);
         }
 
+        private TagBuilder HtmlTextItems(TagBuilder ParentTag)
+        {
+            TagBuilder tb;
+            if (ParentTag != null)
+            {
+                tb = ParentTag;
+            }
+            else
+            {
+                tb = new TagBuilder("div");
+                tb.AddCssClass("MenuContent");
+            }
+
+            for (int i = 0; i < SubMenu.Count; i++)
+                tb.InnerHtml.AppendHtml(SubMenu[i].HtmlText());
+
+            return tb;
+        }
+        public static string GetString(IHtmlContent content)
+        {
+            var writer = new System.IO.StringWriter();
+            content.WriteTo(writer, HtmlEncoder.Default);
+            return writer.ToString();
+        }
+
+        public TagBuilder HtmlText()
+        {
+            TagBuilder tb;
+
+            if (Level == 0)
+            {
+                tb = new TagBuilder("aside");
+                tb.AddCssClass("Accordion");
+
+                TagBuilder tbMenuItems = HtmlTextItems(tb);
+                tb.InnerHtml.AppendHtml(tbMenuItems);
+            }
+            else
+            {
+                TagBuilder tbMenuItems = HtmlTextItems(null);
+                tb.InnerHtml.AppendHtml(MIHeading.HtmlText(Level));
+                tb.InnerHtml.AppendHtml(tbMenuItems);
+            }
+            return tb;
+        }
     }
 
     public class MenuHeading
     {
         public string Label { get; set; }
-        public int Level { get; set; }
         public string Url { get; set; }
         public bool Expanded { get; set; }
         public bool Empty { get; set; }
@@ -56,34 +96,16 @@ namespace PDMSCore.DataManipulation
         public MenuHeading()
         {
         }
-        public MenuHeading(string Label, int Level, string Url, bool Expanded, bool Empty, bool Selected)
+        public MenuHeading(string Label, string Url, bool Expanded, bool Empty, bool Selected)
         {
             this.Label = Label;
-            this.Level = Level;
             this.Url = Url;
             this.Expanded = Expanded;
             this.Empty = Empty;
             this.Selected = Selected;
         }
 
-        public TagBuilder TagA(string Classes, string InnerHtml)
-        {
-            TagBuilder tb = new TagBuilder("a");
-            tb.AddCssClass(Classes);
-            tb.Attributes.Add("href", Url);
-            tb.InnerHtml.AppendHtml(InnerHtml);
-            return tb;
-        }
-
-        public TagBuilder TagDiv(string Classes, string InnerHtml)
-        {
-            TagBuilder tb = new TagBuilder("a");
-            tb.AddCssClass(Classes);
-            tb.InnerHtml.AppendHtml(InnerHtml);
-            return tb;
-        }
-
-        public TagBuilder TagDivChevronArea()
+        private TagBuilder TagDivChevronArea()
         {
             TagBuilder tb = new TagBuilder("div");
             tb.AddCssClass("MIChevronArea");
@@ -96,74 +118,26 @@ namespace PDMSCore.DataManipulation
             return tb;
         }
 
-        public TagBuilder HtmlText()
+        public TagBuilder HtmlText(int Level)
         {
-            TagBuilder tbContent = new TagBuilder("div");
+            TagBuilder tbOuter = new TagBuilder("div");
+            tbOuter.AddCssClass("MenuItemL" + Level.ToString());
+            tbOuter.AddCssClass(Expanded ? "MIExpanded" : "");
+            tbOuter.AddCssClass(Empty ? "MIEmpty" : "");
+            tbOuter.AddCssClass(Selected? "MISelected" : "");
 
-            tbContent.AddCssClass(Expanded ? "MIExpanded" : "");
-            tbContent.AddCssClass(Empty ? "MIEmpty" : "");
-            tbContent.AddCssClass(Selected? "MISelected" : "");
+            TagBuilder tbA = new TagBuilder("a");
+            tbA.Attributes.Add("href", Url);
+            tbA.InnerHtml.AppendHtml(Label);
 
-            TagBuilder tbA = TagA("MenuItemText", Label);
             TagBuilder tbDivChevronArea = TagDivChevronArea();
 
-            TagBuilder tbDivMIChevron = TagDiv("MIChevron", "");
-
-            return tbContent;
+            tbOuter.InnerHtml.AppendHtml(tbA);
+            tbOuter.InnerHtml.AppendHtml(tbDivChevronArea);
+            return tbOuter;
         }
     }
-    
-    public class MenuContent
-    {
-        public int ID { get; set; }
-        public string Label { get; set; }
-        public string Url { get; set; }
-        public bool Expanded { get; set; }
-        public bool Empty { get; set; }
-        public bool Selected { get; set; }
 
-        private int Level { get; set; }
-
-        private List<MenuItem> MenuItems { get; set; }
-        public MenuContent(int Level = 0)
-        {
-            ID = -1;
-            Label = "not defined";
-            Url = "not defined";
-            MenuItems = new List<MenuItem>();
-
-            /*MIHeading = new MenuHeading("",Level,);
-            MIContent = new List<MenuContent>();*/
-        }
-
-        public MenuItem GetMenuItem(int index)
-        {
-            return MenuItems[index];
-        }
-
-        public MenuItem GetLastMenuItem()
-        {
-            return MenuItems[MenuItems.Count-1];
-        }
-
-        public void AddMenuItem(MenuItem md)
-        {
-            md.Level = this.Level + 1;
-
-            MenuItems.Add(md);
-        }
-    /*
-        public void AddMenuItem(int index, MenuItem md, int level)
-        {
-            md.Level = level;
-            MenuItems.Add(md);
-        }*/
-
-        public TagBuilder HtmlText()
-        {
-            return null;
-        }
-    }
 
     public class Menu
     {
@@ -181,6 +155,14 @@ namespace PDMSCore.DataManipulation
             Test();
         }
 
+
+        public TagBuilder HtmlText()
+        {
+            return root.HtmlText();
+        }
+
+
+
         public void Test()
         {
             root.AddMenuItem(new MenuItem());                               //1
@@ -190,6 +172,10 @@ namespace PDMSCore.DataManipulation
 
             root.GetLastSubMenu().AddMenuItem(new MenuItem());                  //1.2
             root.GetLastSubMenu().GetLastSubMenu().AddMenuItem(new MenuItem());     //1.2.1
+
+
+            //string aaa = root.HtmlText();
+
         }
 
       
