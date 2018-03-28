@@ -11,10 +11,12 @@ namespace PDMSCore.BusinessObjects
         public int Id { get; set; }
         public string Name { get; set; }
         public List<Panel> PanelList { get; set; }
+        public Menu SideMenu { get; set; }
 
         public Project()
         {
             PanelList = new List<Panel>();
+            SideMenu = new Menu();
         }
         public bool Create()
         {
@@ -60,7 +62,7 @@ namespace PDMSCore.BusinessObjects
 
         //private bool AuthUser()
         //{
-            
+
         //}
 
         //public static void GetProject(int ProjectID)
@@ -101,8 +103,16 @@ namespace PDMSCore.BusinessObjects
 
         //}
 
+        public void GetRandomMenu()
+        {
+            Menu m = new Menu();
+
+        }
+
         public void GetRandom()
         {
+            GetRandomMenu();
+
             int id = 1;
             long randonName = DateTime.Now.Ticks;
 

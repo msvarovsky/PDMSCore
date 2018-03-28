@@ -1,13 +1,12 @@
-﻿
-@model PDMSCore.BusinessObjects.Project
+﻿@model PDMSCore.BusinessObjects.Project
 
 @using PDMSCore.HtmlHelpers
 @{
     ViewBag.Title = "Index";
 }
 
-<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
-<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+@*<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>*@
 <script type="text/javascript">
     // Close the dropdown if the user clicks outside of it
     /*Z nejakeho duvodu to funguje pouze kdyz je to tady a ne v site.js.*/
@@ -100,7 +99,7 @@
                 </form>
             </div>
         </div>
-        
+
         @*<div>
             <form method="post">
                 <input class="AutoComplete" type="text" id="id1" name="jmeno1" placeholder="ph1" label="MujLabel1" />
@@ -112,3 +111,8 @@
     }
 </div>
 
+@section SideMenu
+{
+    
+    @Model.SideMenu.HtmlText()
+}

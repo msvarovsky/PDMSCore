@@ -5,9 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - PDMSCore</title>
 
-    
-    
-
     <environment include="Development">
         @*<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />*@
 
@@ -21,6 +18,7 @@
         <script src="~/js/Customs.js"></script>
         <script src="~/js/colResizable-1.5.min.js"></script>
         <link rel="stylesheet" href="~/css/main.css" />
+        <link href="~/css/SideMenuStyles.css" rel="stylesheet" />
 
         @*kvuli kalendari*@
         <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
@@ -33,6 +31,8 @@
 
         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
         <link rel="stylesheet" href="~/css/main.css" />
+        <link href="~/css/SideMenuStyles.css" rel="stylesheet" />
+
     </environment>
 </head>
 <body>
@@ -55,7 +55,7 @@
             <div class="NadaUnderMenu"></div>
         </div>
         <div class="wrapper">
-            <div class="Section MainMenu">
+            @*<div class="Section MainMenu">
                 <div id="accordion">
                     <ul class="no-js">
                         <li>
@@ -169,11 +169,13 @@
                         </li>
                     </ul>
                 </div>
-            </div>
+            </div>*@
 
-            @RenderSection("MainMenu", false)
-            @RenderSection("BreadAndMenu", false)
-            @RenderSection("PageInfo", false)
+
+
+            @RenderSection("SideMenu", false)
+            @*@RenderSection("BreadAndMenu", false)
+            @RenderSection("PageInfo", false)*@
             @RenderBody()
         </div>
     </section>

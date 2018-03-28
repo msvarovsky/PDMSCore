@@ -1,11 +1,11 @@
 
 $(document).ready(function () {
-  $(".Accordion").find(".Expanded").next().show();
+  $(".Accordion").find(".MIExpanded").next().show();
 });
 
 
 var changeChevron = function() {
-  $('.chevron.down').toggleClass('up'); }
+  $('.MIChevron.down').toggleClass('up'); }
 
 
 // $(".accordion").click(function (e) {
@@ -15,7 +15,7 @@ $("*").click(function (e) {
   var tagClasses = $(e.target).attr('class');
   var name;
   
-  if (tagClasses.includes("MenuItemText") || tagClasses.includes("Chevron"))
+  if (tagClasses.includes("MenuItemText") || tagClasses.includes("MIChevron"))
   {
     target = $(e.target).parent();
     name = target["0"].nodeName.toUpperCase();
@@ -32,23 +32,23 @@ $("*").click(function (e) {
   var SlideUpSpeed = 50;
   var SlideDownSpeed = 200;
 
-  if (!$(target).hasClass("Expanded")) 
+  if (!$(target).hasClass("MIExpanded")) 
   { //Sbalene
-    $(target).siblings("[class^='MenuItemL']").removeClass("Expanded");
+    $(target).siblings("[class^='MenuItemL']").removeClass("MIExpanded");
     $(target).siblings("[class^='MenuItemL']").next().slideUp(SlideUpSpeed);
 
     // Prehodi Chevron rozbaleneho menu zpet na sbaleny symbol.
-    $(target).siblings("[class^='MenuItemL']").find(".Chevron").removeClass("ChevronExpanded");
+    $(target).siblings("[class^='MenuItemL']").find(".MIChevron").removeClass("MIChevronExpanded");
 
 
-    if (!$(target).hasClass("empty")) {
-      $(target).addClass("Expanded");
+    if (!$(target).hasClass("MIEmpty")) {
+      $(target).addClass("MIExpanded");
       $(target).next().slideDown(SlideDownSpeed);
     }
   }
   else 
   { // ROZbalene
-    $(target).removeClass("Expanded");
+    $(target).removeClass("MIExpanded");
     $(target).next().slideUp(SlideUpSpeed);
   }
 
@@ -59,7 +59,7 @@ $("*").click(function (e) {
 
   // document.getElementById('debug').innerHTML = new Date().getTime();
 
-  $(target).find(".Chevron").toggleClass('ChevronExpanded');
+  $(target).find(".MIChevron").toggleClass('MIChevronExpanded');
 
 
 
@@ -67,14 +67,14 @@ $("*").click(function (e) {
 
   ////////////////////////////////////////////////////////////////////
 
-  // if (!$(target).hasClass("empty"))
-  //   $(target).toggleClass("Expanded");
+  // if (!$(target).hasClass("MIEmpty"))
+  //   $(target).toggleClass("MIExpanded");
 
   // $(target).siblings().removeClass("MISelected");
   // $(target).siblings().children().removeClass("MISelected");
 
-  // $(target).siblings().removeClass("Expanded");
-  // $(target).siblings().children().removeClass("Expanded");
+  // $(target).siblings().removeClass("MIExpanded");
+  // $(target).siblings().children().removeClass("MIExpanded");
 
   // $(target).addClass("MISelected");
 

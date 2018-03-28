@@ -1,0 +1,116 @@
+
+.Accordion{
+  font-size: 100%;
+  margin: 0; padding: 0;
+  
+  min-width: 200px;
+  width: 80%;
+  font-family: Bookman Old Style; 
+  /* margin: 2px auto; */
+}
+
+/* Pro vsechny <a> jejichs class zacina "MenuItemL" */
+[class^='MenuItemL']
+{
+  display: flex;
+  justify-content: space-between;
+  text-decoration: none;
+
+  padding-top: 10px;
+  padding-bottom: 10px;
+  border-top: 1px solid rgb(77, 77, 77);
+}
+.MenuItemL1{
+  padding-left: 20px;
+
+  background-color: #333;
+  font-size: 1.2rem;
+  color: #1abc9c;
+}
+.MenuItemL2
+{
+  padding-left: 30px;
+
+  background-color: #1abc9c;
+  font-size: 1.1rem;
+  color: #333;
+}
+.MenuItemL3 {
+  padding-left: 40px;
+
+  background-color: #b94152;
+  font-size: 1rem;
+  color: #ddd; 
+}
+.MenuItemL4 {
+  padding-left: 50px;
+
+  background-color: #ffc25a;
+  font-size: .8rem;
+  color: #af720a; 
+}
+
+.MenuContent
+{
+  display: none;
+}
+
+/*
+  /* https://codepen.io/zoomodesign/pen/yNbVVZ?editors=1100 */
+  /* https://codepen.io/tejask/pen/QbMKxK
+}*/
+
+/*.PreMenuItemText
+{
+  text-align: left;
+  width: 200px;
+  color: red;
+  border: 1px dashed green;
+}
+.ikona{
+  border: 2px dashed red;
+  width: 10px;
+}*/
+
+.MenuItemText
+{
+  color: inherit;
+  text-decoration: none;
+}
+
+.MIChevronArea{
+  /* background-color: yellow; */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 10px;
+}
+
+.MIChevron {
+  width: 10px;
+  height: 10px;
+
+  pointer-events: none;
+
+  border-top: 4px solid whitesmoke;
+  border-right: 4px solid whitesmoke;
+  /* border-bottom: 1px solid red;
+  border-left: 1px solid red; */
+  /* transition: 100ms all cubic-bezier(1, 0.25, 0.25, .8); */
+  transition: 100ms all cubic-bezier(0.5, 0.1, 0.1, 1);
+  will-change: transform;
+  /* margin-right: 15px; */
+  /* transform: translateY(9px) rotate(-45deg); */
+  transform: rotate(-45deg);
+}
+
+.MIChevron.MIChevronExpanded {
+  /* transform: translateY(4px) rotate(135deg); */
+  transform: rotate(135deg) ;
+}
+
+.MISelected{
+  font-weight: bold;
+  /* text-decoration: underline; */
+  /* content: "*"; */
+}
