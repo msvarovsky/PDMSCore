@@ -3,6 +3,7 @@ using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
+
 namespace PDMSCore.DataManipulation
 {
     public class MenuItem
@@ -65,7 +66,7 @@ namespace PDMSCore.DataManipulation
 
         public TagBuilder HtmlText()
         {
-            TagBuilder tb;
+            TagBuilder tb=null;
 
             if (Level == 0)
             {
@@ -138,7 +139,6 @@ namespace PDMSCore.DataManipulation
         }
     }
 
-
     public class Menu
     {
         /*
@@ -155,10 +155,13 @@ namespace PDMSCore.DataManipulation
             Test();
         }
 
-
+        
         public TagBuilder HtmlText()
         {
-            return root.HtmlText();
+            return new TagBuilder("testtag");
+
+
+            //return root.HtmlText();
         }
 
 
