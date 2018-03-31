@@ -43,9 +43,7 @@ namespace PDMSCore.DataManipulation
         {
             TagBuilder tb;
             if (ParentTag != null)
-            {
                 tb = ParentTag;
-            }
             else
             {
                 tb = new TagBuilder("div");
@@ -53,7 +51,7 @@ namespace PDMSCore.DataManipulation
             }
 
             for (int i = 0; i < SubMenu.Count; i++)
-                tb.InnerHtml.AppendHtml(SubMenu[i].HtmlText());
+                SubMenu[i].HtmlText(tb);
 
             return tb;
         }
@@ -64,23 +62,19 @@ namespace PDMSCore.DataManipulation
             return writer.ToString();
         }
 
-        public TagBuilder HtmlText()
+        public TagBuilder HtmlText(TagBuilder tb = null)
         {
-            TagBuilder tb=null;
-
             if (Level == 0)
             {
                 tb = new TagBuilder("aside");
                 tb.AddCssClass("Accordion");
-
-                TagBuilder tbMenuItems = HtmlTextItems(tb);
-                tb.InnerHtml.AppendHtml(tbMenuItems);
+                HtmlTextItems(tb);
+                //tb.InnerHtml.AppendHtml();
             }
             else
             {
-                TagBuilder tbMenuItems = HtmlTextItems(null);
                 tb.InnerHtml.AppendHtml(MIHeading.HtmlText(Level));
-                tb.InnerHtml.AppendHtml(tbMenuItems);
+                tb.InnerHtml.AppendHtml(HtmlTextItems(null));
             }
             return tb;
         }
@@ -113,19 +107,26 @@ namespace PDMSCore.DataManipulation
 
             TagBuilder tbMIChevron = new TagBuilder("div");
             tbMIChevron.AddCssClass("MIChevron");
-            tbMIChevron.AddCssClass(Expanded ? "MIChevronExpanded" : "");
+            AddCssClass(tbMIChevron, Expanded, "MIChevronExpanded");
 
             tb.InnerHtml.AppendHtml(tbMIChevron);
             return tb;
+        }
+
+        private void AddCssClass(TagBuilder tb, bool Condition, string ClassString)
+        {
+            if (Condition)
+                tb.AddCssClass(ClassString);
         }
 
         public TagBuilder HtmlText(int Level)
         {
             TagBuilder tbOuter = new TagBuilder("div");
             tbOuter.AddCssClass("MenuItemL" + Level.ToString());
-            tbOuter.AddCssClass(Expanded ? "MIExpanded" : "");
-            tbOuter.AddCssClass(Empty ? "MIEmpty" : "");
-            tbOuter.AddCssClass(Selected? "MISelected" : "");
+
+            AddCssClass(tbOuter, Expanded, "MIExpanded");
+            AddCssClass(tbOuter, Empty, "MIEmpty");
+            AddCssClass(tbOuter, Selected, "MISelected");
 
             TagBuilder tbA = new TagBuilder("a");
             tbA.Attributes.Add("href", Url);
@@ -140,33 +141,24 @@ namespace PDMSCore.DataManipulation
     }
 
     public class Menu
-    {
-        /*
-            1   1.1     1.1.1
+    {   /*  1   1.1     1.1.1
                         1.1.2
-                1.2     1.2.1
-        */
+                1.2     1.2.1        */
 
-        MenuItem root { get; set; }
+        private MenuItem root { get; set; }
 
         public Menu()
         {
             root = new MenuItem();
-            Test();
         }
 
-        
         public TagBuilder HtmlText()
         {
-            return new TagBuilder("testtag");
-
-
-            //return root.HtmlText();
+            //return new TagBuilder("testtag");
+            return root.HtmlText();
         }
 
-
-
-        public void Test()
+        public void GetRandomMenu()
         {
             root.AddMenuItem(new MenuItem());                               //1
             root.GetLastSubMenu().AddMenuItem(new MenuItem());                  //1.1
@@ -175,12 +167,7 @@ namespace PDMSCore.DataManipulation
 
             root.GetLastSubMenu().AddMenuItem(new MenuItem());                  //1.2
             root.GetLastSubMenu().GetLastSubMenu().AddMenuItem(new MenuItem());     //1.2.1
-
-
-            //string aaa = root.HtmlText();
-
         }
-
       
     }
 }
