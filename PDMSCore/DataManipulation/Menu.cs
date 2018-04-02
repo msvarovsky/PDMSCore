@@ -12,13 +12,13 @@ namespace PDMSCore.DataManipulation
         private List<MenuItem> SubMenu { get; set; }
         public int Level { get; set; }
 
-        public MenuItem()
+        public MenuItem(string Label, string Url)
         {
             Level = 0;
 
-            MIHeading = new MenuHeading();
+            MIHeading = new MenuHeading(Label, Url);
             SubMenu = new List<MenuItem>();
-            
+
         }
 
         public MenuItem GetSubMenu(int index)
@@ -28,6 +28,40 @@ namespace PDMSCore.DataManipulation
             return SubMenu[index];
         }
 
+        private bool Find(string Url, string Label, ref List<int> p)
+        {
+            if (MIHeading.Url == Url && (Label == null || MIHeading.Label == Label)  )
+                return true;
+            else
+            {
+                for (int i = 0; i < SubMenu.Count; i++)
+                {
+                    if (SubMenu[i].Find(Url, Label, ref p))
+                    {
+                        p.Add(i);
+                        return true;
+                    }
+                }
+                return false;
+            }
+        }
+        private void Select(List<int> MenuPath, int index)
+        {
+            if (index >= 0)
+                SubMenu[MenuPath[index]].Select(MenuPath, index - 1);
+
+            if (index == -1)
+                MIHeading.Selected = true;
+            if (SubMenu.Count > 0)
+                MIHeading.Expanded = true;
+        }
+        public void Select(string Url, string Label=null)
+        {
+            List<int> MenuPath = new List<int>();
+            Find(Url, Label, ref MenuPath);
+            Select(MenuPath, MenuPath.Count-1);
+        }
+
         public MenuItem GetLastSubMenu()
         {
             return SubMenu[SubMenu.Count - 1];
@@ -35,6 +69,7 @@ namespace PDMSCore.DataManipulation
 
         public void AddMenuItem(MenuItem md)
         {
+            MIHeading.Empty = false;
             md.Level = Level + 1;
             SubMenu.Add(md);
         }
@@ -48,18 +83,13 @@ namespace PDMSCore.DataManipulation
             {
                 tb = new TagBuilder("div");
                 tb.AddCssClass("MenuContent");
+                tb.Attributes.Add("display", MIHeading.Expanded ? "block": "none");
             }
 
             for (int i = 0; i < SubMenu.Count; i++)
                 SubMenu[i].HtmlText(tb);
 
             return tb;
-        }
-        public static string GetString(IHtmlContent content)
-        {
-            var writer = new System.IO.StringWriter();
-            content.WriteTo(writer, HtmlEncoder.Default);
-            return writer.ToString();
         }
 
         public TagBuilder HtmlText(TagBuilder tb = null)
@@ -78,6 +108,13 @@ namespace PDMSCore.DataManipulation
             }
             return tb;
         }
+
+        //public static string GetString(IHtmlContent content)
+        //{
+        //    var writer = new System.IO.StringWriter();
+        //    content.WriteTo(writer, HtmlEncoder.Default);
+        //    return writer.ToString();
+        //}
     }
 
     public class MenuHeading
@@ -88,16 +125,14 @@ namespace PDMSCore.DataManipulation
         public bool Empty { get; set; }
         public bool Selected { get; set; }
 
-        public MenuHeading()
-        {
-        }
-        public MenuHeading(string Label, string Url, bool Expanded, bool Empty, bool Selected)
+        public MenuHeading(string Label, string Url)
         {
             this.Label = Label;
             this.Url = Url;
-            this.Expanded = Expanded;
-            this.Empty = Empty;
-            this.Selected = Selected;
+
+            this.Expanded = false;
+            this.Empty = true;
+            this.Selected = false;
         }
 
         private TagBuilder TagDivChevronArea()
@@ -122,20 +157,22 @@ namespace PDMSCore.DataManipulation
         public TagBuilder HtmlText(int Level)
         {
             TagBuilder tbOuter = new TagBuilder("div");
-            tbOuter.AddCssClass("MenuItemL" + Level.ToString());
-
-            AddCssClass(tbOuter, Expanded, "MIExpanded");
-            AddCssClass(tbOuter, Empty, "MIEmpty");
+            
+            /* MenuItemLx musi byt pred MIExpanded. Aby se toho docililo, tak sa do tbOuter musi pridat az po MIExpanded.*/
             AddCssClass(tbOuter, Selected, "MISelected");
+            AddCssClass(tbOuter, Empty, "MIEmpty");
+            AddCssClass(tbOuter, Expanded, "MIExpanded");
+            tbOuter.AddCssClass("MenuItemL" + Level.ToString());
 
             TagBuilder tbA = new TagBuilder("a");
             tbA.Attributes.Add("href", Url);
+            tbA.AddCssClass("MenuItemText");
             tbA.InnerHtml.AppendHtml(Label);
 
-            TagBuilder tbDivChevronArea = TagDivChevronArea();
 
             tbOuter.InnerHtml.AppendHtml(tbA);
-            tbOuter.InnerHtml.AppendHtml(tbDivChevronArea);
+            if (!Empty)
+                tbOuter.InnerHtml.AppendHtml(TagDivChevronArea());
             return tbOuter;
         }
     }
@@ -149,7 +186,7 @@ namespace PDMSCore.DataManipulation
 
         public Menu()
         {
-            root = new MenuItem();
+            root = new MenuItem("root","root");
         }
 
         public TagBuilder HtmlText()
@@ -160,13 +197,20 @@ namespace PDMSCore.DataManipulation
 
         public void GetRandomMenu()
         {
-            root.AddMenuItem(new MenuItem());                               //1
-            root.GetLastSubMenu().AddMenuItem(new MenuItem());                  //1.1
-            root.GetLastSubMenu().GetLastSubMenu().AddMenuItem(new MenuItem());     //1.1.1
-            root.GetLastSubMenu().GetLastSubMenu().AddMenuItem(new MenuItem());     //1.1.2
+            root.AddMenuItem(new MenuItem("1","#1"));                                   //1
+            root.GetLastSubMenu().AddMenuItem(new MenuItem("1.1","#1.1"));                      //1.1
+            root.GetLastSubMenu().GetLastSubMenu().AddMenuItem(new MenuItem("1.1.1", "#1.1.1"));     //1.1.1
+            root.GetLastSubMenu().GetLastSubMenu().AddMenuItem(new MenuItem("1.1.2", "#1.1.2"));     //1.1.2
 
-            root.GetLastSubMenu().AddMenuItem(new MenuItem());                  //1.2
-            root.GetLastSubMenu().GetLastSubMenu().AddMenuItem(new MenuItem());     //1.2.1
+            root.GetLastSubMenu().AddMenuItem(new MenuItem("1.2", "#1.2"));                     //1.2
+            root.GetLastSubMenu().GetLastSubMenu().AddMenuItem(new MenuItem("1.2.1", "#1.2.1"));     //1.2.1
+
+            root.AddMenuItem(new MenuItem("2", "#2"));                                   //2
+            root.GetLastSubMenu().AddMenuItem(new MenuItem("2.1", "#2.1"));                      //1.1
+            root.GetLastSubMenu().AddMenuItem(new MenuItem("2.2", "#2.2"));                      //1.1
+
+            //root.Select("#1.1.2", "1.1.2");
+            root.Select("#1.1.2");
         }
       
     }

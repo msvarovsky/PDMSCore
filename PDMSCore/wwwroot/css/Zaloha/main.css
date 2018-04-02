@@ -35,7 +35,7 @@ body {
 
 .MainWrapper {
     margin: 0;
-    background-color: yellow;
+    /* background-color: yellow; */
 }
 
 .wrapper {
@@ -43,6 +43,7 @@ body {
     display: grid;
     grid-gap: 0px;
     grid-template-columns: var(--MainMenuWidth) 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+
     /*                  Header BreadAndMenu PageInfo Content    */
     
     /*              Z nejakeho duvodu panely funguji spravne pouze kdyz ten radek pod zakomentuju.  */
@@ -147,7 +148,9 @@ body {
 .MainMenu {
     grid-column: 1 / span 1;
     grid-row: 1 / span 3;
-    color: rgb(201,204,205);
+    /* color: rgb(201,204,205); */
+    color:red;
+
     font-size: 1em;
     box-shadow:inset -1px 0px var(--BorderColour);
     padding: 0px;

@@ -1,0 +1,121 @@
+.Content {
+    grid-column: 2;
+    grid-row: 3 ;
+    
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px,1fr));
+    grid-gap: 10px;
+
+    background-color: var(--GreyBackgroundColor);
+    padding: 10px;
+}
+
+    .Panel
+    {
+/*        position: relative;*/
+        padding: 5px;
+        
+/*        z-index: 0;*/
+
+        border-style: solid;
+        border-width: thin;
+        border-color: var(--PanelBorderColor);
+        border-radius: 3px;
+
+        min-height: 200px;
+        min-width: 300px;
+
+        box-shadow: 1px 1px 2px #888888;
+        background-color: var(--WhiteBackgroundColor);
+    }
+    .x1
+    {
+        grid-column: auto / span 1;
+    }
+    .x2
+    {
+        grid-column: auto / span 2;
+    }
+        .Panel-Header
+        {
+            display: grid;
+            grid-template-columns: auto 20px;
+            box-shadow: 0px 1px 0px #888888;
+
+            height: var(--PanelHeaderHeight);
+            margin-left: 10px;
+            margin-right: 10px;
+
+        /*    background-color: darkgrey;*/
+        }
+            .Panel-Header-Left{
+                display: flex;
+                align-items: center;
+/*                font-weight: 550;*/
+                font-size: 20px;
+                
+            }
+            .Panel-Header-Right{
+                display: flex;
+                align-items: center;
+            }
+
+
+        .Panel-Body
+        {
+            display:block;
+            margin: 10px;
+        }
+            .LabelControlDuo
+            {
+                padding: 5px 0px 5px 0px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                
+            }
+                
+
+
+/*              OnClick Menu            */
+.dd-menu-btn:before
+{
+    font: 14px/1 FontAwesome; /* Musi byt, aby se ten znal nenaklanel. Netusim proc.*/
+    text-rendering:auto;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    content:'\2630';
+}
+
+.dd-menu-btn {
+    cursor: pointer;
+}
+
+.dd-menu {
+    position: relative;
+}
+
+.dd-menu-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;  
+    min-width: 160px;
+    overflow: auto;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    right: 0;
+}
+
+.dd-menu-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.dd-menu a:hover {background-color: #f1f1f1}
+
+.show /*Musi byt pod .dropdown-content*/
+{
+    display:block;
+}

@@ -17,8 +17,13 @@
         <script src="~/js/jquery-3.3.1.min.js"></script>
         <script src="~/js/Customs.js"></script>
         <script src="~/js/colResizable-1.5.min.js"></script>
-        <link rel="stylesheet" href="~/css/main.css" />
+        <script src="~/js/SideMenuScript.js"></script>
+        @*<link rel="stylesheet" href="~/css/main.css" />*@
         <link href="~/css/SideMenuStyles.css" rel="stylesheet" />
+        <link href="~/css/Layout.css" rel="stylesheet" />
+        <link href="~/css/ContentPanel.css" rel="stylesheet" />
+        <link href="~/css/Controls.css" rel="stylesheet" />
+
 
         @*kvuli kalendari*@
         <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
@@ -30,156 +35,72 @@
         <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
 
         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
-        <link rel="stylesheet" href="~/css/main.css" />
+        <script src="~/js/SideMenuScript.js"></script>
+        @*<link rel="stylesheet" href="~/css/main.css" />*@
         <link href="~/css/SideMenuStyles.css" rel="stylesheet" />
+        <link href="~/css/Layout.css" rel="stylesheet" />
+        <link href="~/css/ContentPanel.css" rel="stylesheet" />
+        <link href="~/css/Controls.css" rel="stylesheet" />
 
     </environment>
 </head>
 <body>
     @*<link href="~/css/main.css" rel="stylesheet" />
-    <link href="~/Css/Awesome/font-awesome.css" rel="stylesheet" />*@
+        <link href="~/Css/Awesome/font-awesome.css" rel="stylesheet" />*@
+    <div class="TopFixedRow">
+        <div class="LogoSection">LogoSection</div>
+        <div class="Nada">Nada</div>
+        <div class="UserSection">UserSection</div>
+    </div>
+    <div class="LeftFixedColumn">
+        @RenderSection("SideMenu", false)
+    </div>
 
-    <section class="MainWrapper">
-        <input type="checkbox" id="toggle" />
-        <div class="Section Header">
-            <div class="LogoSection">
-                <div id="MenuIcon">
-                    <label for="toggle" id="MenuIcon" style="hhh">&#9776</label>
-                </div>
-                <div id="Logo">
-                    Logo
-                </div>
-            </div>
-            <div class="Nada">Nada</div>
-            <div class="UserSection">User</div>
-            <div class="NadaUnderMenu"></div>
-        </div>
-        <div class="wrapper">
-            @*<div class="Section MainMenu">
-                <div id="accordion">
-                    <ul class="no-js">
-                        <li>
-                            <a class="MainMenuLevel1 HasUL" href="#">
-                                <i class="fa fa-home" aria-hidden="true"></i>
-                                <span>Dashboard</span>
-                            </a>
-                            <ul>
-                                <li><a class="MainMenuLevel2" href="#">1. 1</a></li>
-                            </ul>
-                        </li>
-                        <li>
-                            <a class="MainMenuLevel1 HasUL" href="#">
-                                <i class="fa fa-columns" aria-hidden="true"></i>
-                                <span>Page layouts</span>
-                            </a>
-                            <ul>
-                                <li>
-                                    <a class="MainMenuLevel2 HasUL" href="#">
-                                        <span>Fixed navbar</span>
-                                    </a>
-                                    <ul>
-                                        <li><a class="MainMenuLevel3" href="#"><span>2.1. 1</span></a></li>
-                                        <li><a class="MainMenuLevel3" href="#"><span>2.1. 2</span></a></li>
-                                        <li><a class="MainMenuLevel3" href="#"><span>2.1. 3</span></a></li>
-                                    </ul>
-                                </li>
-                                <li>
-                                    <a class="MainMenuLevel2 HasUL" href="#">
-                                        <span>Boxed with default sidebar</span>
-                                    </a>
-
-                                    <ul>
-                                        <li><a class="MainMenuLevel3" href="#"><span>2.1. 1</span></a></li>
-                                        <li><a class="MainMenuLevel3" href="#"><span>2.1. 2</span></a></li>
-                                        <li><a class="MainMenuLevel3" href="#"><span>2.1. 3</span></a></li>
-                                    </ul>
-                                </li>
-                                <li>
-                                    <a class="MainMenuLevel2 HasUL" href="#">
-                                        <span>Boxed with mini sidebar</span>
-                                    </a>
-                                    <ul>
-                                        <li><a class="MainMenuLevel3" href="#"><span>2.1. 1</span></a></li>
-                                        <li><a class="MainMenuLevel3" href="#"><span>2.1. 2</span></a></li>
-                                        <li><a class="MainMenuLevel3" href="#"><span>2.1. 3</span></a></li>
-                                    </ul>
-                                </li>
-                                <li>
-                                    <a class="MainMenuLevel2 HasUL" href="#">
-                                        <span>Boxed full width</span>
-                                    </a>
-                                    <ul>
-                                        <li><a class="MainMenuLevel3" href="#"><span>2.1. 1</span></a></li>
-                                        <li><a class="MainMenuLevel3" href="#"><span>2.1. 2</span></a></li>
-                                        <li><a class="MainMenuLevel3" href="#"><span>2.1. 3</span></a></li>
-                                    </ul>
-                                </li>
-                                <li><a class="MainMenuLevel2" href="#">2. 3</a></li>
-                            </ul>
-                        </li>
-                        <li>
-                            <a class="MainMenuLevel1 HasUL" href="#">
-                                <i class="fa fa-tint" aria-hidden="true"></i>
-                                <span> &nbsp;Item 3</span>
-                            </a>
-                            <ul>
-                                <li>
-                                    <a class="MainMenuLevel2 HasUL" href="#">
-                                        <span>Fixed navbar</span>
-                                    </a>
-                                    <ul>
-                                        <li><a class="MainMenuLevel3" href="#"><span>2.1. 1</span></a></li>
-                                        <li><a class="MainMenuLevel3" href="#"><span>2.1. 2</span></a></li>
-                                        <li><a class="MainMenuLevel3" href="#"><span>2.1. 3</span></a></li>
-                                    </ul>
-                                </li>
-                                <li>
-                                    <a class="MainMenuLevel2 HasUL" href="#">
-                                        <span>Boxed with default sidebar</span>
-                                    </a>
-
-                                    <ul>
-                                        <li><a class="MainMenuLevel3" href="#"><span>2.1. 1</span></a></li>
-                                        <li><a class="MainMenuLevel3" href="#"><span>2.1. 2</span></a></li>
-                                        <li><a class="MainMenuLevel3" href="#"><span>2.1. 3</span></a></li>
-                                    </ul>
-                                </li>
-                                <li>
-                                    <a class="MainMenuLevel2 HasUL" href="#">
-                                        <span>Boxed with mini sidebar</span>
-                                    </a>
-                                    <ul>
-                                        <li><a class="MainMenuLevel3" href="#"><span>2.1. 1</span></a></li>
-                                        <li><a class="MainMenuLevel3" href="#"><span>2.1. 2</span></a></li>
-                                        <li><a class="MainMenuLevel3" href="#"><span>2.1. 3</span></a></li>
-                                    </ul>
-                                </li>
-                                <li>
-                                    <a class="MainMenuLevel2 HasUL" href="#">
-                                        <span>Boxed full width</span>
-                                    </a>
-                                    <ul>
-                                        <li><a class="MainMenuLevel3" href="#"><span>2.1. 1</span></a></li>
-                                        <li><a class="MainMenuLevel3" href="#"><span>2.1. 2</span></a></li>
-                                        <li><a class="MainMenuLevel3" href="#"><span>2.1. 3</span></a></li>
-                                    </ul>
-                                </li>
-                                <li><a class="MainMenuLevel2" href="#">2. 3</a></li>
-                            </ul>
-                        </li>
-                    </ul>
-                </div>
-            </div>*@
-
-
-
-            @RenderSection("SideMenu", false)
+    <div class="AllButFixed">
+        <div class="PageMenu">PageMenu</div>
+        <div class="PageContent">
             @*@RenderSection("BreadAndMenu", false)
             @RenderSection("PageInfo", false)*@
             @RenderBody()
+
         </div>
-    </section>
+    </div>
+    
 
 </body>
+<script type="text/javascript">
+    // Close the dropdown if the user clicks outside of it
+    /*Z nejakeho duvodu to funguje pouze kdyz je to tady a ne v site.js.*/
+    document.onclick = function (event) {
+        if (!event.target.matches('.dd-menu-btn')) {
+
+            var dropdowns = document.getElementsByClassName("dd-menu-content");
+            var i;
+            for (i = 0; i < dropdowns.length; i++) {
+                var openDropdown = dropdowns[i];
+                if (openDropdown.classList.contains('show')) {
+                    openDropdown.classList.remove('show');
+                }
+            }
+        }
+    }
+
+    function onPanelMenuClick(e) {
+        // Nejdrive zavru vsechny pootevrene ...
+        var dropdowns = document.getElementsByClassName("dd-menu-content");
+        var i;
+        for (i = 0; i < dropdowns.length; i++) {
+            var openDropdown = dropdowns[i];
+            if (openDropdown.classList.contains('show')) {
+                openDropdown.classList.remove('show');
+            }
+        }
+        // ... pak ukazu jenom ten na ktery bylo kliknuto.
+        document.getElementById(e).classList.toggle("show");
+    }
+
+
+</script>
+
 </html>
 

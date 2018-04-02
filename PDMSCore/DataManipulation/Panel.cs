@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Web;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
@@ -22,7 +23,7 @@ namespace PDMSCore.DataManipulation
             this.Size = "x" + xSize;
 
             this.Content = new List<Field>();
-            menu = new PanelMenu();
+            menu = new PanelMenu(id);
         }
 
         //private bool AuthUser()
@@ -77,6 +78,13 @@ namespace PDMSCore.DataManipulation
         {
             this.Content.Add(newField);
         }
+
+        public void GenerateRandomPanelMenuItems(int count)
+        {
+            for (int i = 0; i < count; i++)
+                menu.items.Add(new PanelMenuItem(i.ToString(), "www" + i + ".cz"));
+        }
+
     }
 
     public class PanelMenuItem : IHtmlTag
@@ -111,9 +119,11 @@ namespace PDMSCore.DataManipulation
             </div>          */
 
         public List<PanelMenuItem> items { get; set; }
+        private string PanelMenuId { get; set; }
 
-        public PanelMenu()
+        public PanelMenu(int id)
         {
+            PanelMenuId = "PanelMenu" + id;
             items = new List<PanelMenuItem>();
         }
 
@@ -129,12 +139,12 @@ namespace PDMSCore.DataManipulation
 
             TagBuilder tbI = new TagBuilder("i");
             tbI.AddCssClass("fa fa-gear dd-menu-btn");
-            tbI.Attributes.Add("onclick", "onPanelMenuClick()");
+            tbI.Attributes.Add("onclick", "onPanelMenuClick('" + HttpUtility.JavaScriptStringEncode(PanelMenuId) + "')");
             tbI.Attributes.Add("aria-hidden", "true");
             tbI.RenderSelfClosingTag();
 
             TagBuilder tbDivContent = new TagBuilder("div");
-            tbDivContent.Attributes.Add("id", "myDropdown");
+            tbDivContent.Attributes.Add("id", PanelMenuId);
             tbDivContent.AddCssClass("dd-menu-content");
 
 

@@ -146,6 +146,7 @@ namespace PDMSCore.BusinessObjects
             //panel.Content = fields;
             fields = new List<Field>();
             fields.Add(LabelTextBoxField.GetRandom((id++).ToString()));
+            panel.GenerateRandomPanelMenuItems(5);
             panel.Content = fields;
             //ToShow.Add(panel);
 
@@ -155,12 +156,10 @@ namespace PDMSCore.BusinessObjects
             fields2.Add(LabelDataGridField.GetRandom("Grid"));
 
             panel2.Content = fields2;
-            panel2.menu = new PanelMenu();
-            panel2.menu.AddMenuItem(new PanelMenuItem("ahoj", "tralala"));
-            panel2.menu.AddMenuItem(new PanelMenuItem("cau", "buja"));
-            panel2.menu.AddMenuItem(new PanelMenuItem("hola", "kasa"));
+            panel2.GenerateRandomPanelMenuItems(2);
 
 
+            PanelList.Add(panel);
             PanelList.Add(panel2);
         }
 

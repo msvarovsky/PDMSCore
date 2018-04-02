@@ -8,6 +8,7 @@ namespace TestingConsoleApp
         static void Main(string[] args)
         {
             Menu m = new Menu();
+            m.GetRandomMenu();
 
             m.HtmlText();
 

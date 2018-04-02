@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Test</title>
+    <link rel="stylesheet" href="./css/Layout.css">
+    <link rel="stylesheet" href="./css/Controls.css">
+    <link rel="stylesheet" href="./css/ContentPanel.css">
+</head>
+
+<body>
+
+    <div class="TopFixedRow">
+        <div class="LogoSection">LogoSection</div>
+        <div class="Nada">Nada</div>
+        <div class="UserSection">UserSection</div>
+    </div>
+    <div class="LeftFixedColumn">LeftFixedColumn</div>
+
+    <div class="AllButFixed">
+        <div class="PageMenu">PageMenu</div>
+        <div class="PageContent">
+
+            <div class="Content">
+                <div class="Panel x1">
+                    <div class="Panel-Header">
+                        <div class="Panel-Header-Left">
+                            Panel 1
+                        </div>
+                        <div class="Panel-Header-Right">
+                            <div class="dd-menu">
+                                <i aria-hidden="true" class="dd-menu-btn" onclick="onPanelMenuClick('myDropdown1')"></i>
+                                <div class="dd-menu-content" id="myDropdown1">
+                                    <a href="tralala">ahoj</a>
+                                    <a href="buja">cau</a>
+                                    <a href="kasa">hola</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="Panel-Body">
+                        <form method="post">
+                            <input name="PanelId" hidden type="text" value="2 " />
+                            <div class="LabelControlDuo">
+                                <label class="BoldLabelField">8:labelText</label>
+                                <input class="ControlOfLabelControlDuo" name="8" placeholder="placeholder" title="tooltip" type="text"></input>
+                            </div>
+                            <input type="submit">
+                        </form>
+                    </div>
+                </div>
+                <div class="Panel x1">
+                        <div class="Panel-Header">
+                            <div class="Panel-Header-Left">
+                                Panel 2
+                            </div>
+                            <div class="Panel-Header-Right">
+                                <div class="dd-menu">
+                                    <i aria-hidden="true" class="dd-menu-btn" onclick="onPanelMenuClick('myDropdown2')"></i>
+                                    <div class="dd-menu-content" id="myDropdown2">
+                                        <a href="tralala">ahoj</a>
+                                        <a href="buja">cau</a>
+                                        <a href="kasa">hola</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="Panel-Body">
+                            <form method="post">
+                                <input name="PanelId" hidden type="text" value="2 " />
+                                <div class="LabelControlDuo">
+                                    <label class="BoldLabelField">8:labelText</label>
+                                    <input class="ControlOfLabelControlDuo" name="8" placeholder="placeholder" title="tooltip" type="text"></input>
+                                </div>
+                                <input type="submit">
+                            </form>
+                        </div>
+                    </div>
+            </div>
+
+        </div>
+    </div>
+
+
+</body>
+
+<script type="text/javascript">
+    // Close the dropdown if the user clicks outside of it
+    /*Z nejakeho duvodu to funguje pouze kdyz je to tady a ne v site.js.*/
+    document.onclick = function (event) {
+        if (!event.target.matches('.dd-menu-btn')) {
+
+            var dropdowns = document.getElementsByClassName("dd-menu-content");
+            var i;
+            for (i = 0; i < dropdowns.length; i++) {
+                var openDropdown = dropdowns[i];
+                if (openDropdown.classList.contains('show')) {
+                    openDropdown.classList.remove('show');
+                }
+            }
+        }
+    }
+
+    function MonkeyPatchAutocomplete() {
+        // Musi byt zde a ne v site.js.
+        // https://stackoverflow.com/questions/2435964/how-can-i-custom-format-the-autocomplete-plug-in-results
+        // Don't really need to save the old fn,
+        // but I could chain if I wanted to
+        var oldFn = $.ui.autocomplete.prototype._renderItem;
+        $.ui.autocomplete.prototype._renderItem = function (ul, item) {
+            var re = new RegExp("^" + this.term, "i");
+            var t = item.label.replace(re, "<span style='font-weight:bold;'>" + this.term + "</span>");
+            return $("<li></li>")
+                .data("item.autocomplete", item)
+                .append("<a>" + t + "</a>")
+                .appendTo(ul);
+        };
+    }
+    function Autocomplete() {
+        // Musi byt zde a ne v site.js.
+        $(".AutoComplete").autocomplete({
+            minLength: 1,
+            autoFocus: true,
+            source: function (request, response) {
+                $.ajax({
+                    url: "/Project/AjaxAutoComplete/",
+                    type: "POST",
+                    highlightPhrase: false,
+                    dataType: "json",
+                    data: { prefix: request.term, id: $(this.element).prop("id") },
+                    success: function (data) {
+                        response($.map(data, function (item) {
+                            // properties "item" musi zacinat malym pismenem !!!
+                            // A pokud se do "value" dam hodnotu (jako "item.id"),
+                            // tak se pri submitu posle na server pouze tato hodnota (id) a ne ten text v item.suggestion.
+                            return { label: item.suggestion/*, value: item.id */ };
+                        }))
+                    }
+                })
+            },
+            messages: {
+                noResults: "", results: ""
+            }
+        });
+    }
+
+    function onPanelMenuClick(e) {
+        var dropdowns = document.getElementsByClassName("dd-menu-content");
+            var i;
+            for (i = 0; i < dropdowns.length; i++) {
+                var openDropdown = dropdowns[i];
+                if (openDropdown.classList.contains('show')) {
+                    openDropdown.classList.remove('show');
+                }
+            }
+        document.getElementById(e).classList.toggle("show");
+    }
+
+    $(document).ready(function () {
+        MonkeyPatchAutocomplete();
+        Autocomplete();
+    })
+</script>
+
+
+</html>
