@@ -38,23 +38,11 @@ namespace PDMSCore.DataManipulation
             SubMenu.Add(md);
         }
 
-        private TagBuilder HtmlTextItems(TagBuilder ParentTag)
+        private void HtmlTextItems(TagBuilder tbParent)
         {
-            TagBuilder tb;
-            if (ParentTag != null)
-            {
-                tb = ParentTag;
-            }
-            else
-            {
-                tb = new TagBuilder("div");
-                tb.AddCssClass("MenuContent");
-            }
-
             for (int i = 0; i < SubMenu.Count; i++)
-                tb.InnerHtml.AppendHtml(SubMenu[i].HtmlText());
-
-            return tb;
+                tbParent.InnerHtml.AppendHtml(SubMenu[i].HtmlText());
+            //return tbParent;
         }
         public static string GetString(IHtmlContent content)
         {
@@ -72,14 +60,17 @@ namespace PDMSCore.DataManipulation
                 tb = new TagBuilder("aside");
                 tb.AddCssClass("Accordion");
 
-                TagBuilder tbMenuItems = HtmlTextItems(tb);
-                tb.InnerHtml.AppendHtml(tbMenuItems);
+                tb.InnerHtml.AppendHtml(MIHeading.HtmlText(Level));
+                //TagBuilder tbMenuItems = HtmlTextItems(tb);
+                HtmlTextItems(tb);
             }
             else
             {
-                TagBuilder tbMenuItems = HtmlTextItems(null);
+                tb = new TagBuilder("div");
+                tb.AddCssClass("MenuContent");
+
                 tb.InnerHtml.AppendHtml(MIHeading.HtmlText(Level));
-                tb.InnerHtml.AppendHtml(tbMenuItems);
+                HtmlTextItems(tb);
             }
             return tb;
         }
@@ -141,12 +132,6 @@ namespace PDMSCore.DataManipulation
 
     public class Menu
     {
-        /*
-            1   1.1     1.1.1
-                        1.1.2
-                1.2     1.2.1
-        */
-
         MenuItem root { get; set; }
 
         public Menu()
@@ -155,13 +140,10 @@ namespace PDMSCore.DataManipulation
             Test();
         }
 
-
         public TagBuilder HtmlText()
         {
             return root.HtmlText();
         }
-
-
 
         public void Test()
         {
@@ -173,11 +155,8 @@ namespace PDMSCore.DataManipulation
             root.GetLastSubMenu().AddMenuItem(new MenuItem());                  //1.2
             root.GetLastSubMenu().GetLastSubMenu().AddMenuItem(new MenuItem());     //1.2.1
 
-
             //string aaa = root.HtmlText();
-
         }
-
       
     }
 }
