@@ -1,0 +1,69 @@
+
+.LabelControlDuo
+{
+    padding: 5px 0px 5px 0px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+}
+
+.LabelField, .BoldLabelField {
+    color: black;
+    text-align: right;
+    font-size: 75%;
+    width: 300px;
+}
+.BoldLabelField {
+    font-weight: bold;
+}
+
+.TextAreaField {
+    width: 100%;
+    margin-left: 10px;
+}
+
+.GroupOfCheckBoxes, .GroupOfRadioButtons, .DropDownOptions {
+    width: 100%;
+    margin-left: 10px;
+}
+
+/*.CustomTextBox, .CustomDatePicker {*/
+.ControlOfLabelControlDuo {
+    width: 100%;
+    margin-left: 10px;
+    /*                    border:1px solid #d1c7ac;*/
+}
+
+.HeaderSrchCl {
+    padding-left: 0px;
+    padding-right: 0px;
+    margin-left: 0px;
+    margin-right: 0px;
+    width: 100%;
+    border-spacing: 0px;
+    text-align: center;
+}
+
+/*HeaderSearch input {
+    width: 100%;
+}*/
+
+.TableTextBoxData {
+    border: none;
+    /*background-color: red;*/
+    width: 100%;
+    height: 100%;
+    /*padding-left: 3px;*/
+    padding-top: 0px;
+    padding-bottom: 0px;
+}
+
+.TableTextBoxHeader {
+    width: 100%;
+    height: 100%;
+    padding-left: 0px;
+    padding-right: 0px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+} 

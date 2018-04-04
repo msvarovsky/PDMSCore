@@ -4,7 +4,7 @@
   margin: 0; padding: 0;
   
   min-width: 200px;
-  width: 80%;
+  width: 100%;
   font-family: Bookman Old Style; 
   /* margin: 2px auto; */
 }
@@ -83,7 +83,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-right: 10px;
+  margin-right: 15px;
 }
 
 .MIChevron {
