@@ -52,6 +52,42 @@
         });
     }
 
+
+
+    $('.MenuContent').click(function (e) {
+        alert(".MenuContent");
+        var text = $(e.target).text();
+        var href = e.target.getAttribute("href");
+
+        var MenuItem = $(e.target).prev().children(".MenuItemText");
+
+        var evObj = document.createEvent('Events');
+        evObj.initEvent(MenuItem, true, false);
+        el.dispatchEvent(evObj);
+
+        console.log('menucontent:', text);
+        console.log('href', href);
+    });
+
+    $("[class^=\'MenuItemL\']").click(function (e) {
+        alert("MenuItemL*");
+        var text = $(e.target).text();
+        var href = e.target.getAttribute("href");
+        alert(href);
+        console.log('text:', text);
+        console.log('href', href);
+
+        $.ajax({
+            url: "/Project/OpenMenuUpdate/",
+            type: "POST",
+            highlightPhrase: false,
+            dataType: "json",
+            data: { href: href },
+            success: function (data) { }
+        })
+    });
+
+
     $(document).ready(function () {
         MonkeyPatchAutocomplete();
         Autocomplete();
@@ -84,6 +120,9 @@
                 </form>
             </div>
         </div>
+
+
+
 
         @*<div>
             <form method="post">

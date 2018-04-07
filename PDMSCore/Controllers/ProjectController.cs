@@ -10,6 +10,7 @@ using System.IO;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using System.Linq;
+using System.Web;
 
 namespace PDMSCore.Controllers
 {
@@ -76,20 +77,33 @@ namespace PDMSCore.Controllers
         [HttpPost]
         public ActionResult ShowProject(IFormCollection fc)
         {
-            StringBuilder sb = new StringBuilder();
+            string OpenMenu = HttpContext.Session.GetString("OpenMenu");
 
-            foreach (var FieldId in fc.Keys)
+            if (OpenMenu != null)
             {
-                sb.AppendLine(FieldId + ": " + fc[FieldId].ToString());
+                
             }
+
 
             //p = Project.GetProject(PanelID);
             p = new Project();
 
             p.GetRandom();
+
+            p.SideMenu.Select(OpenMenu);
+
             return View(p);
         }
 
+      
+
+        [HttpPost]
+        public void OpenMenuUpdate(string href)
+        {
+            //HttpContext.Session.SetString("OpenMenu", href);
+
+            //return View("ViewBag");
+        }
 
         [HttpPost]
         public JsonResult AjaxAutoComplete(string prefix, string id)

@@ -62,6 +62,13 @@ namespace PDMSCore.DataManipulation
             Select(MenuPath, MenuPath.Count-1);
         }
 
+        public void UnselectAll()
+        {
+            this.MIHeading.Selected = false;
+            for (int i = 0; i < SubMenu.Count; i++)
+                SubMenu[i].UnselectAll();
+        }
+
         public MenuItem GetLastSubMenu()
         {
             return SubMenu[SubMenu.Count - 1];
@@ -211,6 +218,14 @@ namespace PDMSCore.DataManipulation
 
             //root.Select("#1.1.2", "1.1.2");
             root.Select("#1.1.2");
+        }
+
+        public void Select(string path)
+        {
+            if (path == null)
+                return;
+            root.UnselectAll();
+            root.Select(path);
         }
       
     }
