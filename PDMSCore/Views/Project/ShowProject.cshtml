@@ -6,9 +6,9 @@
 }
 
 @*<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
-<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>*@
+    <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>*@
 <script type="text/javascript">
-    
+
     function MonkeyPatchAutocomplete() {
         // Musi byt zde a ne v site.js.
         // https://stackoverflow.com/questions/2435964/how-can-i-custom-format-the-autocomplete-plug-in-results
@@ -54,10 +54,71 @@
 
 
 
+
     $(document).ready(function () {
         MonkeyPatchAutocomplete();
         Autocomplete();
+
+
+
+        window.async = {};
+        window.async.disabledClass = "disabled";
+        window.async.getFromController = function (url, name, model) {
+            var obj = $("#" + name);
+            ajaxCall(url, obj, model, "GET");
+        }
+
+        window.async.postToController = function (url, name) {
+            var obj = $("#" + name);
+            var form = obj.find("form");
+            form.submit(function (event) {
+                var model = $(this).serializeArray();
+                ajaxCall(url, obj, model, "POST");
+                event.preventDefault();
+            });
+        }
+
+        function ajaxCall(url, obj, model, verb) {
+            $.ajax({
+                cache: false,
+                type: verb,
+                url: url,
+                data: model,
+                beforeSend: function () {
+                    obj.addClass(window.async.disabledClass);
+                },
+                success: function (data) {
+                    obj.replaceWith(data);
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    //log this information or show it…
+                    obj.replaceWith(xhr.responseText);
+                },
+                complete: function () {
+                    obj.removeClass(window.async.disabledClass);
+                    updateURL(url, model, verb);
+                }
+
+            });
+
+        }
+
+        function updateURL(action, model, verb) {
+            if (history.pushState) {
+                var split = action.split("/");
+                split[split.length – 1] = split[split.length – 1].replace("Async", ”);
+                action = split.join("/");
+                if (model != null && verb != "POST")
+                    action = action + "?" + $.param(model);
+                var newurl = window.location.protocol + "//" + window.location.host;
+                newurl = newurl + action;
+                window.history.pushState({ path: newurl }, ”, newurl);
+            }
+
+        }
+        
     })
+
 </script>
 
 <div class="Content">
@@ -90,19 +151,46 @@
 
 
 
+
+
+
         @*<div>
-            <form method="post">
-                <input class="AutoComplete" type="text" id="id1" name="jmeno1" placeholder="ph1" label="MujLabel1" />
-                <input class="AutoComplete" type="text" id="id2" name="jmeno2" placeholder="ph2" label="MujLabel2" />
-                <input class="AutoComplete" type="text" id="id3" name="jmeno3" placeholder="ph3" label="MujLabel3" />
-                <input type="submit">
-            </form>
-        </div>*@
+                <form method="post">
+                    <input class="AutoComplete" type="text" id="id1" name="jmeno1" placeholder="ph1" label="MujLabel1" />
+                    <input class="AutoComplete" type="text" id="id2" name="jmeno2" placeholder="ph2" label="MujLabel2" />
+                    <input class="AutoComplete" type="text" id="id3" name="jmeno3" placeholder="ph3" label="MujLabel3" />
+                    <input type="submit">
+                </form>
+            </div>*@
     }
+
+
+    <div class="Panel x1">
+        <div class="Panel-Header">
+            <div class="Panel-Header-Left">GetRandom</div>
+            <div class="Panel-Header-Right">
+                <div class="dd-menu"><i aria-hidden="true" class="fa fa-gear dd-menu-btn" onclick="onPanelMenuClick('PanelMenu1')"></i><div class="dd-menu-content" id="PanelMenu3"><a href="www0.cz">0</a><a href="www1.cz">1</a><a href="www2.cz">2</a><a href="www3.cz">3</a><a href="www4.cz">4</a></div></div>
+            </div>
+        </div>
+        <div class="Panel-Body">
+            <div id="list" class="loader">
+                <a>test</a>
+                <hr />
+                @Model.AsyncPanelList()
+                @*@AsyncLoader.Render(“Async”, “AsyncEdit”, “list”, new { Id = Model })*@
+
+            </div>
+        </div>
+    </div>
+
+
+
 </div>
 
+
+
 @section SideMenu
-{
-    
+    {
+
     @Model.SideMenu.HtmlText()
 }

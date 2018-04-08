@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace PDMSCore.BusinessObjects
 {
@@ -163,6 +164,14 @@ namespace PDMSCore.BusinessObjects
             PanelList.Add(panel2);
         }
 
+
+        public TagBuilder AsyncPanelList()
+        {
+            AsyncPanel ap = new AsyncPanel();
+
+            return ap.HtmlText();
+
+        }
 
     }
 }

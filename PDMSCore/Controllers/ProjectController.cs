@@ -77,33 +77,48 @@ namespace PDMSCore.Controllers
         [HttpPost]
         public ActionResult ShowProject(IFormCollection fc)
         {
-            string OpenMenu = HttpContext.Session.GetString("OpenMenu");
-
-            if (OpenMenu != null)
-            {
-                
-            }
-
 
             //p = Project.GetProject(PanelID);
             p = new Project();
 
             p.GetRandom();
 
-            p.SideMenu.Select(OpenMenu);
+            p.SideMenu.Select(HttpContext.Session.GetString("OpenMenu"));
 
             return View(p);
         }
 
-      
-
         [HttpPost]
         public void OpenMenuUpdate(string href)
         {
-            //HttpContext.Session.SetString("OpenMenu", href);
-
-            //return View("ViewBag");
+            HttpContext.Session.SetString("OpenMenu", href);
         }
+
+
+
+        [HttpGet]
+        public ViewResult List()
+        {
+
+            return View();
+        }
+
+        [HttpGet]
+        public PartialViewResult AsyncShowProjects()
+        {
+
+            string users = null;
+            return PartialView(users);
+        }
+
+        public ActionResult AnyPanelAction(string ID)
+        {
+
+            //return PartialView(vm);
+            return null;
+        }
+
+
 
         [HttpPost]
         public JsonResult AjaxAutoComplete(string prefix, string id)

@@ -4,6 +4,8 @@
 /*  http://jsfiddle.net/yeyene/Bx5cu/29/  */
 $(document).ready(function () {
 
+    window.async.getFromController('/Async/AsyncList', 'list', null);
+    
 
     $('li ul').slideUp();
     $('.no-js li a.MainMenuLevel1').on("click", function () {
@@ -57,5 +59,4 @@ $(function () {
 
     $("#datepicker").datepicker($.datepicker.regional["fr"]);
 });
-
 

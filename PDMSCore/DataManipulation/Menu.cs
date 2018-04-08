@@ -65,6 +65,7 @@ namespace PDMSCore.DataManipulation
         public void UnselectAll()
         {
             this.MIHeading.Selected = false;
+            this.MIHeading.Expanded = false;
             for (int i = 0; i < SubMenu.Count; i++)
                 SubMenu[i].UnselectAll();
         }
