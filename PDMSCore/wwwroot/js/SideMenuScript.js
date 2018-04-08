@@ -10,20 +10,33 @@ var changeChevron = function() {
 
 // $(".accordion").click(function (e) {
 $("*").click(function (e) {
-
   var target;
   var tagClasses = $(e.target).attr('class');
-  var name;
   
   if (tagClasses.includes("MenuItemText") || tagClasses.includes("MIChevron"))
   {
     target = $(e.target).parent();
-    name = target["0"].nodeName.toUpperCase();
+    
+    if (tagClasses.includes("MenuItemText"))
+    {
+      var href = e.target.getAttribute("href");
+      OpenMenuUpdate(href);
+    }
+    if (tagClasses.includes("MIChevron"))
+    {
+      var children = $(target).children(".MenuItemText");
+      console.log('*.MIChevron: Redirecting to MenuItemText...');
+      children[0].click();
+      return;
+    }
   }
   else if (tagClasses.includes("MenuItemL"))
   {
     target = e.target;
-    name = target.nodeName.toUpperCase();
+    var children = $(target).children(".MenuItemText");
+    console.log('*.MenuItemL: Redirecting to MenuItemText...');
+    children[0].click();
+    return;
   }
   else
     return;
@@ -55,30 +68,31 @@ $("*").click(function (e) {
   //  Only 1 menu item can be selected.
   $(".MISelected").removeClass("MISelected");
   $(target).addClass("MISelected");
-
-
-  // document.getElementById('debug').innerHTML = new Date().getTime();
-
   $(target).find(".MIChevron").toggleClass('MIChevronExpanded');
 
-
-
   ////////////////////////////////////////////////////////////////////
 
-  ////////////////////////////////////////////////////////////////////
-
-  // if (!$(target).hasClass("MIEmpty"))
-  //   $(target).toggleClass("MIExpanded");
-
-  // $(target).siblings().removeClass("MISelected");
-  // $(target).siblings().children().removeClass("MISelected");
-
-  // $(target).siblings().removeClass("MIExpanded");
-  // $(target).siblings().children().removeClass("MIExpanded");
-
-  // $(target).addClass("MISelected");
-
-  //$(allAtDepth).slideUp("fast");
-  //subItem.slideToggle("fast");
+  /*if (!$(target).hasClass("MIEmpty"))
+    $(target).toggleClass("MIExpanded");
+  $(target).siblings().removeClass("MISelected");
+  $(target).siblings().children().removeClass("MISelected");
+  $(target).siblings().removeClass("MIExpanded");
+  $(target).siblings().children().removeClass("MIExpanded");
+  $(target).addClass("MISelected");
+  $(allAtDepth).slideUp("fast");
+  subItem.slideToggle("fast");*/
 
 });
+
+function OpenMenuUpdate(href) {
+  console.log('OpenMenuUpdate.href:', href);
+
+  $.ajax({
+    url: "/Project/OpenMenuUpdate/",
+    type: "POST",
+    highlightPhrase: false,
+    dataType: "json",
+    data: { href: href },
+    success: function (data) { }
+  })
+}
