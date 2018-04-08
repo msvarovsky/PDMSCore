@@ -52,7 +52,11 @@
         });
     }
 
-
+    function getFromController(url, name, model) {
+        alert("separe async");
+        var obj = $(‘#’ + name);
+        ajaxCall(url, obj, model, ‘GET’);
+    }
 
 
     $(document).ready(function () {
@@ -60,10 +64,14 @@
         Autocomplete();
 
 
+        alert("pred window.async");
 
         window.async = {};
         window.async.disabledClass = "disabled";
         window.async.getFromController = function (url, name, model) {
+
+            alert("async");
+
             var obj = $("#" + name);
             ajaxCall(url, obj, model, "GET");
         }
@@ -149,11 +157,6 @@
         </div>
 
 
-
-
-
-
-
         @*<div>
                 <form method="post">
                     <input class="AutoComplete" type="text" id="id1" name="jmeno1" placeholder="ph1" label="MujLabel1" />
@@ -176,11 +179,40 @@
             <div id="list" class="loader">
                 <a>test</a>
                 <hr />
-                @Model.AsyncPanelList()
+
+                <div id=”list” class=”loader”>
+
+                    @*Funguje*@
+@*                    @Html.Partial("AsyncShowProjects");*@
+
+                    <script>
+                        alert("out getfromcontroller");
+
+                        getFromController(null, null, null);
+
+                        var url = "~/Controllers/ProjectController";
+                        var name = "AsyncShowProjects";
+                        var model = null;
+
+                        var obj = $("#" + name);
+                        ajaxCall(url, obj, model, "GET");
+
+                        $(document).ready(function () {
+                            
+                            //window.async.getFromController(‘/Async/AsyncList’, ‘list’, null);
+                            //window.async.getFromController('/AsyncShowProjects', 'AsyncShowProjects', null);
+
+                        });
+                    </script>
+
+                </div>
+
+
+                @*@Model.AsyncPanelList()*@
                 @*@AsyncLoader.Render(“Async”, “AsyncEdit”, “list”, new { Id = Model })*@
 
             </div>
-        </div>
+            </div>
     </div>
 
 
