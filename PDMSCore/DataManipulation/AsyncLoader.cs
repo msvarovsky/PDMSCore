@@ -5,6 +5,8 @@ namespace PDMSCore.DataManipulation
 {
     public class AsyncLoader
     {
+        //https://srramalho.wordpress.com/2017/08/27/asp-net-mvc-loading-partial-views-asynchronously/
+
         public static HtmlString Render(string Controler, string Action, string PlaceHolder)
         {
             return AsyncLoader.Render(Controler, Action, PlaceHolder, null);
