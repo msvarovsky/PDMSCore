@@ -5,8 +5,12 @@
     ViewBag.Title = "Index";
 }
 
+
+
 @*<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
     <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>*@
+
+<script src="~/js/jquery-1.10.2.js"></script>
 <script type="text/javascript">
 
     function MonkeyPatchAutocomplete() {
@@ -63,29 +67,6 @@
         MonkeyPatchAutocomplete();
         Autocomplete();
 
-
-        alert("pred window.async");
-
-        window.async = {};
-        window.async.disabledClass = "disabled";
-        window.async.getFromController = function (url, name, model) {
-
-            alert("async");
-
-            var obj = $("#" + name);
-            ajaxCall(url, obj, model, "GET");
-        }
-
-        window.async.postToController = function (url, name) {
-            var obj = $("#" + name);
-            var form = obj.find("form");
-            form.submit(function (event) {
-                var model = $(this).serializeArray();
-                ajaxCall(url, obj, model, "POST");
-                event.preventDefault();
-            });
-        }
-
         function ajaxCall(url, obj, model, verb) {
             $.ajax({
                 cache: false,
@@ -124,7 +105,11 @@
             }
 
         }
-        
+
+        @*$("#PartialViewWraper").change(function () {
+            var categoryId =  $("#ddlCategory").val();
+               $("#dvCategoryResults").load('@(Url.Action("GetCategoryProducts","Home",null, Request.Url.Scheme))?categoryId=' + categoryId);
+        });*@
     })
 
 </script>
@@ -172,7 +157,7 @@
         <div class="Panel-Header">
             <div class="Panel-Header-Left">GetRandom</div>
             <div class="Panel-Header-Right">
-                <div class="dd-menu"><i aria-hidden="true" class="fa fa-gear dd-menu-btn" onclick="onPanelMenuClick('PanelMenu1')"></i><div class="dd-menu-content" id="PanelMenu3"><a href="www0.cz">0</a><a href="www1.cz">1</a><a href="www2.cz">2</a><a href="www3.cz">3</a><a href="www4.cz">4</a></div></div>
+                <div class="dd-menu"><i aria-hidden="true" class="fa fa-gear dd-menu-btn" onclick="onPanelMenuClick('PanelMenu3')"></i><div class="dd-menu-content" id="PanelMenu3"><a href="www0.cz">0</a><a href="www1.cz">1</a><a href="www2.cz">2</a><a href="www3.cz">3</a><a href="www4.cz">4</a></div></div>
             </div>
         </div>
         <div class="Panel-Body">
@@ -180,13 +165,39 @@
                 <a>test</a>
                 <hr />
 
+                zacatek
+                <div id="#PartialViewWrapperHovno">
+                    #PartialViewWrapperHovno
+                </div>
+                
+                <br/>
+
+                <div id="#PartialViewWrapper3">
+
+                    @(Url.Action("Internet", "Project"))
+
+                    @*@Html.Partial("AsyncShowProjects")*@
+                    <script type="text/javascript">
+
+                        
+                        jQuery("#PartialViewWrapperHovno").load("http://examplepage.com/forum/showthread.php?tid=NN#pid_NN");
+
+                        alert("aaaa");
+
+                        //$("PartialViewWrapperHovno").load('/Project/Internet');
+
+                        //alert("#PartialViewWrapper3");
+                    </script>
+
+                </div>
+                konec
+
                 <div id=”list” class=”loader”>
 
                     @*Funguje*@
-@*                    @Html.Partial("AsyncShowProjects");*@
+                    @*                    @Html.Partial("AsyncShowProjects");*@
 
                     <script>
-                        alert("out getfromcontroller");
 
                         getFromController(null, null, null);
 
@@ -198,7 +209,7 @@
                         ajaxCall(url, obj, model, "GET");
 
                         $(document).ready(function () {
-                            
+
                             //window.async.getFromController(‘/Async/AsyncList’, ‘list’, null);
                             //window.async.getFromController('/AsyncShowProjects', 'AsyncShowProjects', null);
 
@@ -212,7 +223,7 @@
                 @*@AsyncLoader.Render(“Async”, “AsyncEdit”, “list”, new { Id = Model })*@
 
             </div>
-            </div>
+        </div>
     </div>
 
 

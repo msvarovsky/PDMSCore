@@ -11,6 +11,7 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using System.Linq;
 using System.Web;
+using System.Threading.Tasks;
 
 namespace PDMSCore.Controllers
 {
@@ -101,6 +102,13 @@ namespace PDMSCore.Controllers
         {
 
             return View();
+        }
+
+        [HttpGet]
+        //public async Task<ActionResult> Internet(string categoryId)
+        public PartialViewResult Internet()
+        {
+            return PartialView("AsyncShowProjects", null);
         }
 
         [HttpGet]
