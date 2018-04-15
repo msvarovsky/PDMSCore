@@ -56,11 +56,11 @@
         });
     }
 
-    function getFromController(url, name, model) {
-        alert("separe async");
-        var obj = $(‘#’ + name);
-        ajaxCall(url, obj, model, ‘GET’);
-    }
+    //function getFromController(url, name, model) {
+    //    alert("separe async");
+    //    var obj = $(‘#’ + name);
+    //    ajaxCall(url, obj, model, ‘GET’);
+    //}
 
 
     $(document).ready(function () {
@@ -92,19 +92,19 @@
 
         }
 
-        function updateURL(action, model, verb) {
-            if (history.pushState) {
-                var split = action.split("/");
-                split[split.length – 1] = split[split.length – 1].replace("Async", ”);
-                action = split.join("/");
-                if (model != null && verb != "POST")
-                    action = action + "?" + $.param(model);
-                var newurl = window.location.protocol + "//" + window.location.host;
-                newurl = newurl + action;
-                window.history.pushState({ path: newurl }, ”, newurl);
-            }
+        //function updateURL(action, model, verb) {
+        //    if (history.pushState) {
+        //        var split = action.split("/");
+        //        split[split.length – 1] = split[split.length – 1].replace("Async", ”);
+        //        action = split.join("/");
+        //        if (model != null && verb != "POST")
+        //            action = action + "?" + $.param(model);
+        //        var newurl = window.location.protocol + "//" + window.location.host;
+        //        newurl = newurl + action;
+        //        window.history.pushState({ path: newurl }, ”, newurl);
+        //    }
 
-        }
+        //}
 
         @*$("#PartialViewWraper").change(function () {
             var categoryId =  $("#ddlCategory").val();
@@ -180,9 +180,11 @@
                     <script type="text/javascript">
 
                         
-                        jQuery("#PartialViewWrapperHovno").load("http://examplepage.com/forum/showthread.php?tid=NN#pid_NN");
+                        //jQuery("#PartialViewWrapperHovno").load("http://examplepage.com/forum/showthread.php?tid=NN#pid_NN");
 
-                        alert("aaaa");
+                        $("#PartialViewWrapperHovno").load('/Project/ShowProject');
+
+                        alert("PartialViewWrapper3");
 
                         //$("PartialViewWrapperHovno").load('/Project/Internet');
 
@@ -197,7 +199,7 @@
                     @*Funguje*@
                     @*                    @Html.Partial("AsyncShowProjects");*@
 
-                    <script>
+                    @*<script>
 
                         getFromController(null, null, null);
 
@@ -209,12 +211,10 @@
                         ajaxCall(url, obj, model, "GET");
 
                         $(document).ready(function () {
-
                             //window.async.getFromController(‘/Async/AsyncList’, ‘list’, null);
                             //window.async.getFromController('/AsyncShowProjects', 'AsyncShowProjects', null);
-
                         });
-                    </script>
+                    </script>*@
 
                 </div>
 

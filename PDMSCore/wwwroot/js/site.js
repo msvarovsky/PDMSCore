@@ -4,7 +4,7 @@
 /*  http://jsfiddle.net/yeyene/Bx5cu/29/  */
 $(document).ready(function () {
 
-    window.async.getFromController('/Async/AsyncList', 'list', null);
+    //window.async.getFromController('/Async/AsyncList', 'list', null);
     
 
     $('li ul').slideUp();
@@ -45,18 +45,18 @@ function onPanelMenuClick() {
 window.onclick = function () { alert('test'); }
 
 
-$(function () {
-    $.datepicker.setDefaults({
-        //              showOn: "both",
-        firstDay: 1,
-        buttonImageOnly: true,
-        numberOfMonths: 2,
-        showWeek: true,
-        showAnim: "slideDown",
-        showButtonPanel: true
-    });
+//$(function () {
+//    $.datepicker.setDefaults({
+//        //              showOn: "both",
+//        firstDay: 1,
+//        buttonImageOnly: true,
+//        numberOfMonths: 2,
+//        showWeek: true,
+//        showAnim: "slideDown",
+//        showButtonPanel: true
+//    });
 
 
-    $("#datepicker").datepicker($.datepicker.regional["fr"]);
-});
+//    $("#datepicker").datepicker($.datepicker.regional["fr"]);
+//});
 

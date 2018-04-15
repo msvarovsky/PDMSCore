@@ -5,30 +5,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - PDMSCore</title>
 
-    <environment include="Development">
-        @*<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />*@
-
-
-        @*<link href="~/css/font-awesome.css" rel="stylesheet" />*@
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-
-        <script src="~/js/site.js"></script>
+    <environment>
         <script src="~/js/jquery-1.10.2.js"></script>
         <script src="~/js/jquery-3.3.1.min.js"></script>
+        <script src="~/js/site.js"></script>
         <script src="~/js/Customs.js"></script>
         <script src="~/js/colResizable-1.5.min.js"></script>
         <script src="~/js/SideMenuScript.js"></script>
-        @*<link rel="stylesheet" href="~/css/main.css" />*@
+
         <link href="~/css/SideMenuStyles.css" rel="stylesheet" />
         <link href="~/css/Layout.css" rel="stylesheet" />
         <link href="~/css/ContentPanel.css" rel="stylesheet" />
         <link href="~/css/Controls.css" rel="stylesheet" />
 
-
         @*kvuli kalendari*@
         <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     </environment>
-    <environment exclude="Development">
+
+    @*<environment include="Development">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+        <script src="~/js/jquery-1.10.2.js"></script>
+        <script src="~/js/jquery-3.3.1.min.js"></script>
+        <script src="~/js/site.js"></script>
+        <script src="~/js/Customs.js"></script>
+        <script src="~/js/colResizable-1.5.min.js"></script>
+        <script src="~/js/SideMenuScript.js"></script>
+        
+        <link href="~/css/SideMenuStyles.css" rel="stylesheet" />
+        <link href="~/css/Layout.css" rel="stylesheet" />
+        <link href="~/css/ContentPanel.css" rel="stylesheet" />
+        <link href="~/css/Controls.css" rel="stylesheet" />
+
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    </environment>*@
+    
+    @*<environment exclude="Development">
         <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/css/bootstrap.min.css"
               asp-fallback-href="~/lib/bootstrap/dist/css/bootstrap.min.css"
               asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
@@ -36,13 +48,12 @@
 
         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
         <script src="~/js/SideMenuScript.js"></script>
-        @*<link rel="stylesheet" href="~/css/main.css" />*@
         <link href="~/css/SideMenuStyles.css" rel="stylesheet" />
         <link href="~/css/Layout.css" rel="stylesheet" />
         <link href="~/css/ContentPanel.css" rel="stylesheet" />
         <link href="~/css/Controls.css" rel="stylesheet" />
+    </environment>*@
 
-    </environment>
 </head>
 <body>
     @*<link href="~/css/main.css" rel="stylesheet" />
