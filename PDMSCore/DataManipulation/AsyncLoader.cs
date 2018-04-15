@@ -3,10 +3,12 @@ using Microsoft.AspNetCore.Html;
 
 namespace PDMSCore.DataManipulation
 {
+    /*
     public class AsyncLoader
     {
         //https://srramalho.wordpress.com/2017/08/27/asp-net-mvc-loading-partial-views-asynchronously/
 
+            
         public static HtmlString Render(string Controler, string Action, string PlaceHolder)
         {
             return AsyncLoader.Render(Controler, Action, PlaceHolder, null);
@@ -39,6 +41,7 @@ namespace PDMSCore.DataManipulation
             var html = $@” window.async.postToController(‘/{ Controler}/{ Action}‘, ‘{ PlaceHolder}‘); “;
             return HtmlString.Create(html);
         }
+
     }
 
     private JsonSerializerSettings CreateSerializerSettings()
@@ -78,4 +81,6 @@ namespace PDMSCore.DataManipulation
         }
         return json;
     }
+
+    */
 }
