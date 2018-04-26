@@ -11,23 +11,9 @@
     <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>*@
 
 <script src="~/js/jquery-1.10.2.js"></script>
+
 <script type="text/javascript">
 
-    function MonkeyPatchAutocomplete() {
-        // Musi byt zde a ne v site.js.
-        // https://stackoverflow.com/questions/2435964/how-can-i-custom-format-the-autocomplete-plug-in-results
-        // Don't really need to save the old fn,
-        // but I could chain if I wanted to
-        var oldFn = $.ui.autocomplete.prototype._renderItem;
-        $.ui.autocomplete.prototype._renderItem = function (ul, item) {
-            var re = new RegExp("^" + this.term, "i");
-            var t = item.label.replace(re, "<span style='font-weight:bold;'>" + this.term + "</span>");
-            return $("<li></li>")
-                .data("item.autocomplete", item)
-                .append("<a>" + t + "</a>")
-                .appendTo(ul);
-        };
-    }
     function Autocomplete() {
         // Musi byt zde a ne v site.js.
         $(".AutoComplete").autocomplete({
@@ -56,17 +42,31 @@
         });
     }
 
-    function getFromController(url, name, model) {
-        alert("separe async");
-        var obj = $(‘#’ + name);
-        ajaxCall(url, obj, model, ‘GET’);
+    function MonkeyPatchAutocomplete() {
+        // Musi byt zde a ne v site.js.
+        // https://stackoverflow.com/questions/2435964/how-can-i-custom-format-the-autocomplete-plug-in-results
+        // Don't really need to save the old fn, but I could chain if I wanted to
+        //var oldFn = $.ui.autocomplete.prototype._renderItem;
+
+        $.ui.autocomplete.prototype._renderItem = function (ul, item) {
+            var re = new RegExp("^" + this.term, "i");
+            var t = item.label.replace(re, "<span style='font-weight:bold;'>" + this.term + "</span>");
+            return $("<li></li>")
+                .data("item.autocomplete", item)
+                .append("<a>" + t + "</a>")
+                .appendTo(ul);
+        };
     }
 
 
+    //function getFromController(url, name, model) {
+    //    alert("separe async");
+    //    var obj = $(‘#’ + name);
+    //    ajaxCall(url, obj, model, ‘GET’);
+    //}
     $(document).ready(function () {
-        MonkeyPatchAutocomplete();
-        Autocomplete();
-
+        //MonkeyPatchAutocomplete();
+        //Autocomplete();
         function ajaxCall(url, obj, model, verb) {
             $.ajax({
                 cache: false,
@@ -92,27 +92,37 @@
 
         }
 
-        function updateURL(action, model, verb) {
-            if (history.pushState) {
-                var split = action.split("/");
-                split[split.length – 1] = split[split.length – 1].replace("Async", ”);
-                action = split.join("/");
-                if (model != null && verb != "POST")
-                    action = action + "?" + $.param(model);
-                var newurl = window.location.protocol + "//" + window.location.host;
-                newurl = newurl + action;
-                window.history.pushState({ path: newurl }, ”, newurl);
-            }
+        //function updateURL(action, model, verb) {
+        //    if (history.pushState) {
+        //        var split = action.split("/");
+        //        split[split.length – 1] = split[split.length – 1].replace("Async", ”);
+        //        action = split.join("/");
+        //        if (model != null && verb != "POST")
+        //            action = action + "?" + $.param(model);
+        //        var newurl = window.location.protocol + "//" + window.location.host;
+        //        newurl = newurl + action;
+        //        window.history.pushState({ path: newurl }, ”, newurl);
+        //    }
 
-        }
+        //}
+
 
         @*$("#PartialViewWraper").change(function () {
             var categoryId =  $("#ddlCategory").val();
                $("#dvCategoryResults").load('@(Url.Action("GetCategoryProducts","Home",null, Request.Url.Scheme))?categoryId=' + categoryId);
         });*@
+
+
+
+
+
+        
+
+
     })
 
 </script>
+
 
 <div class="Content">
     @for (int i = 0; i < Model.PanelList.Count; i++)
@@ -120,6 +130,7 @@
         <div class="Panel @Model.PanelList[i].Size">
             <div class="Panel-Header">
 
+                
                 <div class="Panel-Header-Left">
                     @Model.PanelList[i].Label
                 </div>
@@ -169,25 +180,17 @@
                 <div id="#PartialViewWrapperHovno">
                     #PartialViewWrapperHovno
                 </div>
+
                 
-                <br/>
+
+                <br />
 
                 <div id="#PartialViewWrapper3">
 
                     @(Url.Action("Internet", "Project"))
 
                     @*@Html.Partial("AsyncShowProjects")*@
-                    <script type="text/javascript">
 
-                        
-                        jQuery("#PartialViewWrapperHovno").load("http://examplepage.com/forum/showthread.php?tid=NN#pid_NN");
-
-                        alert("aaaa");
-
-                        //$("PartialViewWrapperHovno").load('/Project/Internet');
-
-                        //alert("#PartialViewWrapper3");
-                    </script>
 
                 </div>
                 konec
@@ -199,14 +202,14 @@
 
                     <script>
 
-                        getFromController(null, null, null);
+                        //getFromController(null, null, null);
 
                         var url = "~/Controllers/ProjectController";
                         var name = "AsyncShowProjects";
                         var model = null;
 
                         var obj = $("#" + name);
-                        ajaxCall(url, obj, model, "GET");
+                        //ajaxCall(url, obj, model, "GET");
 
                         $(document).ready(function () {
 

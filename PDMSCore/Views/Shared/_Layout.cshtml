@@ -10,14 +10,19 @@
 
 
         @*<link href="~/css/font-awesome.css" rel="stylesheet" />*@
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        @*<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">*@
 
-        <script src="~/js/site.js"></script>
-        <script src="~/js/jquery-1.10.2.js"></script>
-        <script src="~/js/jquery-3.3.1.min.js"></script>
-        <script src="~/js/Customs.js"></script>
-        <script src="~/js/colResizable-1.5.min.js"></script>
-        <script src="~/js/SideMenuScript.js"></script>
+        @*<script src="~/js/jquery-1.10.2.js"></script>*@
+
+        <script src="~/js/jquery-3.3.1.js" defer></script>
+
+        @*<script src="~/js/colResizable-1.5.min.js"></script>*@
+        @*<script src="~/js/colResizable-1.6.js"></script>
+        <script src="~/js/Customs.js"></script>*@
+
+        <script src="~/js/SideMenuScript.js" defer></script>
+        <script src="~/js/site.js" defer></script>
+
         @*<link rel="stylesheet" href="~/css/main.css" />*@
         <link href="~/css/SideMenuStyles.css" rel="stylesheet" />
         <link href="~/css/Layout.css" rel="stylesheet" />
@@ -68,9 +73,13 @@
     
 
 </body>
+
 <script type="text/javascript">
     // Close the dropdown if the user clicks outside of it
     /*Z nejakeho duvodu to funguje pouze kdyz je to tady a ne v site.js.*/
+
+
+
     document.onclick = function (event) {
         if (!event.target.matches('.dd-menu-btn')) {
 
@@ -99,6 +108,32 @@
         document.getElementById(e).classList.toggle("show");
     }
 
+    window.onload = function () {
+        if (window.jQuery) {
+            // jQuery is loaded  
+            alert("Yeah!");
+        } else {
+            // jQuery is not loaded
+            alert("Doesn't Work");
+        }
+
+        $('#PartialViewWrapperHovno').addClass("onload");
+    }
+
+    $(document).ready(function () {
+        //jQuery("#PartialViewWrapperHovno").load("http://examplepage.com/forum/showthread.php?tid=NN#pid_NN");
+
+
+
+        
+        $("#PartialViewWrapperHovno").css("border", "3px solid red");
+
+        //$("#PartialViewWrapperHovno").addClass("novatrida");
+        alert("novatrida");
+
+        //$("PartialViewWrapperHovno").load('~/Project/Internet');
+        //$("PartialViewWrapperHovno").load('/Project/Internet');
+    })
 
 </script>
 

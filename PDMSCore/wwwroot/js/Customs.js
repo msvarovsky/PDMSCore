@@ -1,9 +1,10 @@
 ﻿
 $(function () {
-    $("table").colResizable({
+    $("#GridTable").colResizable({
         liveDrag: true,
         postbackSafe: true,
-        partialRefresh: true
+        partialRefresh: true,
+        resizeMode: 'fit'
         // headerOnly: true
     });
 });
