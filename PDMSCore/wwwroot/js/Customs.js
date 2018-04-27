@@ -1,6 +1,6 @@
 ﻿
 $(function () {
-    $("#GridTable").colResizable({
+    $(".GridTable").colResizable({
         liveDrag: true,
         postbackSafe: true,
         partialRefresh: true,

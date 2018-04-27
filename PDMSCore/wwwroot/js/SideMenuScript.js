@@ -4,83 +4,81 @@ $(document).ready(function () {
 });
 
 
-var changeChevron = function() {
-  $('.MIChevron.down').toggleClass('up'); }
+var changeChevron = function () {
+    $('.MIChevron.down').toggleClass('up');
+}
 
 
 // $(".accordion").click(function (e) {
 $("*").click(function (e) {
-  var target;
-  var tagClasses = $(e.target).attr('class');
-  
-  if (tagClasses.includes("MenuItemText") || tagClasses.includes("MIChevron"))
-  {
-    target = $(e.target).parent();
-    
-    if (tagClasses.includes("MenuItemText"))
-    {
-      var href = e.target.getAttribute("href");
-      OpenMenuUpdate(href);
+    var target;
+    var tagClasses = $(e.target).attr('class');
+
+    if (typeof tagClasses == 'undefined')
+        return;
+
+    if ((tagClasses.indexOf("MenuItemText") != -1) || (tagClasses.indexOf("MIChevron") != -1)) {
+        target = $(e.target).parent();
+
+        if (tagClasses.indexOf("MenuItemText") != -1) {
+            var href = e.target.getAttribute("href");
+            OpenMenuUpdate(href);
+        }
+        if (tagClasses.indexOf("MIChevron") != -1) {
+            var children = $(target).children(".MenuItemText");
+            console.log('*.MIChevron: Redirecting to MenuItemText...');
+            children[0].click();
+            return;
+        }
     }
-    if (tagClasses.includes("MIChevron"))
-    {
-      var children = $(target).children(".MenuItemText");
-      console.log('*.MIChevron: Redirecting to MenuItemText...');
-      children[0].click();
-      return;
+    else if (tagClasses.indexOf("MenuItemL") != -1) {
+        target = e.target;
+        var children = $(target).children(".MenuItemText");
+        console.log('*.MenuItemL: Redirecting to MenuItemText...');
+        children[0].click();
+        return;
     }
-  }
-  else if (tagClasses.includes("MenuItemL"))
-  {
-    target = e.target;
-    var children = $(target).children(".MenuItemText");
-    console.log('*.MenuItemL: Redirecting to MenuItemText...');
-    children[0].click();
-    return;
-  }
-  else
-    return;
-  
-
-  var SlideUpSpeed = 50;
-  var SlideDownSpeed = 200;
-
-  if (!$(target).hasClass("MIExpanded")) 
-  { //Sbalene
-    $(target).siblings("[class^='MenuItemL']").removeClass("MIExpanded");
-    $(target).siblings("[class^='MenuItemL']").next().slideUp(SlideUpSpeed);
-
-    // Prehodi Chevron rozbaleneho menu zpet na sbaleny symbol.
-    $(target).siblings("[class^='MenuItemL']").find(".MIChevron").removeClass("MIChevronExpanded");
+    else
+        return;
 
 
-    if (!$(target).hasClass("MIEmpty")) {
-      $(target).addClass("MIExpanded");
-      $(target).next().slideDown(SlideDownSpeed);
+    var SlideUpSpeed = 50;
+    var SlideDownSpeed = 200;
+
+    if (!$(target).hasClass("MIExpanded")) { //Sbalene
+        $(target).siblings("[class^='MenuItemL']").removeClass("MIExpanded");
+        $(target).siblings("[class^='MenuItemL']").next().slideUp(SlideUpSpeed);
+
+        // Prehodi Chevron rozbaleneho menu zpet na sbaleny symbol.
+        $(target).siblings("[class^='MenuItemL']").find(".MIChevron").removeClass("MIChevronExpanded");
+
+
+        if (!$(target).hasClass("MIEmpty")) {
+            $(target).addClass("MIExpanded");
+            $(target).next().slideDown(SlideDownSpeed);
+        }
     }
-  }
-  else 
-  { // ROZbalene
-    $(target).removeClass("MIExpanded");
-    $(target).next().slideUp(SlideUpSpeed);
-  }
+    else { // ROZbalene
+        $(target).removeClass("MIExpanded");
+        $(target).next().slideUp(SlideUpSpeed);
+    }
 
-  //  Only 1 menu item can be selected.
-  $(".MISelected").removeClass("MISelected");
-  $(target).addClass("MISelected");
-  $(target).find(".MIChevron").toggleClass('MIChevronExpanded');
+    //  Only 1 menu item can be selected.
+    $(".MISelected").removeClass("MISelected");
+    $(target).addClass("MISelected");
+    $(target).find(".MIChevron").toggleClass('MIChevronExpanded');
 
-  ////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////
 
-  /*if (!$(target).hasClass("MIEmpty"))
-    $(target).toggleClass("MIExpanded");
-  $(target).siblings().removeClass("MISelected");
-  $(target).siblings().children().removeClass("MISelected");
-  $(target).siblings().removeClass("MIExpanded");
-  $(target).siblings().children().removeClass("MIExpanded");
-  $(target).addClass("MISelected");
-  $(allAtDepth).slideUp("fast");
-  subItem.slideToggle("fast");*/
+    /*if (!$(target).hasClass("MIEmpty"))
+      $(target).toggleClass("MIExpanded");
+    $(target).siblings().removeClass("MISelected");
+    $(target).siblings().children().removeClass("MISelected");
+    $(target).siblings().removeClass("MIExpanded");
+    $(target).siblings().children().removeClass("MIExpanded");
+    $(target).addClass("MISelected");
+    $(allAtDepth).slideUp("fast");
+    subItem.slideToggle("fast");*/
 
 });
 

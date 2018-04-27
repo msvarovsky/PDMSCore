@@ -6,7 +6,7 @@ $(document).ready(function () {
 
     //window.async.getFromController('/Async/AsyncList', 'list', null);
 
-    $("#PartialViewWrapperHovno").addClass("fjgfdkhjgdf");
+    //$("#PartialViewWrapperHovno").addClass("fjgfdkhjgdf");
 
     $('li ul').slideUp();
     $('.no-js li a.MainMenuLevel1').on("click", function () {
