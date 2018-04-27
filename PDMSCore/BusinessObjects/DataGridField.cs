@@ -45,6 +45,7 @@ namespace PDMSCore.BusinessObjects
         public override TagBuilder HtmlText()
         {
             TagBuilder tb = new TagBuilder("table");
+            tb.Attributes.Add("id", "GridTable");
             tb.AddCssClass("GridTable");
             tb.InnerHtml.AppendHtml(HeaderRow.HtmlText());
 

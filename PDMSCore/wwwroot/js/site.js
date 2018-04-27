@@ -5,7 +5,8 @@
 $(document).ready(function () {
 
     //window.async.getFromController('/Async/AsyncList', 'list', null);
-    
+
+    $("#PartialViewWrapperHovno").addClass("fjgfdkhjgdf");
 
     $('li ul').slideUp();
     $('.no-js li a.MainMenuLevel1').on("click", function () {
@@ -42,21 +43,22 @@ $(document).ready(function () {
 function onPanelMenuClick() {
     document.getElementById("myDropdown").classList.toggle("show");
 }
-window.onclick = function () { alert('test'); }
+
+//window.onclick = function () { alert('test'); }
 
 
-//$(function () {
-//    $.datepicker.setDefaults({
-//        //              showOn: "both",
-//        firstDay: 1,
-//        buttonImageOnly: true,
-//        numberOfMonths: 2,
-//        showWeek: true,
-//        showAnim: "slideDown",
-//        showButtonPanel: true
-//    });
+$(function () {
+    //$.datepicker.setDefaults({
+    //    //              showOn: "both",
+    //    firstDay: 1,
+    //    buttonImageOnly: true,
+    //    numberOfMonths: 2,
+    //    showWeek: true,
+    //    showAnim: "slideDown",
+    //    showButtonPanel: true
+    //});
 
 
-//    $("#datepicker").datepicker($.datepicker.regional["fr"]);
-//});
+    //$("#datepicker").datepicker($.datepicker.regional["fr"]);
+});
 
