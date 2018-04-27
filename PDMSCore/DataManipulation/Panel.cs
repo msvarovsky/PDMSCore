@@ -81,28 +81,39 @@ namespace PDMSCore.DataManipulation
 
         public void GenerateRandomPanelMenuItems(int count)
         {
+            menu.items.Add(new PanelMenuItem(true, "Refresh", "www.-1.cz"));
             for (int i = 0; i < count; i++)
-                menu.items.Add(new PanelMenuItem(i.ToString(), "www" + i + ".cz"));
+                //menu.items.Add(new PanelMenuItem(i.ToString(), "www" + i + ".cz"));
+                menu.items.Add(new PanelMenuItem(false, i.ToString(), "www" + i + ".cz"));
         }
 
     }
 
-    public class PanelMenuItem : IHtmlTag
+  
+
+    public class PanelMenuItem
     {/*     <a href="#">Link 1-</a>
                 <a href="#">Link 3-</a>     */
-        public string ItemText { get; set; }
-        public string ItemLink { get; set; }
 
-        public PanelMenuItem(string Text, string Link)
+        public bool IsActionAsync { get; set; }
+        public string ItemText { get; set; }
+        public string ItemLinkOrAsyncAction { get; set; }
+
+        public PanelMenuItem(bool Async, string Text, string LinkOrAsyncAction)
         {
+            IsActionAsync = Async;
             ItemText = Text;
-            ItemLink = Link;
+            ItemLinkOrAsyncAction = LinkOrAsyncAction;
         }
 
-        public TagBuilder HtmlText()
+        public TagBuilder HtmlText(string PanelMenuID=null)
         {
             TagBuilder tb = new TagBuilder("a");
-            tb.Attributes.Add("href", ItemLink);
+            if (IsActionAsync)
+                tb.Attributes.Add("onclick", "onPanelMenuItemClick('" + PanelMenuID + "','"+ ItemLinkOrAsyncAction + "')");
+            else
+                tb.Attributes.Add("href", ItemLinkOrAsyncAction);
+
             tb.InnerHtml.AppendHtml(ItemText);
             return tb;
         }
@@ -110,11 +121,9 @@ namespace PDMSCore.DataManipulation
 
     public class PanelMenu : IHtmlTag
     {   
-        /*
-            <div class="dd-menu">
+        /*  <div class="dd-menu">
                 <i class="fa fa-gear dd-menu-btn" onclick="onPanelMenuClick()" aria-hidden="true"></i>
                 <div id="myDropdown" class="dd-menu-content">
-                    
                 </div>
             </div>          */
 
@@ -123,7 +132,9 @@ namespace PDMSCore.DataManipulation
 
         public PanelMenu(int id)
         {
-            PanelMenuId = "PanelMenu" + id;
+            //PanelMenuId = "PanelMenu" + id;
+            PanelMenuId = id.ToString();
+
             items = new List<PanelMenuItem>();
         }
 
@@ -147,12 +158,10 @@ namespace PDMSCore.DataManipulation
             tbDivContent.Attributes.Add("id", PanelMenuId);
             tbDivContent.AddCssClass("dd-menu-content");
 
-
             for (int i = 0; i < items.Count; i++)
             {
-                tbDivContent.InnerHtml.AppendHtml(items[i].HtmlText());
+                tbDivContent.InnerHtml.AppendHtml(items[i].HtmlText(PanelMenuId));
             }
-
 
             tbDiv.InnerHtml.AppendHtml(tbI);
             tbDiv.InnerHtml.AppendHtml(tbDivContent);

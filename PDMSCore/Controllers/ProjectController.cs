@@ -49,9 +49,7 @@ namespace PDMSCore.Controllers
         public ActionResult CreateNewProject()
         {
             Project p = new Project();
-            
             p.GetRandom();
-
             return View(p);
         }
 
@@ -59,7 +57,6 @@ namespace PDMSCore.Controllers
         public ActionResult ShowAll(IFormCollection fc)
         {
             //Project.SaveFromHtml(fc);
-
             return RedirectToAction("Index");
         }
 
@@ -81,9 +78,7 @@ namespace PDMSCore.Controllers
 
             //p = Project.GetProject(PanelID);
             p = new Project();
-
             p.GetRandom();
-
             p.SideMenu.Select(HttpContext.Session.GetString("OpenMenu"));
 
             return View(p);
@@ -95,6 +90,21 @@ namespace PDMSCore.Controllers
             HttpContext.Session.SetString("OpenMenu", href);
         }
 
+        [HttpPost]
+        public void PanelMenuItemClick(string PanelMenuID, string PanelMenuItemID)
+        {
+            System.Threading.Thread.Sleep(5000);
+            
+        }
+
+        [HttpGet]
+        public ActionResult UpdatePartialPanel(string PanelID)
+        {
+            Panel p = new Panel(5, "Label:" + DateTime.Now.ToLongTimeString(), 1);
+            p.GenerateRandomPanelMenuItems(5);
+            
+            return PartialView("PartialPanel", p);
+        }
 
 
         [HttpGet]

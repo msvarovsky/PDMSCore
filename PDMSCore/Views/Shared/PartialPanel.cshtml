@@ -1,0 +1,34 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+
+@model PDMSCore.DataManipulation.Panel
+
+@using PDMSCore.HtmlHelpers
+@{
+    ViewBag.Title = "partial view panels";
+}
+
+<div class="Panel @Model.Size" id="Panel-@Model.id">
+    <div class="Panel-Header">
+
+        <div class="Panel-Header-Left">
+            @Model.Label
+        </div>
+
+        <div class="Panel-Header-Right">
+            @Model.menu.HtmlText()
+        </div>
+
+    </div>
+    <div class="Panel-Body">
+        <form method="post">
+            <input name="PanelId" hidden type="text" value="@Model.id" />
+            @for (int f = 0; f < Model.Content.Count; f++)
+            {
+                @MSHelpers.Field(Model.Content[f]);
+            }
+            <input type="submit">
+        </form>
+    </div>
+</div>

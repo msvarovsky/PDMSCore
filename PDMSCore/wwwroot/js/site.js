@@ -38,11 +38,68 @@ $(document).ready(function () {
     });
 });
 
+document.onclick = function (event) {
+
+    // Zavru vsechny pootevrene dd-menu
+    if (!event.target.matches('.dd-menu-btn')) {
+
+        var dropdowns = document.getElementsByClassName("dd-menu-content");
+        var i;
+        for (i = 0; i < dropdowns.length; i++) {
+            var openDropdown = dropdowns[i];
+            if (openDropdown.classList.contains('show')) {
+                openDropdown.classList.remove('show');
+            }
+        }
+    }
+}
 
 //        https://www.w3schools.com/howto/tryit.asp?filename=tryhow_css_js_dropdown
-function onPanelMenuClick() {
-    document.getElementById("myDropdown").classList.toggle("show");
+function onPanelMenuClick(e) {
+    // Nejdrive zavru vsechny pootevrene ...
+    var dropdowns = document.getElementsByClassName("dd-menu-content");
+    var i;
+    for (i = 0; i < dropdowns.length; i++) {
+        var openDropdown = dropdowns[i];
+        if (openDropdown.classList.contains('show')) {
+            openDropdown.classList.remove('show');
+        }
+    }
+    // ... pak ukazu jenom ten na ktery bylo kliknuto.
+    document.getElementById(e).classList.toggle("show");
 }
+
+
+function onPanelMenuItemClick(panelMenuID,panelMenuItemID) {
+
+    alert("LoadPartialView:" + panelMenuID);
+    $.ajax({
+        url: "/Project/UpdatePartialPanel/",
+        type: "GET",
+        data: { PanelID: panelMenuID }
+    })
+        .done(function (partialViewResult) {
+            $("#Panel-3").replaceWith(partialViewResult);
+        });
+
+
+    //alert("ahojky refresh:" + PanelMenuID + ", ", PanelMenuItemID);
+    //$.ajax({
+    //    url: "/Project/PanelMenuItemClick/",
+    //    type: "POST",
+    //    highlightPhrase: false,
+    //    dataType: "json",
+    //    data: { PanelMenuID: panelMenuID, PanelMenuItemID: panelMenuItemID  },
+    //    success: function (data) { }
+    //})
+}
+
+function LoadPartialView(panelMenuID) {
+
+    
+    
+}
+
 
 //window.onclick = function () { alert('test'); }
 

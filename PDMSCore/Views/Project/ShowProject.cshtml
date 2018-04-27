@@ -10,7 +10,7 @@
 @*<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
     <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>*@
 
-<script src="~/js/jquery-1.10.2.js"></script>
+@*<script src="~/js/jquery-1.10.2.js"></script>*@
 <script type="text/javascript">
 
     //function MonkeyPatchAutocomplete() {
@@ -64,35 +64,35 @@
     //}
 
 
-    $(document).ready(function () {
+    @*$(document).ready(function () {
 
         //MonkeyPatchAutocomplete();
         //Autocomplete();
 
-        function ajaxCall(url, obj, model, verb) {
-            $.ajax({
-                cache: false,
-                type: verb,
-                url: url,
-                data: model,
-                beforeSend: function () {
-                    obj.addClass(window.async.disabledClass);
-                },
-                success: function (data) {
-                    obj.replaceWith(data);
-                },
-                error: function (xhr, ajaxOptions, thrownError) {
-                    //log this information or show it…
-                    obj.replaceWith(xhr.responseText);
-                },
-                complete: function () {
-                    obj.removeClass(window.async.disabledClass);
-                    updateURL(url, model, verb);
-                }
+        //function ajaxCall(url, obj, model, verb) {
+        //    $.ajax({
+        //        cache: false,
+        //        type: verb,
+        //        url: url,
+        //        data: model,
+        //        beforeSend: function () {
+        //            obj.addClass(window.async.disabledClass);
+        //        },
+        //        success: function (data) {
+        //            obj.replaceWith(data);
+        //        },
+        //        error: function (xhr, ajaxOptions, thrownError) {
+        //            //log this information or show it…
+        //            obj.replaceWith(xhr.responseText);
+        //        },
+        //        complete: function () {
+        //            obj.removeClass(window.async.disabledClass);
+        //            updateURL(url, model, verb);
+        //        }
 
-            });
+        //    });
 
-        }
+        //}
 
         //function updateURL(action, model, verb) {
         //    if (history.pushState) {
@@ -108,54 +108,34 @@
 
         //}
 
-        @*$("#PartialViewWraper").change(function () {
+        $("#PartialViewWraper").change(function () {
             var categoryId =  $("#ddlCategory").val();
                $("#dvCategoryResults").load('@(Url.Action("GetCategoryProducts","Home",null, Request.Url.Scheme))?categoryId=' + categoryId);
-        });*@
-    })
+        });
+    })*@
 
 </script>
 
 <div class="Content">
     @for (int i = 0; i < Model.PanelList.Count; i++)
     {
-        <div class="Panel @Model.PanelList[i].Size">
-            <div class="Panel-Header">
 
-                <div class="Panel-Header-Left">
-                    @Model.PanelList[i].Label
-                </div>
-
-                <div class="Panel-Header-Right">
-                    @Model.PanelList[i].menu.HtmlText()
-                </div>
-
-            </div>
-            <div class="Panel-Body">
-                <form method="post">
-                    <input name="PanelId" hidden type="text" value="@Model.PanelList[i].id " />
-                    @for (int f = 0; f < Model.PanelList[i].Content.Count; f++)
-                    {
-                        @MSHelpers.Field(Model.PanelList[i].Content[f]);
-                    }
-                    <input type="submit">
-                </form>
-            </div>
-        </div>
+        //To nize mozna neni nutne. Toto take funguje:      @Html.Partial("PartialPanel", @Model.PanelList[i])
+        @await Html.PartialAsync("PartialPanel", @Model.PanelList[i])
 
 
         @*<div>
-                <form method="post">
-                    <input class="AutoComplete" type="text" id="id1" name="jmeno1" placeholder="ph1" label="MujLabel1" />
-                    <input class="AutoComplete" type="text" id="id2" name="jmeno2" placeholder="ph2" label="MujLabel2" />
-                    <input class="AutoComplete" type="text" id="id3" name="jmeno3" placeholder="ph3" label="MujLabel3" />
-                    <input type="submit">
-                </form>
-            </div>*@
+            <form method="post">
+                <input class="AutoComplete" type="text" id="id1" name="jmeno1" placeholder="ph1" label="MujLabel1" />
+                <input class="AutoComplete" type="text" id="id2" name="jmeno2" placeholder="ph2" label="MujLabel2" />
+                <input class="AutoComplete" type="text" id="id3" name="jmeno3" placeholder="ph3" label="MujLabel3" />
+                <input type="submit">
+            </form>
+        </div>*@
     }
 
 
-    <div class="Panel x1">
+    <div class="Panel x1" id="Panel-3">
         <div class="Panel-Header">
             <div class="Panel-Header-Left">GetRandom</div>
             <div class="Panel-Header-Right">
@@ -178,18 +158,14 @@
 
                     @(Url.Action("Internet", "Project"))
 
+
                     @*@Html.Partial("AsyncShowProjects")*@
                     <script type="text/javascript">
 
-                        
                         //jQuery("#PartialViewWrapperHovno").load("http://examplepage.com/forum/showthread.php?tid=NN#pid_NN");
-
-                        $("#PartialViewWrapperHovno").load('/Project/ShowProject');
-
+                        //$("#PartialViewWrapperHovno").load('/Project/AsyncShowProjects');
                         //alert("PartialViewWrapper3");
-
                         //$("PartialViewWrapperHovno").load('/Project/Internet');
-
                         //alert("#PartialViewWrapper3");
                     </script>
 
@@ -202,13 +178,10 @@
                     @*                    @Html.Partial("AsyncShowProjects");*@
 
                     @*<script>
-
                         getFromController(null, null, null);
-
                         var url = "~/Controllers/ProjectController";
                         var name = "AsyncShowProjects";
                         var model = null;
-
                         var obj = $("#" + name);
                         ajaxCall(url, obj, model, "GET");
 
@@ -220,15 +193,12 @@
 
                 </div>
 
-
                 @*@Model.AsyncPanelList()*@
                 @*@AsyncLoader.Render(“Async”, “AsyncEdit”, “list”, new { Id = Model })*@
 
             </div>
         </div>
     </div>
-
-
 
 </div>
 
