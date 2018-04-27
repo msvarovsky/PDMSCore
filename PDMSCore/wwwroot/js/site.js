@@ -72,15 +72,38 @@ function onPanelMenuClick(e) {
 
 function onPanelMenuItemClick(panelMenuID,panelMenuItemID) {
 
-    alert("LoadPartialView:" + panelMenuID);
+    //alert("LoadPartialView:" + panelMenuID);
+
+    //var modal = $('<div>').dialog({ modal: true });
+    //modal.dialog('widget').hide();
+    $('#ajax_loader').show();
+
+
     $.ajax({
-        url: "/Project/UpdatePartialPanel/",
+        url: "/Project/PanelMenuItemClick/",
         type: "GET",
-        data: { PanelID: panelMenuID }
-    })
-        .done(function (partialViewResult) {
-            $("#Panel-3").replaceWith(partialViewResult);
-        });
+        data: { PanelMenuID: panelMenuID, PanelMenuItemID: panelMenuItemID },
+        success: function (partialViewResult) {
+            $('#ajax_loader').hide();
+            if (partialViewResult.length > 0)
+                $("#Panel-" + panelMenuID).replaceWith(partialViewResult);
+        },
+        error: function (result) {
+            alert("error!" + result);
+            $('#ajax_loader').hide();
+        }
+    });
+
+
+    //$.ajax({
+    //    url: "/Project/PanelMenuItemClick/",
+    //    type: "GET",
+    //    data: { PanelMenuID: panelMenuID, PanelMenuItemID: panelMenuItemID }
+    //})
+    //    .done(function (partialViewResult) {
+    //        if (partialViewResult.length > 0)
+    //            $("#Panel-" + panelMenuID).replaceWith(partialViewResult);
+    //    });
 
 
     //alert("ahojky refresh:" + PanelMenuID + ", ", PanelMenuItemID);

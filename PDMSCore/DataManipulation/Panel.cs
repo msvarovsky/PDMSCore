@@ -81,8 +81,10 @@ namespace PDMSCore.DataManipulation
 
         public void GenerateRandomPanelMenuItems(int count)
         {
-            menu.items.Add(new PanelMenuItem(true, "Refresh", "www.-1.cz"));
-            for (int i = 0; i < count; i++)
+            menu.items.Add(new PanelMenuItem(true, "Refresh", "0"));
+            menu.items.Add(new PanelMenuItem(true, "Save", "1"));
+
+            for (int i = 2; i < count; i++)
                 //menu.items.Add(new PanelMenuItem(i.ToString(), "www" + i + ".cz"));
                 menu.items.Add(new PanelMenuItem(false, i.ToString(), "www" + i + ".cz"));
         }

@@ -90,20 +90,23 @@ namespace PDMSCore.Controllers
             HttpContext.Session.SetString("OpenMenu", href);
         }
 
-        [HttpPost]
-        public void PanelMenuItemClick(string PanelMenuID, string PanelMenuItemID)
-        {
-            System.Threading.Thread.Sleep(5000);
-            
-        }
-
         [HttpGet]
-        public ActionResult UpdatePartialPanel(string PanelID)
+        public ActionResult PanelMenuItemClick(string PanelMenuID, string PanelMenuItemID)
         {
-            Panel p = new Panel(5, "Label:" + DateTime.Now.ToLongTimeString(), 1);
-            p.GenerateRandomPanelMenuItems(5);
-            
-            return PartialView("PartialPanel", p);
+            int MenuItemCode = int.Parse(PanelMenuItemID);
+            if (MenuItemCode == 0)    // Refresh
+            {
+                Panel p = new Panel(5, "Label:" + DateTime.Now.ToLongTimeString(), 1);
+                p.GenerateRandomPanelMenuItems(5);
+                return PartialView("PartialPanel", p);
+            }
+            else if (MenuItemCode == 1) //  Save
+            {
+                System.Threading.Thread.Sleep(100);
+                return PartialView();
+            }
+            else
+                return null;
         }
 
 
