@@ -10,6 +10,73 @@ namespace PDMSCore.BusinessObjects
         Header,
         Data
     }
+    public enum ColumnType
+    {
+        Label,
+        Text,
+        CheckBox
+    }
+
+    public class DataGridField2 : Field
+    {
+        private TableColumns Columns;
+        //private List<TableColumn2> Columns;
+
+        public DataGridField2()
+        {
+            //Columns = new TableColumns();
+        }
+
+        public void DefineColumns(TableColumns tc)
+        {
+            Columns = tc;
+        }
+
+        public bool AddDataRow()
+        {
+            if (Columns == null)
+                return false;
+
+
+
+            return true;
+        }
+
+        public override TagBuilder HtmlText()
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class TableColumns
+    {
+        public List<OneColumnInfo> column;
+        //ColumnType type, Boolean ro = false)
+
+        public TableColumns()
+        {
+            column = new List<OneColumnInfo>();
+        }
+
+        public void Add(ColumnType type, Boolean readOnly)
+        {
+            column.Add(new OneColumnInfo(type, readOnly));
+
+        }
+    }
+    public struct OneColumnInfo
+    {
+        public ColumnType Type { get; private set; }
+        public Boolean ReadOnly { get; private set; }
+
+        public OneColumnInfo(ColumnType type, Boolean readOnly)
+        {
+            Type = type;
+            ReadOnly = readOnly;
+        }
+    }
+
+    /////////////////////////////////////////////////////////
 
     public class DataGridField : Field
     {
@@ -30,14 +97,24 @@ namespace PDMSCore.BusinessObjects
             DataRow.Add(NewRow);
         }
 
-        public static DataGridField GetRandom()
+        public static DataGridField GetRandom(string type="")
         {
-            int ColumnCount = 3;
             DataGridField n = new DataGridField();
+            if (type == "")
+            {
+                int ColumnCount = 3;
+                n.SetHeaderRow(TableRow.GetRandomHeaderRow(ColumnCount));
+                for (int i = 0; i < 5; i++)
+                    n.AddDataRow(TableRow.GetRandomDataRow(ColumnCount));
+            }
+            else if (type == "users")
+            {
+                int ColumnCount = 3;
+                n.SetHeaderRow(TableRow.GetRandomHeaderRow(ColumnCount));
+                for (int i = 0; i < 5; i++)
+                    n.AddDataRow(TableRow.GetRandomDataRow(ColumnCount));
 
-            n.SetHeaderRow(TableRow.GetRandomHeaderRow(ColumnCount));
-            for (int i = 0; i < 5; i++)
-                n.AddDataRow(TableRow.GetRandomDataRow(ColumnCount));
+            }
 
             return n;
         }

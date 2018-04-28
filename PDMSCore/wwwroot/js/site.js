@@ -39,18 +39,24 @@ $(document).ready(function () {
 });
 
 document.onclick = function (event) {
+    var i;
 
     // Zavru vsechny pootevrene dd-menu
     if (!event.target.matches('.dd-menu-btn')) {
-
         var dropdowns = document.getElementsByClassName("dd-menu-content");
-        var i;
         for (i = 0; i < dropdowns.length; i++) {
             var openDropdown = dropdowns[i];
             if (openDropdown.classList.contains('show')) {
                 openDropdown.classList.remove('show');
             }
         }
+    }
+
+    // Zavru otevreny modal dialog.
+    var modals = document.getElementsByClassName("Modal");
+    for (i = 0; i < modals.length; i++) {
+        if (event.target == modals[i])
+            modals[i].style.display = "none";
     }
 }
 
@@ -117,11 +123,87 @@ function onPanelMenuItemClick(panelMenuID,panelMenuItemID) {
     //})
 }
 
-function LoadPartialView(panelMenuID) {
+
+// When the user clicks on <span> (x), close the modal
+$('.CancelBtn, .OkBtn').click(function () {
+    //$(this).parent().css({"display":"none"}); // Nefunguje dobre
+    //this.panentNode.style.display = "none";   // Nefunguje dobre
+
+    var modals = document.getElementsByClassName("Modal");
+    for (i = 0; i < modals.length; i++) {
+        modals[i].style.display = "none";
+    }
+});
+
+
+function OpenModal(dialogID) {
+
+    // alert(DialogID);
+    // $(DialogID).style.display = "block";
 
     
+    $.ajax({
+        url: "/Project/ModalPartialView/",
+        type: "GET",
+        data: { DialogID: dialogID },
+        success: function (partialViewResult) {
+            if (partialViewResult.length > 0) {
+                $("#"+dialogID).html(partialViewResult);
+            }
+        },
+        error: function (result) {
+            $("#"+dialogID).html("<div class=\"ModalBody\">\r\n<span class=\"CloseModal\">&times;</span>\r\n<p>Ajax failed...</p>\r\n</div>");
+        }
+
+    });
+
+    document.getElementById(dialogID).style.display = "block";
+
+
     
-}
+    // Get the modal
+    // var modal = document.getElementById('myModal');
+
+
+
+    //$("#ModalDialog1").OpenModal("#ModalDialog1");
+
+    //$("ModalDialog1").dialog({
+    //    autoOpen: true,
+    //    width: 400,
+    //    resizable: false,
+    //    title: 'My Table',
+    //    modal: true,
+    //    open: function (event, ui) {
+    //        $(this).load('@Url.Action("ModalPartialView", "Project")');
+    //    },
+    //    buttons: {
+            
+    //        "Close": function () {
+    //            alert("close");
+    //            $(this).dialog("close");
+    //        }
+    //    }
+    //});
+};
+
+
+
+
+// $('#my-dialog').dialog({
+//     autoOpen: false,
+//     width: 400,
+//     resizable: false,
+//     modal: true
+// });
+
+//$('#show-modal').click(function () {
+//    $('#my-dialog').load("/Project/ModalPartialView/", function () {
+//        $(this).dialog('open');
+//    });
+//    return false;
+//});
+
 
 
 //window.onclick = function () { alert('test'); }
@@ -137,7 +219,6 @@ $(function () {
     //    showAnim: "slideDown",
     //    showButtonPanel: true
     //});
-
 
     //$("#datepicker").datepicker($.datepicker.regional["fr"]);
 });

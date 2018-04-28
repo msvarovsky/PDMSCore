@@ -109,6 +109,18 @@ namespace PDMSCore.Controllers
                 return null;
         }
 
+        public ActionResult ModalPartialView(string DialogID)
+        {
+            ModalDialog md = new ModalDialog("en", "Test title");
+
+            DataGridField dgf = DataGridField.GetRandom();
+
+            md.AddField(dgf);
+            //md.AddField(new LabelTextBoxField("testTextBoxDield", "Label", "already in"));
+
+
+            return PartialView("ModalPartialView", md);
+        }
 
         [HttpGet]
         public ViewResult List()

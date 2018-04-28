@@ -1,0 +1,37 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model PDMSCore.DataManipulation.ModalDialog
+
+
+
+<div class="ModalBody">
+    <div class="ModalTitle">
+        @Model.Title
+    </div>
+    <div class="ModalDescription">
+        @Model.Description
+    </div>
+    <hr />
+    <div class="ModalContent">
+        @for (int i = 0; i < @Model.Fields.Count; i++)
+        {
+            @Model.Fields[i].HtmlText();
+        }
+    </div>
+    <p />
+    <div class="ModalBottom">
+        <input type="button" class="CancelBtn" value=@Model.CancelButtonLabel />
+        <input type="button" class="OkBtn" value=@Model.OkButtonLabel />
+    </div>
+</div>
+
+
+<script>
+    $('.CancelBtn, .OkBtn').click(function () {
+        var modals = document.getElementsByClassName("Modal");
+        for (i = 0; i < modals.length; i++) {
+            modals[i].style.display = "none";
+        }
+    });
+</script>

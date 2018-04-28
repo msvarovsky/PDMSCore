@@ -125,13 +125,13 @@
 
 
         @*<div>
-            <form method="post">
-                <input class="AutoComplete" type="text" id="id1" name="jmeno1" placeholder="ph1" label="MujLabel1" />
-                <input class="AutoComplete" type="text" id="id2" name="jmeno2" placeholder="ph2" label="MujLabel2" />
-                <input class="AutoComplete" type="text" id="id3" name="jmeno3" placeholder="ph3" label="MujLabel3" />
-                <input type="submit">
-            </form>
-        </div>*@
+                <form method="post">
+                    <input class="AutoComplete" type="text" id="id1" name="jmeno1" placeholder="ph1" label="MujLabel1" />
+                    <input class="AutoComplete" type="text" id="id2" name="jmeno2" placeholder="ph2" label="MujLabel2" />
+                    <input class="AutoComplete" type="text" id="id3" name="jmeno3" placeholder="ph3" label="MujLabel3" />
+                    <input type="submit">
+                </form>
+            </div>*@
     }
 
 
@@ -143,59 +143,23 @@
             </div>
         </div>
         <div class="Panel-Body">
-            <div id="list" class="loader">
-                <a>test</a>
-                <hr />
 
-                zacatek
-                <div id="#PartialViewWrapperHovno">
-                    #PartialViewWrapperHovno
+            <input type="button" id="btnOpenModal" onclick="OpenModal('myModal1')" />
+            <div id="myModal1" class="Modal">
+                <div class="Modal-content">
+                    <span class="CloseModal">&times;</span>
+                    <p>....</p>
                 </div>
-                
-                <br/>
+            </div>
 
-                <div id="#PartialViewWrapper3">
-
-                    @(Url.Action("Internet", "Project"))
+        </div>
+    </div>
 
 
-                    @*@Html.Partial("AsyncShowProjects")*@
-                    <script type="text/javascript">
-
-                        //jQuery("#PartialViewWrapperHovno").load("http://examplepage.com/forum/showthread.php?tid=NN#pid_NN");
-                        //$("#PartialViewWrapperHovno").load('/Project/AsyncShowProjects');
-                        //alert("PartialViewWrapper3");
-                        //$("PartialViewWrapperHovno").load('/Project/Internet');
-                        //alert("#PartialViewWrapper3");
-                    </script>
-
-                </div>
-                konec
-
-                <div id=”list” class=”loader”>
-
-                    @*Funguje*@
-                    @*                    @Html.Partial("AsyncShowProjects");*@
-
-                    @*<script>
-                        getFromController(null, null, null);
-                        var url = "~/Controllers/ProjectController";
-                        var name = "AsyncShowProjects";
-                        var model = null;
-                        var obj = $("#" + name);
-                        ajaxCall(url, obj, model, "GET");
-
-                        $(document).ready(function () {
-                            //window.async.getFromController(‘/Async/AsyncList’, ‘list’, null);
-                            //window.async.getFromController('/AsyncShowProjects', 'AsyncShowProjects', null);
-                        });
-                    </script>*@
-
-                </div>
-
-                @*@Model.AsyncPanelList()*@
-                @*@AsyncLoader.Render(“Async”, “AsyncEdit”, “list”, new { Id = Model })*@
-
+    <div id='myModal' class='modal'>
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div id='myModalContent'></div>
             </div>
         </div>
     </div>
