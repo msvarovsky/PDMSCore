@@ -24,6 +24,20 @@ namespace PDMSCore.DataManipulation
         Indicator
     }
 
+    public struct WebTagAttributes
+    {
+        public Boolean ReadOnly { get; private set; }
+        public string CheckBoxGroupName { get; private set; }
+
+        public WebTagAttributes(Boolean readOnly, string checkBoxGroupName)
+        {
+            ReadOnly = readOnly;
+            CheckBoxGroupName = checkBoxGroupName;
+        }
+    }
+
+
+
     public interface IHtmlTag
     {
         TagBuilder HtmlText();
@@ -513,6 +527,52 @@ namespace PDMSCore.DataManipulation
         }
     }
 
+    public class CheckBoxField : Field
+    {
+        public string Name { get; set; }
+        public string Id { get; set; }
+        public string Value { get; set; }
+        public bool Checked { get; set; }
+        public bool Disabled { get; set; }
+
+        public CheckBoxField(string GroupName, string HtmlLabel, string IndividualValueId, bool Checked = false, bool Disabled = false)
+        {
+            this.Name = GroupName;
+            this.Id = IndividualValueId;
+            this.Value = IndividualValueId;
+            this.Checked = Checked;
+            this.Disabled = Disabled;
+        }
+        public CheckBoxField(string IndividualValueId, string HtmlLabel, bool Checked, WebTagAttributes wta)
+        {
+            this.Name = wta.CheckBoxGroupName;
+            this.Id = IndividualValueId;
+            this.Value = IndividualValueId;
+            this.Checked = Checked;
+            this.Disabled = wta.ReadOnly;
+        }
+
+
+        public override TagBuilder HtmlText()
+        {
+            TagBuilder tbLabelCheckBox = new TagBuilder("div");
+
+            TagBuilder tbCheckBox = new TagBuilder("input");
+            tbCheckBox.Attributes.Add("type", "checkbox");
+            tbCheckBox.Attributes.Add("name", Name);
+            tbCheckBox.Attributes.Add("id", Id);
+            tbCheckBox.Attributes.Add("value", Value);
+            //tbCheckBox.Attributes.Add("value", Label);
+            if (Checked)
+                tbCheckBox.Attributes.Add("checked", "checked");
+            if (Disabled)
+                tbCheckBox.Attributes.Add("disabled", "disabled");
+
+            tbLabelCheckBox.InnerHtml.AppendHtml(tbCheckBox);
+            return tbLabelCheckBox;
+        }
+    }
+
     public class LabelCheckBoxField : Field
     {
         public LabelField Label { get; set; }
@@ -541,7 +601,6 @@ namespace PDMSCore.DataManipulation
                 tbCheckBox.Attributes.Add("name", Name);
                 tbCheckBox.Attributes.Add("id", Id);
                 tbCheckBox.Attributes.Add("value", Value);
-                //tbCheckBox.Attributes.Add("value", Label);
                 if (Checked)
                     tbCheckBox.Attributes.Add("checked", "checked");
                 if (Disabled)

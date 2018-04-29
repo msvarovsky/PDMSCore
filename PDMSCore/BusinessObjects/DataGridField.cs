@@ -19,64 +19,125 @@ namespace PDMSCore.BusinessObjects
 
     public class DataGridField2 : Field
     {
-        private TableColumns Columns;
-        //private List<TableColumn2> Columns;
+        private List<TableRow2> Data;
 
         public DataGridField2()
         {
-            //Columns = new TableColumns();
+            Data = new List<TableRow2>();
         }
 
-        public void DefineColumns(TableColumns tc)
+        public bool AddDataRow(TableRow2 tr)
         {
-            Columns = tc;
-        }
-
-        public bool AddDataRow()
-        {
-            if (Columns == null)
-                return false;
-
-
-
+            Data.Add(tr);
             return true;
+        }
+
+        public TagBuilder HtmlTextHeaderRow()
+        {
+            TableRow2 tr = Data[0];
+
+            TagBuilder tbTr = new TagBuilder("tr");
+            for (int i = 0; i < tr.Cells.Count; i++)
+            {
+                TagBuilder tbTh = new TagBuilder("th");
+                TagBuilder tbDiv = new TagBuilder("div");
+                TagBuilder tbHl = new TagBuilder("HeaderLabel");
+                TagBuilder tbHs = new TagBuilder("HeaderSearch");
+
+                if (tr.Cells[i].GetType() == typeof(CheckBoxField))
+                {
+                }
+                else
+                {
+                    tbHl.InnerHtml.AppendHtml(tr.Cells[i].NameId);
+
+                    TagBuilder tbInput = new TagBuilder("input");
+                    tbInput.Attributes.Add("type", "text");
+                    tbInput.Attributes.Add("placeholder", "...");
+
+                    tbHs.InnerHtml.AppendHtml(tbInput);
+                }
+                tbDiv.InnerHtml.AppendHtml(tbHl);
+                tbDiv.InnerHtml.AppendHtml(tbHs);
+                tbTh.InnerHtml.AppendHtml(tbDiv);
+
+                tbTr.InnerHtml.AppendHtml(tbTh);
+            }
+            return tbTr;
         }
 
         public override TagBuilder HtmlText()
         {
-            throw new NotImplementedException();
+            TagBuilder tb = new TagBuilder("table");
+            tb.Attributes.Add("id", "GridTable");
+            tb.AddCssClass("GridTable");
+            tb.InnerHtml.AppendHtml(HtmlTextHeaderRow());
+
+            for (int i = 0; i < Data.Count; i++)
+                tb.InnerHtml.AppendHtml(Data[i].HtmlText());
+
+            return tb;
         }
     }
 
-    public class TableColumns
+    public class TableRow2: IHtmlTag
     {
-        public List<OneColumnInfo> column;
-        //ColumnType type, Boolean ro = false)
+        public List<Field> Cells { get; set; }
 
-        public TableColumns()
+        public TableRow2()
         {
-            column = new List<OneColumnInfo>();
+            Cells = new List<Field>();
         }
 
-        public void Add(ColumnType type, Boolean readOnly)
+        public void Add(Field f)
         {
-            column.Add(new OneColumnInfo(type, readOnly));
+            Cells.Add(f);
+        }
 
+        public TagBuilder HtmlText()
+        {
+            TagBuilder tbTr = new TagBuilder("tr");
+
+            for (int i = 0; i < Cells.Count; i++)
+            {
+                TagBuilder tbTd = new TagBuilder("td");
+                tbTd.InnerHtml.AppendHtml(Cells[i].HtmlText());
+                tbTr.InnerHtml.AppendHtml(tbTd);
+            }
+            return tbTr;
         }
     }
-    public struct OneColumnInfo
-    {
-        public ColumnType Type { get; private set; }
-        public Boolean ReadOnly { get; private set; }
+    
 
-        public OneColumnInfo(ColumnType type, Boolean readOnly)
-        {
-            Type = type;
-            ReadOnly = readOnly;
-        }
-    }
+    //public class TableColumns
+    //{
+    //    public List<OneColumnInfo> column;
+    //    //ColumnType type, Boolean ro = false)
 
-    /////////////////////////////////////////////////////////
+    //    public TableColumns()
+    //    {
+    //        column = new List<OneColumnInfo>();
+    //    }
+
+    //    public void Add(ColumnType type, Boolean readOnly)
+    //    {
+    //        column.Add(new OneColumnInfo(type, readOnly));
+
+    //    }
+    //}
+    //public struct OneColumnInfo
+    //{
+    //    public ColumnType Type { get; private set; }
+    //    public Boolean ReadOnly { get; private set; }
+
+    //    public OneColumnInfo(ColumnType type, Boolean readOnly)
+    //    {
+    //        Type = type;
+    //        ReadOnly = readOnly;
+    //    }
+    //}
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public class DataGridField : Field
     {
