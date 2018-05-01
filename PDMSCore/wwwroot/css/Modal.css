@@ -68,6 +68,7 @@
     margin: 0px;
     cursor: pointer;
     border-radius: 2px;
+    min-width: 100px;
 }
 
 .OkBtn

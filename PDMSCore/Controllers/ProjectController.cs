@@ -109,13 +109,27 @@ namespace PDMSCore.Controllers
                 return null;
         }
 
-        public ActionResult ModalPartialView(string DialogID)
+        public ActionResult ModalPartialView(string DialogID, string ReturnFieldID)
         {
             ModalDialog md = new ModalDialog("en", "Test title");
 
             DataGridField dgf = DataGridField.GetRandom();
 
-            md.AddField(dgf);
+            DataGridField2 d = new DataGridField2();
+            d.SetHeaderLabels("Jmeno", "Prijmeni", "Aktivni");
+
+            TableRow2 tr = new TableRow2();
+            tr.AddColumnCell(new LabelField("Jmeno"));
+            tr.AddColumnCell(new LabelField("Prijmeni"));
+            tr.AddColumnCell(new CheckBoxField("", "", true, new WebTagAttributes(true, "")));
+            
+            d.AddDataRow(tr,1);
+            d.AddDataRow(tr.MakeCopy());
+            d.AddDataRow(tr.MakeCopy());
+
+
+            md.AddField(d);
+            md.ReturnFieldID = ReturnFieldID;
             //md.AddField(new LabelTextBoxField("testTextBoxDield", "Label", "already in"));
 
 

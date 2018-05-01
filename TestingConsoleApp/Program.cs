@@ -16,10 +16,11 @@ namespace TestingConsoleApp
             DataGridField2 d = new DataGridField2();
 
             TableRow2 tr = new TableRow2();
-            tr.Add(new TextBoxField("", "", "Jmeno"));
-            tr.Add(new TextBoxField("", "", "Prijmeni"));
-            tr.Add(new CheckBoxField("", "", true, new WebTagAttributes(true, "")));
+            tr.AddColumnCell(new TextBoxField("", "", "Jmeno"));
+            tr.AddColumnCell(new TextBoxField("", "", "Prijmeni"));
+            tr.AddColumnCell(new CheckBoxField("", "", true, new WebTagAttributes(true, "")));
 
+            d.SetHeaderLabels("Jmeno", "Prijmeni", "Aktivni");
             d.AddDataRow(tr);
 
             TagBuilder tb = d.HtmlText();

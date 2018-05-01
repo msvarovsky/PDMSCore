@@ -12,6 +12,7 @@ namespace PDMSCore.DataManipulation
         public List<Field> Fields { get; set; }
         public string OkButtonLabel { get; set; }
         public string CancelButtonLabel { get; set; }
+        public string ReturnFieldID { get; set; }
 
 
         public ModalDialog(string LangID, string title, string Descr="")

@@ -136,7 +136,7 @@ $('.CancelBtn, .OkBtn').click(function () {
 });
 
 
-function OpenModal(dialogID) {
+function OpenModal(dialogID, returnFieldID) {
 
     // alert(DialogID);
     // $(DialogID).style.display = "block";
@@ -145,7 +145,7 @@ function OpenModal(dialogID) {
     $.ajax({
         url: "/Project/ModalPartialView/",
         type: "GET",
-        data: { DialogID: dialogID },
+        data: { DialogID: dialogID, ReturnFieldID: returnFieldID },
         success: function (partialViewResult) {
             if (partialViewResult.length > 0) {
                 $("#"+dialogID).html(partialViewResult);

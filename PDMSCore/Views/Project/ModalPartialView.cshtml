@@ -4,7 +4,6 @@
 @model PDMSCore.DataManipulation.ModalDialog
 
 
-
 <div class="ModalBody">
     <div class="ModalTitle">
         @Model.Title
@@ -28,10 +27,57 @@
 
 
 <script>
-    $('.CancelBtn, .OkBtn').click(function () {
+    $('.CancelBtn').click(function () {
+        CloseModal();
+    });
+
+    $(document).keyup(function (e) {
+        if (e.keyCode == 27) { 
+            CloseModal();
+        }
+    });
+
+    $(".GridTable tr").click(function () {
+        $(this).addClass('SingleSelected').siblings().removeClass('SingleSelected');
+        var value = $(this).find('td:first').html();
+        console.log(value);
+    });
+
+    $('.OkBtn').click(function () {
+        OkButtonClicked(null);
+    });
+
+    $(".GridTable tr").dblclick(function () {
+        $(this).addClass('SingleSelected').siblings().removeClass('SingleSelected');
+        var RowID = $(this).find('td:first').html();
+        OkButtonClicked(RowID);
+    });
+
+    function OkButtonClicked(RowID) {
+        var ReturnVariable = document.getElementById("@Model.ReturnFieldID");
+        if (RowID != null)
+            ReturnVariable.innerHTML = RowID;
+        else
+            ReturnVariable.innerHTML = $('.SingleSelected').children("td")[0].innerHTML;
+
+        CloseModal();
+    }
+
+    function CloseModal() {
         var modals = document.getElementsByClassName("Modal");
         for (i = 0; i < modals.length; i++) {
             modals[i].style.display = "none";
         }
+    }
+
+    $(function () {
+        $(".GridTable").colResizable({
+            liveDrag: true,
+            postbackSafe: true,
+            partialRefresh: true,
+            resizeMode: 'fit'
+            // headerOnly: true
+        });
     });
+
 </script>

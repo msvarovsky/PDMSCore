@@ -20,14 +20,26 @@ namespace PDMSCore.BusinessObjects
     public class DataGridField2 : Field
     {
         private List<TableRow2> Data;
+        private string[] HeaderLabels;
 
         public DataGridField2()
         {
+            HeaderLabels = null;
             Data = new List<TableRow2>();
         }
 
-        public bool AddDataRow(TableRow2 tr)
+        public void SetHeaderLabels(params string[] a)
         {
+            HeaderLabels = a;
+        }
+
+        public bool AddDataRow(TableRow2 tr, int? id = null)
+        {
+            if (HeaderLabels == null)
+                throw new Exception("Table header labels are not defined.");
+
+            tr.ID = (id == null) ? Data.Count+1 : (int)id;
+
             Data.Add(tr);
             return true;
         }
@@ -37,20 +49,35 @@ namespace PDMSCore.BusinessObjects
             TableRow2 tr = Data[0];
 
             TagBuilder tbTr = new TagBuilder("tr");
+
+            TagBuilder tbID = new TagBuilder("th");
+            tbID.Attributes.Add("style", "display:none");
+            tbTr.InnerHtml.AppendHtml(tbID);
+
             for (int i = 0; i < tr.Cells.Count; i++)
             {
                 TagBuilder tbTh = new TagBuilder("th");
                 TagBuilder tbDiv = new TagBuilder("div");
+                tbDiv.AddCssClass("HeadCell");
                 TagBuilder tbHl = new TagBuilder("HeaderLabel");
                 TagBuilder tbHs = new TagBuilder("HeaderSearch");
 
+                if (i > HeaderLabels.Length)
+                    tbHl.InnerHtml.AppendHtml("{Not defined}");
+                else
+                    tbHl.InnerHtml.AppendHtml(HeaderLabels[i]);
+
                 if (tr.Cells[i].GetType() == typeof(CheckBoxField))
                 {
+                    DropDownField ddf = new DropDownField("-1", 1);
+                    ddf.Add(new DropDownOption("-", "(All)"));
+                    ddf.Add(new DropDownOption("y", "Yes"));
+                    ddf.Add(new DropDownOption("n", "No"));
+
+                    tbHs.InnerHtml.AppendHtml(ddf.HtmlText());
                 }
                 else
                 {
-                    tbHl.InnerHtml.AppendHtml(tr.Cells[i].NameId);
-
                     TagBuilder tbInput = new TagBuilder("input");
                     tbInput.Attributes.Add("type", "text");
                     tbInput.Attributes.Add("placeholder", "...");
@@ -83,13 +110,14 @@ namespace PDMSCore.BusinessObjects
     public class TableRow2: IHtmlTag
     {
         public List<Field> Cells { get; set; }
+        public int ID { get; set; }
 
         public TableRow2()
         {
             Cells = new List<Field>();
         }
 
-        public void Add(Field f)
+        public void AddColumnCell(Field f)
         {
             Cells.Add(f);
         }
@@ -98,13 +126,37 @@ namespace PDMSCore.BusinessObjects
         {
             TagBuilder tbTr = new TagBuilder("tr");
 
+            TagBuilder tbID = new TagBuilder("td");
+            tbID.Attributes.Add("style", "display:none");
+            tbID.InnerHtml.AppendHtml(ID.ToString());
+
+            tbTr.InnerHtml.AppendHtml(tbID);
+
+
             for (int i = 0; i < Cells.Count; i++)
             {
                 TagBuilder tbTd = new TagBuilder("td");
-                tbTd.InnerHtml.AppendHtml(Cells[i].HtmlText());
+                TagBuilder tbDiv = new TagBuilder("div");
+                tbDiv.AddCssClass("Cell");
+
+                tbDiv.InnerHtml.AppendHtml(Cells[i].HtmlText());
+                tbTd.InnerHtml.AppendHtml(tbDiv);
                 tbTr.InnerHtml.AppendHtml(tbTd);
             }
             return tbTr;
+        }
+
+        public TableRow2 MakeCopy()
+        {
+            TableRow2 n = new TableRow2();
+            n.ID = this.ID;
+            Field[] fs = this.Cells.ToArray();
+
+            n.Cells = new List<Field>();
+            for (int i = 0; i < fs.Length; i++)
+                n.Cells.Add(fs[i]);
+
+            return n;
         }
     }
     
