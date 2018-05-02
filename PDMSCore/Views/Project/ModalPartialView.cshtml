@@ -20,8 +20,8 @@
     </div>
     <p />
     <div class="ModalBottom">
-        <input type="button" class="CancelBtn" value=@Model.CancelButtonLabel />
-        <input type="button" class="OkBtn" value=@Model.OkButtonLabel />
+        <input type="button" id="ModalCancel" class="CancelBtn" value=@Model.CancelButtonLabel />
+        <input type="button" id="ModalOk" class="OkBtn" disabled value=@Model.OkButtonLabel />
     </div>
 </div>
 
@@ -40,6 +40,9 @@
     $(".GridTable tr").click(function () {
         $(this).addClass('SingleSelected').siblings().removeClass('SingleSelected');
         var value = $(this).find('td:first').html();
+
+        $('#ModalOk').removeAttr("disabled");
+
         console.log(value);
     });
 
@@ -70,14 +73,13 @@
         }
     }
 
-    $(function () {
-        $(".GridTable").colResizable({
-            liveDrag: true,
-            postbackSafe: true,
-            partialRefresh: true,
-            resizeMode: 'fit'
-            // headerOnly: true
-        });
-    });
+    //$(function () {
+    //    $(".GridTable").colResizable({
+    //        liveDrag: true,
+    //        postbackSafe: true,
+    //        partialRefresh: true,
+    //        resizeMode: 'fit'
+    //    });
+    //});
 
 </script>

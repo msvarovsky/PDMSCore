@@ -75,6 +75,9 @@
 {
     background-color: #4CAF50;
 }
+.OkBtn:disabled {
+    background-color: grey;
+}
 .CancelBtn
 {
     background-color: grey;

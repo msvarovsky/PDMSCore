@@ -2,8 +2,11 @@
     http://www.designchemical.com/blog/index.php/jquery/jquery-simple-vertical-accordion-menu/
     */
 /*  http://jsfiddle.net/yeyene/Bx5cu/29/  */
+
+
 $(document).ready(function () {
 
+    
     //window.async.getFromController('/Async/AsyncList', 'list', null);
 
     //$("#PartialViewWrapperHovno").addClass("fjgfdkhjgdf");
@@ -37,6 +40,7 @@ $(document).ready(function () {
         return false;
     });
 });
+
 
 document.onclick = function (event) {
     var i;
@@ -136,6 +140,7 @@ $('.CancelBtn, .OkBtn').click(function () {
 });
 
 
+
 function OpenModal(dialogID, returnFieldID) {
 
     // alert(DialogID);
@@ -148,7 +153,8 @@ function OpenModal(dialogID, returnFieldID) {
         data: { DialogID: dialogID, ReturnFieldID: returnFieldID },
         success: function (partialViewResult) {
             if (partialViewResult.length > 0) {
-                $("#"+dialogID).html(partialViewResult);
+                $("#" + dialogID).html(partialViewResult);
+            
             }
         },
         error: function (result) {
@@ -158,7 +164,6 @@ function OpenModal(dialogID, returnFieldID) {
     });
 
     document.getElementById(dialogID).style.display = "block";
-
 
     
     // Get the modal
