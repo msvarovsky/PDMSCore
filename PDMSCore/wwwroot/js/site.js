@@ -148,7 +148,7 @@ function OpenModal(dialogID, returnFieldID) {
 
     
     $.ajax({
-        url: "/Project/ModalPartialView/",
+        url: "/Project/ModalPartial/",
         type: "GET",
         data: { DialogID: dialogID, ReturnFieldID: returnFieldID },
         success: function (partialViewResult) {

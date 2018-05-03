@@ -108,14 +108,14 @@ namespace PDMSCore.Controllers
             else
                 return null;
         }
-        public ActionResult DataGridPartialView(string DialogID, string ReturnFieldID)
+        public ActionResult DataGridPartial(string DialogID, string ReturnFieldID)
         {
             DataGridField2 d = new DataGridField2();
 
-            return PartialView("ModalPartialView", d);
+            return PartialView("ModalPartial", d);
         }
 
-        public ActionResult ModalPartialView(string DialogID, string ReturnFieldID)
+        public ActionResult ModalPartial(string DialogID, string ReturnFieldID)
         {
             ModalDialog md = new ModalDialog("en", "Test title");
 
@@ -139,7 +139,7 @@ namespace PDMSCore.Controllers
             //md.AddField(new LabelTextBoxField("testTextBoxDield", "Label", "already in"));
 
 
-            return PartialView("ModalPartialView", md);
+            return PartialView("ModalPartial", md);
         }
 
         [HttpGet]

@@ -13,12 +13,12 @@
     </div>
     <hr />
     <div class="ModalContent">
-        @for (int i = 0; i < @Model.Fields.Count; i++)
+        @*@for (int i = 0; i < @Model.Fields.Count; i++)
         {
             @Model.Fields[i].HtmlText();
-        }
+        }*@
         <hr />
-        @await Html.PartialAsync("DataGridPartialView", (PDMSCore.DataManipulation.DataGridField2) @Model.Fields[0] /*To be changed*/)
+        @await Html.PartialAsync("~/Views/DataGrid/DataGridPartial.cshtml", (PDMSCore.DataManipulation.DataGridField2) @Model.Fields[0] /*To be changed*/)
     </div>
     <p />
     <div class="ModalBottom">
@@ -79,33 +79,5 @@
         }
     }
 
-
-    function Autocomplete() {
-        // Musi byt zde a ne v site.js.
-        $(".AutoComplete").Autocomplete({
-            minLength: 1,
-            autoFocus: true,
-            source: function (request, response) {
-                $.ajax({
-                    url: "/Project/AjaxAutoComplete/",
-                    type: "POST",
-                    highlightPhrase: false,
-                    dataType: "json",
-                    data: { prefix: request.term, id: $(this.element).prop("id") },
-                    success: function (data) {
-                        response($.map(data, function (item) {
-                            // properties "item" musi zacinat malym pismenem !!!
-                            // A pokud se do "value" dam hodnotu (jako "item.id"),
-                            // tak se pri submitu posle na server pouze tato hodnota (id) a ne ten text v item.suggestion.
-                            return { label: item.suggestion/*, value: item.id */ };
-                        }))
-                    }
-                })
-            },
-            messages: {
-                noResults: "", results: ""
-            }
-        });
-    }
 
 </script>

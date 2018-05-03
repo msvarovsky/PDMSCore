@@ -19,6 +19,7 @@ namespace PDMSCore.DataManipulation
 
     public class DataGridField2 : Field
     {
+        public int ID { get; set; }
         private List<TableRow2> Data;
         private string[] HeaderLabels;
 
@@ -62,10 +63,18 @@ namespace PDMSCore.DataManipulation
                 TagBuilder tbHl = new TagBuilder("HeaderLabel");
                 TagBuilder tbHs = new TagBuilder("HeaderSearch");
 
+                //if (i > HeaderLabels.Length)
+                //    tbHl.InnerHtml.AppendHtml("{Not defined}");
+                //else
+                //    tbHl.InnerHtml.AppendHtml(HeaderLabels[i]);
+
+                string colID;
                 if (i > HeaderLabels.Length)
-                    tbHl.InnerHtml.AppendHtml("{Not defined}");
+                    colID = "{Not defined}";
                 else
-                    tbHl.InnerHtml.AppendHtml(HeaderLabels[i]);
+                    colID = HeaderLabels[i];
+
+                tbHl.InnerHtml.AppendHtml(colID);
 
                 if (tr.Cells[i].GetType() == typeof(CheckBoxField))
                 {
@@ -81,6 +90,8 @@ namespace PDMSCore.DataManipulation
                     TagBuilder tbInput = new TagBuilder("input");
                     tbInput.Attributes.Add("type", "text");
                     tbInput.Attributes.Add("placeholder", "...");
+                    tbInput.Attributes.Add("id", "filter-" + colID);
+                    tbInput.Attributes.Add("oninput", "OnDataGridFilterChange(\'filter-" + colID + "\')");
 
                     tbHs.InnerHtml.AppendHtml(tbInput);
                 }
@@ -93,15 +104,32 @@ namespace PDMSCore.DataManipulation
             return tbTr;
         }
 
+        public TagBuilder HtmlTextContent()
+        {
+            TagBuilder tbDiv = new TagBuilder("div");
+            tbDiv.Attributes.Add("id", "DataGridContent");
+
+            for (int i = 0; i < Data.Count; i++)
+                tbDiv.InnerHtml.AppendHtml(Data[i].HtmlText());
+
+            return tbDiv;
+        }
+
         public override TagBuilder HtmlText()
         {
             TagBuilder tb = new TagBuilder("table");
             tb.Attributes.Add("id", "GridTable");
             tb.AddCssClass("GridTable");
+
             tb.InnerHtml.AppendHtml(HtmlTextHeaderRow());
 
+            TagBuilder tbDiv = new TagBuilder("div");
+            tbDiv.Attributes.Add("id", "GridTableContent");
+
             for (int i = 0; i < Data.Count; i++)
-                tb.InnerHtml.AppendHtml(Data[i].HtmlText());
+                tbDiv.InnerHtml.AppendHtml(Data[i].HtmlText());
+
+            tb.InnerHtml.AppendHtml(tbDiv);
 
             return tb;
         }

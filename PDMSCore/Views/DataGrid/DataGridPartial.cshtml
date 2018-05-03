@@ -1,0 +1,72 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+
+@model PDMSCore.DataManipulation.DataGridField2
+
+
+<table class="GridTable">
+    <thead>@Model.HtmlTextHeaderRow()</thead>
+    <tbody id="DataGridContent"></tbody>
+</table>
+
+<input type="button" id="RefreshGrid" onclick="ReloadDataGrid('gridID-input','Hovno')" />
+
+
+<script>
+
+    $(document).ready(function () {
+        ReloadDataGrid("gridID", "any");
+    });
+
+    function ReloadDataGrid(DataGridID, returnFieldID) {
+        $.ajax({
+            url: "/DataGrid/GetDataGridContent/",
+            
+            type: "GET",
+            data: { DataGridID: @Model.ID },
+            success: function (partialViewResult) {
+                console.log("ReloadDataGrid");
+                if (partialViewResult.length > 0)
+                    $("#DataGridContent").html(partialViewResult);
+            },
+            error: function (result) {
+                $("#" + dialogID).html("<span>DataGridPartialView: Ajax failed...</span>");
+            }
+        });
+    };
+
+    function OnDataGridFilterChange(FilterID) {
+        console.log("OnDataGridFilterChange");
+        var value = $("#" + FilterID).val();
+        if (value.length > 2) { 
+            console.log(">2");
+
+            ReloadDataGrid(FilterID, "any");
+        }
+
+        
+    };
+    
+    //$("input[id^='filter-']").keyup(function (e) {
+    //        console.log("Char");
+    //});
+
+    @*function ReloadDataGrid(DataGridID, returnFieldID) {
+        $.ajax({
+            url: "/DataGridContent/GetDataGridContent/",
+            
+            type: "GET",
+            data: { DataGridID: @Model.ID },
+            success: function (partialViewResult) {
+                console.log("ReloadDataGrid");
+                if (partialViewResult.length > 0)
+                    $("#DataGridContent").html(partialViewResult);
+            },
+            error: function (result) {
+                $("#" + dialogID).html("<span>DataGridPartialView: Ajax failed...</span>");
+            }
+        });
+    };*@
+
+</script>
