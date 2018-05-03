@@ -36,8 +36,6 @@ namespace PDMSCore.DataManipulation
         }
     }
 
-
-
     public interface IHtmlTag
     {
         TagBuilder HtmlText();
@@ -71,7 +69,6 @@ namespace PDMSCore.DataManipulation
             return tb;
         }
     }
-    
 
     public class LabelDataGridField : Field
     {
@@ -98,7 +95,6 @@ namespace PDMSCore.DataManipulation
             return n;
         }
     }
-
 
     public class LabelField : Field
     {

@@ -108,6 +108,12 @@ namespace PDMSCore.Controllers
             else
                 return null;
         }
+        public ActionResult DataGridPartialView(string DialogID, string ReturnFieldID)
+        {
+            DataGridField2 d = new DataGridField2();
+
+            return PartialView("ModalPartialView", d);
+        }
 
         public ActionResult ModalPartialView(string DialogID, string ReturnFieldID)
         {
@@ -139,7 +145,6 @@ namespace PDMSCore.Controllers
         [HttpGet]
         public ViewResult List()
         {
-
             return View();
         }
 
@@ -153,14 +158,12 @@ namespace PDMSCore.Controllers
         [HttpGet]
         public PartialViewResult AsyncShowProjects()
         {
-
             string users = null;
             return PartialView(users);
         }
 
         public ActionResult AnyPanelAction(string ID)
         {
-
             //return PartialView(vm);
             return null;
         }

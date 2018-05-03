@@ -3,7 +3,7 @@ using PDMSCore.DataManipulation;
 using System;
 using System.Collections.Generic;
 
-namespace PDMSCore.BusinessObjects
+namespace PDMSCore.DataManipulation
 {
     public enum RowType
     {

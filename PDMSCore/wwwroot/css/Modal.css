@@ -75,15 +75,17 @@
 {
     background-color: #4CAF50;
 }
-.OkBtn:disabled {
-    background-color: grey;
-}
+
 .CancelBtn
 {
     background-color: grey;
 }
 
-.OkBtn:hover,
+.OkBtn:hover:enabled,
 .CancelBtn:hover{
     box-shadow:0 8px 16px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+}
+.OkBtn:disabled {
+    background-color: grey;
+    cursor: not-allowed;
 }

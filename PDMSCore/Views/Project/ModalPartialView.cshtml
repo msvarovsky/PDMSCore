@@ -17,6 +17,8 @@
         {
             @Model.Fields[i].HtmlText();
         }
+        <hr />
+        @await Html.PartialAsync("DataGridPartialView", (PDMSCore.DataManipulation.DataGridField2) @Model.Fields[0] /*To be changed*/)
     </div>
     <p />
     <div class="ModalBottom">
@@ -37,20 +39,10 @@
         }
     });
 
-    //$(".GridTable tr").click(function () {
-    //    $(this).addClass('SingleSelected').siblings().removeClass('SingleSelected');
-    //    var value = $(this).find('td:first').html();
-    //    $('#ModalOk').removeAttr("disabled");
-    //    console.log(value);
-    //});
-
     $(".GridTable th").click(function () {
         $(this).parent().addClass('SingleSelected').siblings().removeClass('SingleSelected');
-
         var value = $(this).find('td:first').html();
-
         $('#ModalOk').attr("disabled","");
-
         console.log(value);
     });
 
@@ -68,9 +60,6 @@
     $(".GridTable tr").dblclick(function () {
         $(this).addClass('SingleSelected').siblings().removeClass('SingleSelected');
         var RowID = $(this).find('td:first').html();
-
-        
-
         OkButtonClicked(RowID);
     });
 
@@ -80,7 +69,6 @@
             ReturnVariable.innerHTML = RowID;
         else
             ReturnVariable.innerHTML = $('.SingleSelected').children("td")[0].innerHTML;
-
         CloseModal();
     }
 
@@ -91,13 +79,33 @@
         }
     }
 
-    //$(function () {
-    //    $(".GridTable").colResizable({
-    //        liveDrag: true,
-    //        postbackSafe: true,
-    //        partialRefresh: true,
-    //        resizeMode: 'fit'
-    //    });
-    //});
+
+    function Autocomplete() {
+        // Musi byt zde a ne v site.js.
+        $(".AutoComplete").Autocomplete({
+            minLength: 1,
+            autoFocus: true,
+            source: function (request, response) {
+                $.ajax({
+                    url: "/Project/AjaxAutoComplete/",
+                    type: "POST",
+                    highlightPhrase: false,
+                    dataType: "json",
+                    data: { prefix: request.term, id: $(this.element).prop("id") },
+                    success: function (data) {
+                        response($.map(data, function (item) {
+                            // properties "item" musi zacinat malym pismenem !!!
+                            // A pokud se do "value" dam hodnotu (jako "item.id"),
+                            // tak se pri submitu posle na server pouze tato hodnota (id) a ne ten text v item.suggestion.
+                            return { label: item.suggestion/*, value: item.id */ };
+                        }))
+                    }
+                })
+            },
+            messages: {
+                noResults: "", results: ""
+            }
+        });
+    }
 
 </script>
