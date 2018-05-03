@@ -37,12 +37,27 @@
         }
     });
 
-    $(".GridTable tr").click(function () {
-        $(this).addClass('SingleSelected').siblings().removeClass('SingleSelected');
+    //$(".GridTable tr").click(function () {
+    //    $(this).addClass('SingleSelected').siblings().removeClass('SingleSelected');
+    //    var value = $(this).find('td:first').html();
+    //    $('#ModalOk').removeAttr("disabled");
+    //    console.log(value);
+    //});
+
+    $(".GridTable th").click(function () {
+        $(this).parent().addClass('SingleSelected').siblings().removeClass('SingleSelected');
+
         var value = $(this).find('td:first').html();
 
-        $('#ModalOk').removeAttr("disabled");
+        $('#ModalOk').attr("disabled","");
 
+        console.log(value);
+    });
+
+    $(".GridTable td").click(function () {
+        $(this).parent().addClass('SingleSelected').siblings().removeClass('SingleSelected');
+        var value = $(this).find('td:first').html();
+        $('#ModalOk').removeAttr("disabled");
         console.log(value);
     });
 
@@ -53,6 +68,9 @@
     $(".GridTable tr").dblclick(function () {
         $(this).addClass('SingleSelected').siblings().removeClass('SingleSelected');
         var RowID = $(this).find('td:first').html();
+
+        
+
         OkButtonClicked(RowID);
     });
 
