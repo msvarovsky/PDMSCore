@@ -39,14 +39,15 @@
         }
     });
 
+    // Toto se Ajaxem neobnovuje a proto to muze zustat 
     $(".GridTable th").click(function () {
-        $(this).parent().addClass('SingleSelected').siblings().removeClass('SingleSelected');
-        var value = $(this).find('td:first').html();
+        $(this).parent().parent().parent().find("tr").removeClass('SingleSelected');
         $('#ModalOk').attr("disabled","");
-        console.log(value);
+        //console.log($(this));
     });
 
-    $(".GridTable td").click(function () {
+    //Nemuzu pouzit toto:  "$(".GridTable td").click(function () {"  na dynamicky generovany obsah.
+    $(document).on("click", '.GridTable td', function (event) {
         $(this).parent().addClass('SingleSelected').siblings().removeClass('SingleSelected');
         var value = $(this).find('td:first').html();
         $('#ModalOk').removeAttr("disabled");
@@ -57,7 +58,8 @@
         OkButtonClicked(null);
     });
 
-    $(".GridTable tr").dblclick(function () {
+    $(document).on("dblclick", '.GridTable tr', function (event) {
+        //console.log("dblclick");
         $(this).addClass('SingleSelected').siblings().removeClass('SingleSelected');
         var RowID = $(this).find('td:first').html();
         OkButtonClicked(RowID);
