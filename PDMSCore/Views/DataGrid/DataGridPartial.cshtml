@@ -5,9 +5,11 @@
 @model PDMSCore.DataManipulation.DataGridField2
 
 
-<table class="GridTable">
+<table class="GridTable" id=@Model.ID>
     <thead>@Model.HtmlTextHeaderRow()</thead>
     <tbody id="DataGridContent"></tbody>
+
+    @*<tbody id="DataGridContent"></tbody>*@
 </table>
 
 <input type="button" id="RefreshGrid" onclick="ReloadDataGrid('gridID-input','Hovno')" />
@@ -16,19 +18,85 @@
 <script>
 
     $(document).ready(function () {
-        ReloadDataGrid("gridID", "any");
+        ReloadDataGrid("gridID", "any", null);
     });
 
-    function ReloadDataGrid(DataGridID, returnFieldID) {
+    //Nemuzu pouzit toto:  "$(".GridTable td").click(function () {"  na dynamicky generovany obsah.
+    $(document).on("click", '.GridTable td', function (event) {
+        $(this).parent().addClass('SingleSelected').siblings().removeClass('SingleSelected');
+        var value = $(this).find('td:first').html();
+        $('#ModalOk').removeAttr("disabled");
+        console.log(value);
+        //GetSelectedRowID($(this).closest('table').attr('id'));
+        var FilterValues = GetHeaderRowValues($(this).closest('table'));
+        ReloadDataGrid("dataGridID-TODO", "bla", FilterValues);
+
+    });
+
+    // Toto se Ajaxem neobnovuje a proto to muze zustat 
+    $(".GridTable th").click(function () {
+        $(this).parent().parent().parent().find("tr").removeClass('SingleSelected');
+        $('#ModalOk').attr("disabled", "");
+        //console.log($(this));
+    });
+
+    $(document).on("dblclick", '.GridTable tr', function (event) {
+        //console.log("dblclick");
+        $(this).addClass('SingleSelected').siblings().removeClass('SingleSelected');
+        var RowID = $(this).find('td:first').html();
+        OkButtonClicked(RowID);
+    });
+
+    function GetHeaderRowValues(Table) {
+        //console.log("TableID = " + TableID);
+
+        var thead = $(Table).find("thead");
+        var HeaderRow = $(thead).find("tr");
+        console.log(HeaderRow);
+
+        //var filtres = $(HeaderRow).find("[id^=filter]");
+        var filtres = $(HeaderRow).find(".filter");
+        console.log(filtres);
+
+        var al = [];
+        for (var i = 0; i < filtres.length; i++) {
+            al.push(filtres[i].value);
+        }
+        for (var i = 0; i < al.length; i++) {
+            console.log(al[i]);
+        }
+
+
+
+        //var row = $(".SingleSelected");
+        //console.log(row);
+        //var rowIndex = $('.GridTable tr').index($(row).closest('tr'));
+        //console.log(rowIndex);
+
+    };
+
+    function GetTableRow(TableID, RowNumber) {
+        var array = new Array();
+        var myTable = document.getElementById(TableID);
+        var current, cell;
+        current = myTable.rows[RowNumber];
+        for (var j = 0; (cell = current.cells[j]); j++) {
+            array.push(cell);
+        }
+        return array;
+    };
+
+    function ReloadDataGrid(DataGridID, returnFieldID, filterValues) {
         $.ajax({
             url: "/DataGrid/GetDataGridContent/",
             
             type: "GET",
-            data: { DataGridID: @Model.ID },
+            data: { DataGridID: @Model.ID, FilterValues = filterValues },
             success: function (partialViewResult) {
                 console.log("ReloadDataGrid");
                 if (partialViewResult.length > 0)
-                    $("#DataGridContent").html(partialViewResult);
+                    //$("#DataGridContent").html(partialViewResult);
+                    $("#DataGridContent").replaceWith(partialViewResult);
             },
             error: function (result) {
                 $("#" + dialogID).html("<span>DataGridPartialView: Ajax failed...</span>");
@@ -42,7 +110,7 @@
         if (value.length > 2) { 
             console.log(">2");
 
-            ReloadDataGrid(FilterID, "any");
+            ReloadDataGrid(FilterID, "any", "");
         }
 
         

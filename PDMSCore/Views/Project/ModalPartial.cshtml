@@ -17,7 +17,6 @@
         {
             @Model.Fields[i].HtmlText();
         }*@
-        <hr />
         @await Html.PartialAsync("~/Views/DataGrid/DataGridPartial.cshtml", (PDMSCore.DataManipulation.DataGridField2) @Model.Fields[0] /*To be changed*/)
     </div>
     <p />
@@ -39,31 +38,11 @@
         }
     });
 
-    // Toto se Ajaxem neobnovuje a proto to muze zustat 
-    $(".GridTable th").click(function () {
-        $(this).parent().parent().parent().find("tr").removeClass('SingleSelected');
-        $('#ModalOk').attr("disabled","");
-        //console.log($(this));
-    });
-
-    //Nemuzu pouzit toto:  "$(".GridTable td").click(function () {"  na dynamicky generovany obsah.
-    $(document).on("click", '.GridTable td', function (event) {
-        $(this).parent().addClass('SingleSelected').siblings().removeClass('SingleSelected');
-        var value = $(this).find('td:first').html();
-        $('#ModalOk').removeAttr("disabled");
-        console.log(value);
-    });
-
     $('.OkBtn').click(function () {
         OkButtonClicked(null);
     });
 
-    $(document).on("dblclick", '.GridTable tr', function (event) {
-        //console.log("dblclick");
-        $(this).addClass('SingleSelected').siblings().removeClass('SingleSelected');
-        var RowID = $(this).find('td:first').html();
-        OkButtonClicked(RowID);
-    });
+
 
     function OkButtonClicked(RowID) {
         var ReturnVariable = document.getElementById("@Model.ReturnFieldID");

@@ -27,7 +27,7 @@ namespace PDMSCore.Controllers
             return PartialView("DataGridPartial", d);
         }
 
-        public ActionResult GetDataGridContent(string DataGridID)
+        public ActionResult GetDataGridContent(string DataGridID, object filters)
         {
             DataGridField2 d = new DataGridField2();
             d.ID = Int32.Parse(DataGridID);
@@ -43,7 +43,7 @@ namespace PDMSCore.Controllers
             d.AddDataRow(tr.MakeCopy());
 
             //return PartialView("DataGridPartialContent", d);
-            return Content(GetString(d.HtmlTextContent()));
+            return Content(GetString(d.HtmlTextTableBody()));
         }
 
         public static string GetString(IHtmlContent content)

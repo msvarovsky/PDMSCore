@@ -78,10 +78,11 @@ namespace PDMSCore.DataManipulation
 
                 if (tr.Cells[i].GetType() == typeof(CheckBoxField))
                 {
-                    DropDownField ddf = new DropDownField("-1", 1);
+                    DropDownField ddf = new DropDownField("filter-ddf-1", 1);
                     ddf.Add(new DropDownOption("-", "(All)"));
                     ddf.Add(new DropDownOption("y", "Yes"));
                     ddf.Add(new DropDownOption("n", "No"));
+                    ddf.AddClass("filter");
 
                     tbHs.InnerHtml.AppendHtml(ddf.HtmlText());
                 }
@@ -92,6 +93,7 @@ namespace PDMSCore.DataManipulation
                     tbInput.Attributes.Add("placeholder", "...");
                     tbInput.Attributes.Add("id", "filter-" + colID);
                     tbInput.Attributes.Add("oninput", "OnDataGridFilterChange(\'filter-" + colID + "\')");
+                    tbInput.AddCssClass("filter");
 
                     tbHs.InnerHtml.AppendHtml(tbInput);
                 }
@@ -104,15 +106,15 @@ namespace PDMSCore.DataManipulation
             return tbTr;
         }
 
-        public TagBuilder HtmlTextContent()
+        public TagBuilder HtmlTextTableBody()
         {
-            TagBuilder tbDiv = new TagBuilder("div");
-            tbDiv.Attributes.Add("id", "DataGridContent");
+            TagBuilder tbTableBody = new TagBuilder("tbody");
+            tbTableBody.Attributes.Add("id", "DataGridContent");
 
             for (int i = 0; i < Data.Count; i++)
-                tbDiv.InnerHtml.AppendHtml(Data[i].HtmlText());
+                tbTableBody.InnerHtml.AppendHtml(Data[i].HtmlText());
 
-            return tbDiv;
+            return tbTableBody;
         }
 
         public override TagBuilder HtmlText()

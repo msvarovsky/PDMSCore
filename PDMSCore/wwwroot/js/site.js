@@ -10,6 +10,7 @@ $(document).ready(function () {
     //window.async.getFromController('/Async/AsyncList', 'list', null);
 
     //$("#PartialViewWrapperHovno").addClass("fjgfdkhjgdf");
+    OpenModal('myModal1', 'Hovno');
 
     $('li ul').slideUp();
     $('.no-js li a.MainMenuLevel1').on("click", function () {
@@ -39,6 +40,11 @@ $(document).ready(function () {
         }
         return false;
     });
+
+
+
+    
+
 });
 
 
@@ -145,7 +151,7 @@ function OpenModal(dialogID, returnFieldID) {
 
     // alert(DialogID);
     // $(DialogID).style.display = "block";
-
+    console.log("OpenModal");
     
     $.ajax({
         url: "/Project/ModalPartial/",

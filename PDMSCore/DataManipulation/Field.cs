@@ -450,17 +450,25 @@ namespace PDMSCore.DataManipulation
     {
         List<DropDownOption> Options { get; set; }
         public int Size { get; set; }
+        private List<string> Classes { get; set; }
 
         public DropDownField(string Id, int VisibleRows = 1)
         {
             Options = new List<DropDownOption>();
             this.NameId = Id;
             this.Size = VisibleRows;
+            Classes = new List<string>();
+            Classes.Add("DropDownOptions");
         }
 
         public void Add(DropDownOption toBeAdded)
         {
             Options.Add(toBeAdded);
+        }
+
+        public void AddClass(string newClass)
+        {
+            Classes.Add(newClass);
         }
 
         public static DropDownField GetRandom(string id, int count)
@@ -477,7 +485,8 @@ namespace PDMSCore.DataManipulation
         public override TagBuilder HtmlText()
         {
             TagBuilder tbDropDown = new TagBuilder("select");
-            tbDropDown.AddCssClass("DropDownOptions");
+            for (int i = 0; i < Classes.Count; i++)
+                tbDropDown.AddCssClass(Classes[i]);
 
             tbDropDown.Attributes.Add("name", NameId);
             if (Size > 1)
