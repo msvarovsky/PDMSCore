@@ -18,7 +18,7 @@
 <script>
 
     $(document).ready(function () {
-        ReloadDataGrid("gridID", "any", null);
+        ReloadDataGrid("gridID", "any");
     });
 
     //Nemuzu pouzit toto:  "$(".GridTable td").click(function () {"  na dynamicky generovany obsah.
@@ -29,8 +29,7 @@
         console.log(value);
         //GetSelectedRowID($(this).closest('table').attr('id'));
         var FilterValues = GetHeaderRowValues($(this).closest('table'));
-        ReloadDataGrid("dataGridID-TODO", "bla", FilterValues);
-
+        ReloadDataGrid("dataGridID-TODO", "bla");
     });
 
     // Toto se Ajaxem neobnovuje a proto to muze zustat 
@@ -60,38 +59,73 @@
 
         var al = [];
         for (var i = 0; i < filtres.length; i++) {
-            al.push(filtres[i].value);
+            //al.push(filtres[i].value);
+            al[i] = filtres[i].value;
+
         }
         for (var i = 0; i < al.length; i++) {
             console.log(al[i]);
         }
-
-
-
-        //var row = $(".SingleSelected");
-        //console.log(row);
-        //var rowIndex = $('.GridTable tr').index($(row).closest('tr'));
-        //console.log(rowIndex);
-
+        return al;
     };
 
-    function GetTableRow(TableID, RowNumber) {
-        var array = new Array();
-        var myTable = document.getElementById(TableID);
-        var current, cell;
-        current = myTable.rows[RowNumber];
-        for (var j = 0; (cell = current.cells[j]); j++) {
-            array.push(cell);
+    function GetHeaderRowValuesFromID(TableID) {
+        //console.log("TableID = " + TableID);
+
+        var table = $("#" + TableID);
+        var HeaderRow = $(table).find("tr");
+        console.log(HeaderRow);
+
+        //var filtres = $(HeaderRow).find("[id^=filter]");
+        var filtres = $(HeaderRow).find(".filter");
+        console.log(filtres);
+
+        var al = [];
+        for (var i = 0; i < filtres.length; i++) {
+            //al.push(filtres[i].value);
+            al[i] = filtres[i].value;
+
         }
-        return array;
+        for (var i = 0; i < al.length; i++) {
+            console.log(al[i]);
+        }
+        return al;
     };
+    //function GetTableRow(TableID, RowNumber) {
+    //    var array = new Array();
+    //    var myTable = document.getElementById(TableID);
+    //    var current, cell;
+    //    current = myTable.rows[RowNumber];
+    //    for (var j = 0; (cell = current.cells[j]); j++) {
+    //        array.push(cell);
+    //    }
+    //    return array;
+    //};
 
-    function ReloadDataGrid(DataGridID, returnFieldID, filterValues) {
+    function ReloadDataGrid(DataGridID, returnFieldID) {
+
+        //var FilterValues = GetHeaderRowValues($(this).closest('table'));
+        var filterValues = GetHeaderRowValuesFromID(@Model.ID);
+
+
         $.ajax({
+            //type: "GET",
+            type: "post",
+            dataType: "json",
             url: "/DataGrid/GetDataGridContent/",
+            traditional: true,
+            data: {
+                DataGridID: @Model.ID,
+                FilterValues: ["ahoj", "martine"],
+            },
+
+            //data: { DataGridID: @Model.ID, FilterValues : filterValues },
+            //data: { DataGridID: @Model.ID, JSON.stringify({ 'FilterValues ': filterValues }) },
             
-            type: "GET",
-            data: { DataGridID: @Model.ID, FilterValues = filterValues },
+            //cache: false,
+            //contentType: "application/json; charset=utf-8",
+            
+
             success: function (partialViewResult) {
                 console.log("ReloadDataGrid");
                 if (partialViewResult.length > 0)
@@ -110,7 +144,7 @@
         if (value.length > 2) { 
             console.log(">2");
 
-            ReloadDataGrid(FilterID, "any", "");
+            //ReloadDataGrid(FilterID, "any", "");
         }
 
         

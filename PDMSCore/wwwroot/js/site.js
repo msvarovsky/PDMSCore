@@ -10,6 +10,7 @@ $(document).ready(function () {
     //window.async.getFromController('/Async/AsyncList', 'list', null);
 
     //$("#PartialViewWrapperHovno").addClass("fjgfdkhjgdf");
+    console.log("site.js-ready");
     OpenModal('myModal1', 'Hovno');
 
     $('li ul').slideUp();
