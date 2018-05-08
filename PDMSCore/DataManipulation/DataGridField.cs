@@ -29,6 +29,14 @@ namespace PDMSCore.DataManipulation
             Data = new List<TableRow2>();
         }
 
+        private static DataGridField2 GetTestData()
+        {
+            DataGridField2 r = new DataGridField2();
+
+
+            return r;
+        }
+
         public void SetHeaderLabels(params string[] a)
         {
             HeaderLabels = a;

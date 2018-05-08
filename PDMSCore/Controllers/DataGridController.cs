@@ -27,7 +27,7 @@ namespace PDMSCore.Controllers
             return PartialView("DataGridPartial", d);
         }
 
-        public ActionResult GetDataGridContent(string DataGridID, string[] filters)
+        public ActionResult GetDataGridContent(string DataGridID, string[] FilterValues)
         {
             DataGridField2 d = new DataGridField2();
             d.ID = Int32.Parse(DataGridID);

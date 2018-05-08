@@ -8,8 +8,6 @@
 <table class="GridTable" id=@Model.ID>
     <thead>@Model.HtmlTextHeaderRow()</thead>
     <tbody id="DataGridContent"></tbody>
-
-    @*<tbody id="DataGridContent"></tbody>*@
 </table>
 
 <input type="button" id="RefreshGrid" onclick="ReloadDataGrid('gridID-input','Hovno')" />
@@ -103,37 +101,31 @@
     //};
 
     function ReloadDataGrid(DataGridID, returnFieldID) {
-
         //var FilterValues = GetHeaderRowValues($(this).closest('table'));
         var filterValues = GetHeaderRowValuesFromID(@Model.ID);
 
-
         $.ajax({
-            //type: "GET",
-            type: "post",
-            dataType: "json",
+            type: "GET",
+            //dataType: "json",  // Nesmi tu byt
             url: "/DataGrid/GetDataGridContent/",
             traditional: true,
             data: {
                 DataGridID: @Model.ID,
-                FilterValues: ["ahoj", "martine"],
+                FilterValues: filterValues,
             },
-
-            //data: { DataGridID: @Model.ID, FilterValues : filterValues },
-            //data: { DataGridID: @Model.ID, JSON.stringify({ 'FilterValues ': filterValues }) },
             
-            //cache: false,
-            //contentType: "application/json; charset=utf-8",
-            
+            contentType: "application/json; charset=utf-8",
 
             success: function (partialViewResult) {
-                console.log("ReloadDataGrid");
+                console.log("ReloadDataGrid: success");
                 if (partialViewResult.length > 0)
                     //$("#DataGridContent").html(partialViewResult);
                     $("#DataGridContent").replaceWith(partialViewResult);
             },
             error: function (result) {
-                $("#" + dialogID).html("<span>DataGridPartialView: Ajax failed...</span>");
+                console.log("ReloadDataGrid: error");
+                console.log(result.statusText + "----");
+                $("#" + @Model.ID).replaceWith("<span>DataGridPartialView: Ajax failed...</span>");
             }
         });
     };
