@@ -49,6 +49,7 @@ namespace PDMSCore.DataManipulation
         public string Tag { get; set; }
 
         public abstract TagBuilder HtmlText();
+        public abstract string GetValue();
 
         public static Field NewLine()
         {
@@ -60,6 +61,11 @@ namespace PDMSCore.DataManipulation
         public static Field GetRandom()
         {
             return null;
+        }
+
+        public override string GetValue()
+        {
+            return "";
         }
 
         public override TagBuilder HtmlText()
@@ -94,6 +100,11 @@ namespace PDMSCore.DataManipulation
             LabelDataGridField n = new LabelDataGridField("Grid", DataGridField.GetRandom());
             return n;
         }
+
+        public override string GetValue()
+        {
+            return "";
+        }
     }
 
     public class LabelField : Field
@@ -126,6 +137,11 @@ namespace PDMSCore.DataManipulation
         {
             return new LabelField("LabelField");
         }
+
+        public override string GetValue()
+        {
+            return HtmlLabel;
+        }
     }
     public class TextAreaField : Field
     {
@@ -151,6 +167,11 @@ namespace PDMSCore.DataManipulation
             tb.Attributes.Add("placeholder", Placeholder);
             tb.InnerHtml.AppendHtml(WebUtility.HtmlEncode(Text));
             return tb;
+        }
+
+        public override string GetValue()
+        {
+            return Text;
         }
     }
     public class LabelTextAreaField : Field
@@ -181,6 +202,11 @@ namespace PDMSCore.DataManipulation
             LabelTextAreaField a = new LabelTextAreaField(id, "TextArea label", null, "holder", 4);
             return a;
         }
+
+        public override string GetValue()
+        {
+            return textArea.GetValue();
+        }
     }
 
     public class TextBoxField : Field
@@ -210,8 +236,6 @@ namespace PDMSCore.DataManipulation
             else
                 tb.AddCssClass(CSS);
 
-
-
             tb.Attributes.Add("name", this.Name);
             tb.Attributes.Add("type", "text");
             if (ToolTip != "") 
@@ -219,6 +243,11 @@ namespace PDMSCore.DataManipulation
             if (PlaceHolder != "")
                 tb.Attributes.Add("placeholder", PlaceHolder);
             return tb;
+        }
+
+        public override string GetValue()
+        {
+            return Text;
         }
     }
     public class LabelTextBoxField : Field
@@ -236,6 +265,11 @@ namespace PDMSCore.DataManipulation
         {
             LabelTextBoxField a = new LabelTextBoxField(Id,Id+":labelText","","placeholder","tooltip");
             return a;
+        }
+
+        public override string GetValue()
+        {
+            return txtb.GetValue();
         }
 
         public override TagBuilder HtmlText()
@@ -272,6 +306,11 @@ namespace PDMSCore.DataManipulation
                 tb.Attributes.Add("multiple", "");
             return tb;
         }
+
+        public override string GetValue()
+        {
+            return Name;
+        }
     }
     public class LabelFileUploadField : Field
     {
@@ -297,6 +336,11 @@ namespace PDMSCore.DataManipulation
             tb.InnerHtml.AppendHtml(label.HtmlText());
             tb.InnerHtml.AppendHtml(fu.HtmlText());
             return tb;
+        }
+
+        public override string GetValue()
+        {
+            return "";
         }
     }
 
@@ -327,6 +371,11 @@ namespace PDMSCore.DataManipulation
             tb.InnerHtml.AppendHtml(aa);
             return tb;
         }
+
+        public override string GetValue()
+        {
+            return Name;
+        }
     }
     public class LabelFileDownloadField : Field
     {
@@ -352,6 +401,11 @@ namespace PDMSCore.DataManipulation
             tb.InnerHtml.AppendHtml(label.HtmlText());
             tb.InnerHtml.AppendHtml(fu.HtmlText());
             return tb;
+        }
+
+        public override string GetValue()
+        {
+            return fu.GetValue();
         }
     }
 
@@ -391,6 +445,11 @@ namespace PDMSCore.DataManipulation
                 tb.Attributes.Add("disabled", "");
             return tb;
         }
+
+        public override string GetValue()
+        {
+            return Value.Value.ToShortDateString();
+        }
     }
     public class LabelDatePickerField : Field
     {   //    <input type="date" name="bday">
@@ -418,6 +477,11 @@ namespace PDMSCore.DataManipulation
             tb.InnerHtml.AppendHtml(DatePicker.HtmlText());
             return tb;
         }
+
+        public override string GetValue()
+        {
+            return DatePicker.GetValue();
+        }
     }
 
     //public class DropDownOption : IHtmlTag
@@ -444,6 +508,11 @@ namespace PDMSCore.DataManipulation
                 tb.Attributes.Add("disabled", "");
             tb.InnerHtml.AppendHtml(Label);
             return tb;
+        }
+
+        public override string GetValue()
+        {
+            return Label;
         }
     }
     public class DropDownField : Field
@@ -502,6 +571,11 @@ namespace PDMSCore.DataManipulation
             }
             return tbDropDown;
         }
+
+        public override string GetValue()
+        {
+            return "DropDownField,GetValue: TODO";
+        }
     }
     public class LabelDropDownField : Field
     {
@@ -530,6 +604,11 @@ namespace PDMSCore.DataManipulation
             tb.InnerHtml.AppendHtml(Dropdown.HtmlText());
             return tb;
         }
+
+        public override string GetValue()
+        {
+            return Dropdown.GetValue();
+        }
     }
 
     public class CheckBoxField : Field
@@ -557,7 +636,6 @@ namespace PDMSCore.DataManipulation
             this.Disabled = wta.ReadOnly;
         }
 
-
         public override TagBuilder HtmlText()
         {
             TagBuilder tbLabelCheckBox = new TagBuilder("div");
@@ -575,6 +653,11 @@ namespace PDMSCore.DataManipulation
 
             tbLabelCheckBox.InnerHtml.AppendHtml(tbCheckBox);
             return tbLabelCheckBox;
+        }
+
+        public override string GetValue()
+        {
+            return Value;
         }
     }
 
@@ -622,68 +705,12 @@ namespace PDMSCore.DataManipulation
         {
             throw new NotImplementedException();
         }
+
+        public override string GetValue()
+        {
+            return Value;
+        }
     }
-    //public class LabelCheckBoxesControl : Field
-    //{
-    //    public LabelField Label { get; set; }
-    //    public string Name { get; set; }
-
-    //    List<LabelCheckBoxField> CheckBoxes { get; set; }
-
-    //    public LabelCheckBoxesControl(string Id, string HtmlLabel)
-    //    {
-    //        this.Name = Id;
-    //        this.Label = new LabelField(HtmlLabel, true);
-    //        CheckBoxes = new List<LabelCheckBoxField>();
-    //    }
-
-    //    //public void Add(string HtmlLabel, string ValueId, bool bChecked, bool bDisabled)
-    //    public void Add(LabelCheckBoxField lcbf)
-    //    {
-    //        LabelCheckBoxField cb = lcbf;
-    //        CheckBoxes.Add(cb);
-    //    }
-
-    //    public static Field GetRandom(int count)
-    //    {
-    //        string GroupName = "lcbc" + DateTime.Now.ToShortDateString();
-    //        LabelCheckBoxesControl c = new LabelCheckBoxesControl(GroupName,"Checkbox global label");
-    //        for (int i = 0; i < count; i++)
-    //        {
-    //            LabelCheckBoxField cb = new LabelCheckBoxField(GroupName, "LCBC global label", GroupName + i.ToString(), i % 2 == 0, false);
-    //            c.CheckBoxes.Add(cb);
-    //        }
-    //        return c;
-    //    }
-
-    //    public override TagBuilder HtmlText()
-    //    {
-    //        TagBuilder tb = new TagBuilder("div");
-    //        tb.AddCssClass("LabelControlDuo");
-
-    //            /*TagBuilder tbControlLabel = new TagBuilder("div");
-    //            tbControlLabel.InnerHtml.AppendHtml(label.HtmlText());*/
-
-    //            TagBuilder tbControl = new TagBuilder("div");
-    //            tbControl.AddCssClass("GroupOfCheckBoxes");
-
-    //                TagBuilder tbForm = new TagBuilder("form");
-    //                tbForm.Attributes.Add("action", "#");
-    //                tbForm.Attributes.Add("method", "get");
-
-    //                //TagBuilder tbCheckboxes = new TagBuilder("div");
-    //                for (int i = 0; i < CheckBoxes.Count; i++)
-    //                    tbForm.InnerHtml.AppendHtml(CheckBoxes[i].HtmlText());
-                    
-    //                //tbForm.InnerHtml.AppendHtml(tbCheckboxes);
-
-    //            tbControl.InnerHtml.AppendHtml(tbForm);
-
-    //        tb.InnerHtml.AppendHtml(Label.HtmlText());
-    //        tb.InnerHtml.AppendHtml(tbControl);
-    //        return tb;
-    //    }
-    //}
     public class LabelRadioButtonField : Field
     {
         public LabelField Label { get; set; }
@@ -729,63 +756,12 @@ namespace PDMSCore.DataManipulation
         {
             throw new NotImplementedException();
         }
+
+        public override string GetValue()
+        {
+            return Value;
+        }
     }
-    //public class LabelRadioButtonsControl : Field
-    //{
-    //    public LabelField label { get; set; }
-    //    List<LabelRadioButtonField> RadioButtons { get; set; }
-
-    //    public LabelRadioButtonsControl(string label)
-    //    {
-    //        this.label = new LabelField(label, true);
-    //        RadioButtons = new List<LabelRadioButtonField>();
-    //    }
-
-    //    public void Add(string text, bool bChecked, bool bDisabled)
-    //    {
-    //        LabelRadioButtonField cb = new LabelRadioButtonField(tagName, text,"error", bChecked, bDisabled);
-    //        RadioButtons.Add(cb);
-    //    }
-
-    //    public static Field GetRandom(int count)
-    //    {
-    //        LabelRadioButtonsControl c = new LabelRadioButtonsControl("Radiobuttons global label");
-    //        for (int i = 0; i < count; i++)
-    //        {
-    //            LabelRadioButtonField cb = new LabelRadioButtonField("cb" + i, "Label cb" + i, "Label cb" + i, i % 2 == 0, false);
-    //            c.RadioButtons.Add(cb);
-    //        }
-    //        return c;
-    //    }
-
-    //    public override TagBuilder HtmlText()
-    //    {
-    //        TagBuilder tb = new TagBuilder("div");
-    //        tb.AddCssClass("LabelControlDuo");
-
-    //        /*TagBuilder tbControlLabel = new TagBuilder("div");
-    //        tbControlLabel.InnerHtml.AppendHtml(label.HtmlText());*/
-
-    //        TagBuilder tbControl = new TagBuilder("div");
-    //        tbControl.AddCssClass("GroupOfCheckBoxes");
-
-    //        TagBuilder tbForm = new TagBuilder("form");
-    //        tbForm.Attributes.Add("action", "#");
-    //        tbForm.Attributes.Add("method", "get");
-
-    //        //TagBuilder tbCheckboxes = new TagBuilder("div");
-    //        for (int i = 0; i < RadioButtons.Count; i++)
-    //            tbForm.InnerHtml.AppendHtml(RadioButtons[i].HtmlText());
-            
-    //        //tbForm.InnerHtml.AppendHtml(tbCheckboxes);
-
-    //        tbControl.InnerHtml.AppendHtml(tbForm);
-
-    //        tb.InnerHtml.AppendHtml(label.HtmlText());
-    //        tb.InnerHtml.AppendHtml(tbControl);
-    //        return tb;
-    //    }
-    //}
     enum GroupControlType
     {
         RadioBoxes,
@@ -852,6 +828,11 @@ namespace PDMSCore.DataManipulation
             tb.InnerHtml.AppendHtml(Label.HtmlText());
             tb.InnerHtml.AppendHtml(tbControl);
             return tb;
+        }
+
+        public override string GetValue()
+        {
+            return "";
         }
     }
 

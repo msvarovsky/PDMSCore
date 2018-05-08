@@ -24,10 +24,11 @@
         $(this).parent().addClass('SingleSelected').siblings().removeClass('SingleSelected');
         var value = $(this).find('td:first').html();
         $('#ModalOk').removeAttr("disabled");
-        console.log(value);
+        console.log("click: .GridTable td");
         //GetSelectedRowID($(this).closest('table').attr('id'));
-        var FilterValues = GetHeaderRowValues($(this).closest('table'));
-        ReloadDataGrid("dataGridID-TODO", "bla");
+
+        //var FilterValues = GetHeaderRowValues($(this).closest('table'));
+        //ReloadDataGrid("dataGridID-TODO", "bla");
     });
 
     // Toto se Ajaxem neobnovuje a proto to muze zustat 
@@ -44,39 +45,16 @@
         OkButtonClicked(RowID);
     });
 
-    function GetHeaderRowValues(Table) {
-        //console.log("TableID = " + TableID);
-
-        var thead = $(Table).find("thead");
-        var HeaderRow = $(thead).find("tr");
-        console.log(HeaderRow);
-
-        //var filtres = $(HeaderRow).find("[id^=filter]");
-        var filtres = $(HeaderRow).find(".filter");
-        console.log(filtres);
-
-        var al = [];
-        for (var i = 0; i < filtres.length; i++) {
-            //al.push(filtres[i].value);
-            al[i] = filtres[i].value;
-
-        }
-        for (var i = 0; i < al.length; i++) {
-            console.log(al[i]);
-        }
-        return al;
-    };
-
     function GetHeaderRowValuesFromID(TableID) {
         //console.log("TableID = " + TableID);
 
         var table = $("#" + TableID);
         var HeaderRow = $(table).find("tr");
-        console.log(HeaderRow);
+        console.log("GetHeaderRowValuesFromID");
 
         //var filtres = $(HeaderRow).find("[id^=filter]");
         var filtres = $(HeaderRow).find(".filter");
-        console.log(filtres);
+        //console.log(filtres);
 
         var al = [];
         for (var i = 0; i < filtres.length; i++) {
@@ -84,21 +62,11 @@
             al[i] = filtres[i].value;
 
         }
-        for (var i = 0; i < al.length; i++) {
-            console.log(al[i]);
-        }
+        //for (var i = 0; i < al.length; i++) {
+        //    console.log(al[i]);
+        //}
         return al;
     };
-    //function GetTableRow(TableID, RowNumber) {
-    //    var array = new Array();
-    //    var myTable = document.getElementById(TableID);
-    //    var current, cell;
-    //    current = myTable.rows[RowNumber];
-    //    for (var j = 0; (cell = current.cells[j]); j++) {
-    //        array.push(cell);
-    //    }
-    //    return array;
-    //};
 
     function ReloadDataGrid(DataGridID, returnFieldID) {
         //var FilterValues = GetHeaderRowValues($(this).closest('table'));
@@ -124,43 +92,29 @@
             },
             error: function (result) {
                 console.log("ReloadDataGrid: error");
-                console.log(result.statusText + "----");
                 $("#" + @Model.ID).replaceWith("<span>DataGridPartialView: Ajax failed...</span>");
             }
         });
     };
 
+
+    //$(document).keyup(function (e) {
+    //    if (e.keyCode == 13) {
+    //        ReloadDataGrid('gridID-input', 'Hovno')
+    //    }
+    //});
+
     function OnDataGridFilterChange(FilterID) {
         console.log("OnDataGridFilterChange");
         var value = $("#" + FilterID).val();
-        if (value.length > 2) { 
-            console.log(">2");
+        ReloadDataGrid('gridID-input', 'Hovno')
 
-            //ReloadDataGrid(FilterID, "any", "");
-        }
+        //if (value.length > 2) { 
+        //    console.log(">2");
+        //    ReloadDataGrid('gridID-input', 'Hovno')
+        //}
 
         
     };
     
-    //$("input[id^='filter-']").keyup(function (e) {
-    //        console.log("Char");
-    //});
-
-    @*function ReloadDataGrid(DataGridID, returnFieldID) {
-        $.ajax({
-            url: "/DataGridContent/GetDataGridContent/",
-            
-            type: "GET",
-            data: { DataGridID: @Model.ID },
-            success: function (partialViewResult) {
-                console.log("ReloadDataGrid");
-                if (partialViewResult.length > 0)
-                    $("#DataGridContent").html(partialViewResult);
-            },
-            error: function (result) {
-                $("#" + dialogID).html("<span>DataGridPartialView: Ajax failed...</span>");
-            }
-        });
-    };*@
-
 </script>

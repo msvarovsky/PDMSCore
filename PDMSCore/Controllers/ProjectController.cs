@@ -63,7 +63,7 @@ namespace PDMSCore.Controllers
         [HttpGet]
         public ActionResult ShowProject()
         {
-            int PanelID = 1;
+            //int PanelID = 1;
 
             //p = Project.GetProject(PanelID);
             p = new Project();

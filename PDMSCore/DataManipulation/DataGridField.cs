@@ -29,12 +29,70 @@ namespace PDMSCore.DataManipulation
             Data = new List<TableRow2>();
         }
 
-        private static DataGridField2 GetTestData()
+        public static DataGridField2 GetTestData(int ID)
         {
-            DataGridField2 r = new DataGridField2();
+            DataGridField2 d = new DataGridField2();
+            d.ID = ID;
+            d.SetHeaderLabels("Jmeno", "Prijmeni", "Aktivni");
 
+            TableRow2 tr = new TableRow2();
+            tr.AddColumnCell(new LabelField("Martin-" + DateTime.Now.Second));
+            tr.AddColumnCell(new LabelField("Svarovsky"));
+            tr.AddColumnCell(new CheckBoxField("", "", true, new WebTagAttributes(true, "")));
+            d.AddDataRow(tr, 1);
 
-            return r;
+            tr = new TableRow2();
+            tr.AddColumnCell(new LabelField("Cecile-" + DateTime.Now.Second));
+            tr.AddColumnCell(new LabelField("Svarovska"));
+            tr.AddColumnCell(new CheckBoxField("", "", true, new WebTagAttributes(true, "")));
+            d.AddDataRow(tr);
+
+            tr = new TableRow2();
+            tr.AddColumnCell(new LabelField("Jitka-" + DateTime.Now.Second));
+            tr.AddColumnCell(new LabelField("Svarovska"));
+            tr.AddColumnCell(new CheckBoxField("", "", true, new WebTagAttributes(true, "")));
+            d.AddDataRow(tr);
+
+            tr = new TableRow2();
+            tr.AddColumnCell(new LabelField("Astrid-" + DateTime.Now.Second));
+            tr.AddColumnCell(new LabelField("Svarovska"));
+            tr.AddColumnCell(new CheckBoxField("", "", true, new WebTagAttributes(true, "")));
+            d.AddDataRow(tr);
+
+            tr = new TableRow2();
+            tr.AddColumnCell(new LabelField("Lubos-" + DateTime.Now.Second));
+            tr.AddColumnCell(new LabelField("Svarovsky"));
+            tr.AddColumnCell(new CheckBoxField("", "", true, new WebTagAttributes(true, "")));
+            d.AddDataRow(tr);
+
+            tr = new TableRow2();
+            tr.AddColumnCell(new LabelField("Dominique-" + DateTime.Now.Second));
+            tr.AddColumnCell(new LabelField("Champagne"));
+            tr.AddColumnCell(new CheckBoxField("", "", true, new WebTagAttributes(true, "")));
+            d.AddDataRow(tr);
+
+            tr = new TableRow2();
+            tr.AddColumnCell(new LabelField("Nadine-" + DateTime.Now.Second));
+            tr.AddColumnCell(new LabelField("Champagne"));
+            tr.AddColumnCell(new CheckBoxField("", "", true, new WebTagAttributes(true, "")));
+            d.AddDataRow(tr);
+
+            tr = new TableRow2();
+            tr.AddColumnCell(new LabelField("Thomas-" + DateTime.Now.Second));
+            tr.AddColumnCell(new LabelField("Champagne"));
+            tr.AddColumnCell(new CheckBoxField("", "", true, new WebTagAttributes(true, "")));
+            d.AddDataRow(tr);
+
+            tr = new TableRow2();
+            tr.AddColumnCell(new LabelField("Noemie-" + DateTime.Now.Second));
+            tr.AddColumnCell(new LabelField("JeNeSaisPas"));
+            tr.AddColumnCell(new CheckBoxField("", "", true, new WebTagAttributes(true, "")));
+            d.AddDataRow(tr);
+
+            /*d.AddDataRow(tr.MakeCopy());
+            d.AddDataRow(tr.MakeCopy());*/
+
+            return d;
         }
 
         public void SetHeaderLabels(params string[] a)
@@ -51,6 +109,35 @@ namespace PDMSCore.DataManipulation
 
             Data.Add(tr);
             return true;
+        }
+
+        private string[] ToLowerCase(string[] f)
+        {
+            string[] ret = new string[f.Length];
+
+            for (int i = 0; i < f.Length; i++)
+            {
+                if (f[i] == null)
+                    continue;
+                ret[i] = f[i].ToLower();
+            }
+
+
+            return ret;
+        }
+
+        public void ApplyFilters(string[] filters, FilteringType ft )
+        {
+            filters = ToLowerCase(filters);
+
+            for (int r = 0; r < Data.Count; r++)
+            {
+                if (!Data[r].DoesRowComplyWithFilters(filters, ft))
+                {
+                    Data.RemoveAt(r);
+                    r--;
+                }
+            }
         }
 
         public TagBuilder HtmlTextHeaderRow()
@@ -87,7 +174,7 @@ namespace PDMSCore.DataManipulation
                 if (tr.Cells[i].GetType() == typeof(CheckBoxField))
                 {
                     DropDownField ddf = new DropDownField("filter-ddf-1", 1);
-                    ddf.Add(new DropDownOption("-", "(All)"));
+                    ddf.Add(new DropDownOption("", "(All)"));
                     ddf.Add(new DropDownOption("y", "Yes"));
                     ddf.Add(new DropDownOption("n", "No"));
                     ddf.AddClass("filter");
@@ -143,6 +230,18 @@ namespace PDMSCore.DataManipulation
 
             return tb;
         }
+
+        public override string GetValue()
+        {
+            return "";
+        }
+    }
+
+    public enum FilteringType
+    {
+        StartWith,
+        Contain,
+        ContainWithAsterisks
     }
 
     public class TableRow2: IHtmlTag
@@ -153,6 +252,24 @@ namespace PDMSCore.DataManipulation
         public TableRow2()
         {
             Cells = new List<Field>();
+        }
+
+        public bool DoesRowComplyWithFilters(string[] filter, FilteringType ft)
+        {
+            if (ft == FilteringType.StartWith)
+            {
+                for (int c = 0; c < Cells.Count; c++)
+                {
+                    if (filter[c] == null || filter[c] == "")
+                        continue;
+                    else
+                    {
+                        if (Cells[c].GetValue().ToLower().IndexOf(filter[c]) != 0)
+                            return false;
+                    }
+                }
+            }
+            return true;
         }
 
         public void AddColumnCell(Field f)
@@ -281,6 +398,11 @@ namespace PDMSCore.DataManipulation
                 tb.InnerHtml.AppendHtml(DataRow[i].HtmlText());
 
             return tb;
+        }
+
+        public override string GetValue()
+        {
+            return "";
         }
     }
 

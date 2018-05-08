@@ -29,7 +29,7 @@ namespace PDMSCore.Controllers
 
         public ActionResult GetDataGridContent(string DataGridID, string[] FilterValues)
         {
-            DataGridField2 d = new DataGridField2();
+            /*DataGridField2 d = new DataGridField2();
             d.ID = Int32.Parse(DataGridID);
             d.SetHeaderLabels("Jmeno", "Prijmeni", "Aktivni");
 
@@ -40,9 +40,14 @@ namespace PDMSCore.Controllers
 
             d.AddDataRow(tr, 1);
             d.AddDataRow(tr.MakeCopy());
-            d.AddDataRow(tr.MakeCopy());
+            d.AddDataRow(tr.MakeCopy());*/
 
-            //return PartialView("DataGridPartialContent", d);
+            int id = Int32.Parse(DataGridID);
+            DataGridField2 d = DataGridField2.GetTestData(id);
+            d.ApplyFilters(FilterValues, FilteringType.StartWith);
+
+
+
             return Content(GetString(d.HtmlTextTableBody()));
         }
 
