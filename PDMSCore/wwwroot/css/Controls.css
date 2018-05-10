@@ -94,7 +94,30 @@
     border-spacing: 0;
     /*musi byt kvuli collapse*/
     font-size: 0.9em;
+
+
+
 }
+
+#GridTableWrapper{
+    position:relative;
+  }
+
+#GridTableScroll{
+    height:7em;
+    overflow:auto;  
+    margin-top:50px;
+}
+
+#GridTableWrapper table thead th .HeadCell {
+    position:absolute;   
+    top:-50px;
+    z-index:2;
+    height:20px;
+    width:35%;
+}
+
+
 
 th {
     border-right: 1px solid var(--InnerBorderColor);

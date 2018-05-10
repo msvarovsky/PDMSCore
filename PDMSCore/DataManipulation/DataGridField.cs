@@ -20,6 +20,7 @@ namespace PDMSCore.DataManipulation
     public class DataGridField2 : Field
     {
         public int ID { get; set; }
+        public int nVisibleRows { get; set; }
         private List<TableRow2> Data;
         private string[] HeaderLabels;
 
@@ -27,6 +28,7 @@ namespace PDMSCore.DataManipulation
         {
             HeaderLabels = null;
             Data = new List<TableRow2>();
+            nVisibleRows = 5;
         }
 
         public static DataGridField2 GetTestData(int ID)

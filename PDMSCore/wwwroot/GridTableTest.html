@@ -19,92 +19,251 @@
 	});
 </script>
 
-
+<!-- http://jsfiddle.net/TweNm/ -->
+<!-- https://stackoverflow.com/questions/8232713/how-to-display-scroll-bar-onto-a-html-table -->
 <body>
-	<table class="GridTable">
-		<tr>
-			<th style="display:none">
-				<div class="HeadCell">
-					<HeaderLabel>ID</HeaderLabel>
-					<HeaderSearch>
-						<input type="text" value="Ahoj">
-					</HeaderSearch>
-				</div>
-			</th>
-			<th>
-				<div class="HeadCell">
-					<HeaderLabel>Project</HeaderLabel>
-					<HeaderSearch>
-						<input type="text" value="Ahoj">
-					</HeaderSearch>
-				</div>
-			</th>
-			<th>
-				<div class="HeadCell">
-					<HeaderLabel>Manager</HeaderLabel>
-					<HeaderSearch>
-						<input type="text" value="Ahoj">
-					</HeaderSearch>
-				</div>
-			</th>
-			<th>
-				<div class="HeadCell">
-					<HeaderLabel>Supplier</HeaderLabel>
-					<HeaderSearch>
-						<input type="text" value="Ahoj">
-					</HeaderSearch>
-				</div>
-			</th>
-		</tr>
-		<div id="aa">
-			<tr>
-				<td style="display:none">
-					<div class="Cell">
-						1
-					</div>
-				</td>
-				<td>
-					<div class="Cell">
-						<input type="text" class="tbDataGrid">
-					</div>
-				</td>
-				<td>
-					<div class="Cell">
-						Cell
-					</div>
-				</td>
-				<td>
-					<div class="Cell">
-						Cell
-					</div>
-				</td>
-			</tr>
-			<tr>
-				<td style="display:none">
-					<div class="Cell">
-						1
-					</div>
-				</td>
-				<td>
-					<div class="Cell">
-						Cell
-					</div>
-				</td>
-				<td>
-					<div class="Cell">
-						Cell
-					</div>
-				</td>
-				<td>
-					<div class="Cell">
-						Cell
-					</div>
-				</td>
-			</tr>
+	<div id="GridTableWrapper">
+		<div id="GridTableScroll">
+			<table class="GridTable">
+				<thead>
+					<tr>
+						<th style="display:none">
+							<div class="HeadCell">
+								<HeaderLabel>ID</HeaderLabel>
+								<HeaderSearch>
+									<input type="text" value="Ahoj">
+								</HeaderSearch>
+							</div>
+						</th>
+						<th>
+							<div class="HeadCell">
+								<HeaderLabel>Project</HeaderLabel>
+								<HeaderSearch>
+									<input type="text" value="Ahoj">
+								</HeaderSearch>
+							</div>
+						</th>
+						<th>
+							<div class="HeadCell">
+								<HeaderLabel>Manager</HeaderLabel>
+								<HeaderSearch>
+									<input type="text" value="Ahoj">
+								</HeaderSearch>
+							</div>
+						</th>
+						<th>
+							<div class="HeadCell">
+								<HeaderLabel>Supplier</HeaderLabel>
+								<HeaderSearch>
+									<input type="text" value="Ahoj">
+								</HeaderSearch>
+							</div>
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td style="display:none">
+							<div class="Cell">
+								1
+							</div>
+						</td>
+						<td>
+							<div class="Cell">
+								<input type="text" class="tbDataGrid" value="1">
+							</div>
+						</td>
+						<td>
+							<div class="Cell">
+								Cell
+							</div>
+						</td>
+						<td>
+							<div class="Cell">
+								Cell
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td style="display:none">
+							<div class="Cell">
+								2
+							</div>
+						</td>
+						<td>
+							<div class="Cell">
+								2
+							</div>
+						</td>
+						<td>
+							<div class="Cell">
+								Cell
+							</div>
+						</td>
+						<td>
+							<div class="Cell">
+								Cell
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td style="display:none">
+							<div class="Cell">
+								3
+							</div>
+						</td>
+						<td>
+							<div class="Cell">
+								3
+							</div>
+						</td>
+						<td>
+							<div class="Cell">
+								Cell
+							</div>
+						</td>
+						<td>
+							<div class="Cell">
+								Cell
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td style="display:none">
+							<div class="Cell">
+								4
+							</div>
+						</td>
+						<td>
+							<div class="Cell">
+								4
+							</div>
+						</td>
+						<td>
+							<div class="Cell">
+								Cell
+							</div>
+						</td>
+						<td>
+							<div class="Cell">
+								Cell
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td style="display:none">
+							<div class="Cell">
+								5
+							</div>
+						</td>
+						<td>
+							<div class="Cell">
+								5
+							</div>
+						</td>
+						<td>
+							<div class="Cell">
+								Cell
+							</div>
+						</td>
+						<td>
+							<div class="Cell">
+								Cell
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td style="display:none">
+							<div class="Cell">
+								5
+							</div>
+						</td>
+						<td>
+							<div class="Cell">
+								5
+							</div>
+						</td>
+						<td>
+							<div class="Cell">
+								Cell
+							</div>
+						</td>
+						<td>
+							<div class="Cell">
+								Cell
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td style="display:none">
+							<div class="Cell">
+								5
+							</div>
+						</td>
+						<td>
+							<div class="Cell">
+								5
+							</div>
+						</td>
+						<td>
+							<div class="Cell">
+								Cell
+							</div>
+						</td>
+						<td>
+							<div class="Cell">
+								Cell
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td style="display:none">
+							<div class="Cell">
+								5
+							</div>
+						</td>
+						<td>
+							<div class="Cell">
+								5
+							</div>
+						</td>
+						<td>
+							<div class="Cell">
+								Cell
+							</div>
+						</td>
+						<td>
+							<div class="Cell">
+								Cell
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td style="display:none">
+							<div class="Cell">
+								5
+							</div>
+						</td>
+						<td>
+							<div class="Cell">
+								5
+							</div>
+						</td>
+						<td>
+							<div class="Cell">
+								Cell
+							</div>
+						</td>
+						<td>
+							<div class="Cell">
+								Cell
+							</div>
+						</td>
+					</tr>
+				</tbody>
+			</table>
 		</div>
-		
-
-	</table>
+	</div>
 </body>
 
 
