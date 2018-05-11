@@ -9,21 +9,48 @@
 	<!-- http://www.bacubacu.com/colresizable/ -->
 </head>
 <script>
-	$(function () {
-		$(".GridTable").colResizable({
-			liveDrag: true,
-			postbackSafe: true,
-			partialRefresh: true
-			// headerOnly: true
-		});
-	});
+	// $(function () {
+	// 	$(".GridTable").colResizable({
+	// 		liveDrag: true,
+	// 		postbackSafe: true,
+	// 		partialRefresh: true
+	// 	});
+	// });
+
+
+	
+	console.log("$bodyCells");
+
+	// Adjust the width of thead cells when window resizes
+	$(window).resize(function() {
+
+	var $table = $('table.GridTable');
+	var $bodyCells = $table.find('tbody tr:first').children();
+	var colWidth;
+
+		console.log("resize");
+		// Get the tbody columns width array
+		colWidth = $bodyCells.map(function() {
+			return $(this).width();
+		}).get();
+		
+		// Set the width of thead columns
+		$table.find('thead tr').children().each(function(i, v) {
+			
+			console.log("pred: " + $(v).width());
+			console.log("zmena: " + colWidth[i]);
+			$(v).width(colWidth[i]);
+			console.log("po  : " + $(v).width());
+		});    
+	}).resize(); // Trigger resize handler
+
 </script>
 
 <!-- http://jsfiddle.net/TweNm/ -->
 <!-- https://stackoverflow.com/questions/8232713/how-to-display-scroll-bar-onto-a-html-table -->
 <body>
-	<div id="GridTableWrapper">
-		<div id="GridTableScroll">
+	<!-- <div id="GridTableWrapper">
+		<div id="GridTableScroll"> -->
 			<table class="GridTable">
 				<thead>
 					<tr>
@@ -92,7 +119,7 @@
 						</td>
 						<td>
 							<div class="Cell">
-								2
+								2.
 							</div>
 						</td>
 						<td>
@@ -262,8 +289,8 @@
 					</tr>
 				</tbody>
 			</table>
-		</div>
-	</div>
+		<!-- </div>
+	</div> -->
 </body>
 
 

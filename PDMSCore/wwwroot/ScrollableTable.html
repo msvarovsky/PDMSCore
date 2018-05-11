@@ -1,0 +1,126 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+
+<head>
+    <link rel="stylesheet" href="./css/Controls.css">
+    <script src="./js/jquery-3.3.1.min.js"></script>
+    <style>
+
+
+        table.GridTable tbody,
+        table.GridTable thead { display: block; }
+
+        td, th{
+            border:1px solid black;
+        }
+
+        table.GridTable tbody {
+            height: 60px;
+            overflow-x: hidden;
+        }
+    </style>
+    <script>
+        console.log("script");
+        // Change the selector if needed
+        
+
+        // Adjust the width of thead cells when window resizes
+        $(window).resize(function() {
+
+            var $table = $('table.GridTable');
+            var $bodyCells = $table.find('tbody tr:first').children();
+            var colWidth;
+            
+            // Get the tbody columns width array
+            colWidth = $bodyCells.map(function() {
+                console.log("map");
+                return $(this).width();
+            }).get();
+            
+            // Set the width of thead columns
+            $table.find('thead tr').children().each(function(i, v) {
+                console.log("each");
+                $(v).width(colWidth[i]);
+            });    
+        }).resize(); // Trigger resize handler
+    </script>
+</head>
+<body>
+    <table class="GridTable">
+        <thead>
+            <tr>
+                <th style="display:none">
+                    <div class="HeadCell">
+                            <div>ID</div>
+                            <HeaderSearch>
+                                1
+                            </HeaderSearch>
+                    </div>
+                </th>
+                <th>
+                    <div class="HeadCell">
+                            <div>project</div>
+                            <HeaderSearch>
+                               2
+                            </HeaderSearch>
+                    </div>
+                </th>
+                <th>
+                    <div class="HeadCell">
+                            <div>p</div>
+                            <HeaderSearch>
+                                3
+                            </HeaderSearch>
+                    </div>
+                </th>
+                <th>
+                    <div class="HeadCell">
+                            <div>p</div>
+                            <HeaderSearch>
+                                4
+                            </HeaderSearch>
+                    </div>
+                </th>
+                <th>
+                    <div class="HeadCell">
+                            <div>p</div>
+                            <HeaderSearch>
+                                5
+                            </HeaderSearch>
+                    </div>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td style="display:none">Content 1</td>
+                <td>Content 2</td>
+                <td>Content 3</td>
+                <td>Content 4</td>
+                <td>Content 5</td>
+            </tr>
+            <tr>
+                <td style="display:none">Content 2</td>
+                <td>Lorem ipsum dolor sit amet.</td>
+                <td>Content 3</td>
+                <td>Content 4</td>
+                <td>Content 5</td>
+            </tr>
+            <tr>
+                <td style="display:none">Content 1</td>
+                <td>Content 2</td>
+                <td>Content 3</td>
+                <td>Content 4</td>
+                <td>Content 5</td>
+            </tr>
+            <tr>
+                <td style="display:none">Content 1</td>
+                <td>Content 2</td>
+                <td>Content 3</td>
+                <td>Content 4</td>
+                <td>Content 5</td>
+            </tr>
+
+        </tbody>
+    </table>
+</body>
