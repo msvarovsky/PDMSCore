@@ -21,6 +21,7 @@ namespace PDMSCore.DataManipulation
     {
         public int ID { get; set; }
         public int nVisibleRows { get; set; }
+        public string FocusControlID { get; set; }
         private List<TableRow2> Data;
         private string[] HeaderLabels;
 
@@ -100,6 +101,7 @@ namespace PDMSCore.DataManipulation
         public void SetHeaderLabels(params string[] a)
         {
             HeaderLabels = a;
+            FocusControlID = "filter-" + HeaderLabels[0];
         }
 
         public bool AddDataRow(TableRow2 tr, int? id = null)

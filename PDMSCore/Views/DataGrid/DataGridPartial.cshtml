@@ -17,7 +17,32 @@
 
     $(document).ready(function () {
         ReloadDataGrid("gridID", "any");
+        document.getElementById("@Model.FocusControlID").focus();
+        ResizeColumns();
     });
+
+    function ResizeColumns() { 
+
+    };
+
+    $(window).resize(function () {
+
+        var $table = $('table.GridTable');
+        var $bodyCells = $table.find('tbody tr:first').children();
+        var colWidth;
+
+        // Get the tbody columns width array
+        colWidth = $bodyCells.map(function () {
+            console.log("map");
+            return $(this).width();
+        }).get();
+
+        // Set the width of thead columns
+        $table.find('thead tr').children().each(function (i, v) {
+            console.log("each");
+            $(v).width(colWidth[i]);
+        });
+    }).resize(); // Trigger resize handler
 
     //Nemuzu pouzit toto:  "$(".GridTable td").click(function () {"  na dynamicky generovany obsah.
     $(document).on("click", '.GridTable td', function (event) {

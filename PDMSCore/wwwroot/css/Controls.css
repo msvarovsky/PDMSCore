@@ -99,8 +99,13 @@ table.GridTable tbody,
 table.GridTable thead { display: block; }
 
 table.GridTable tbody {
-    height: 100px;
+    height: 120px;
     overflow-x: hidden;
+}
+
+table.GridTable thead tr th,
+table.GridTable tbody tr td{
+    min-width:70px;
 }
 
 

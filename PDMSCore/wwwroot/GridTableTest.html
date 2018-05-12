@@ -22,11 +22,13 @@
 	console.log("$bodyCells");
 
 	// Adjust the width of thead cells when window resizes
-	$(window).resize(function() {
+	$(window).resize(ResizeColumns()); // Trigger resize handler
 
-	var $table = $('table.GridTable');
-	var $bodyCells = $table.find('tbody tr:first').children();
-	var colWidth;
+	function ResizeColumns() {
+
+		var $table = $('table.GridTable');
+		var $bodyCells = $table.find('tbody tr:first').children();
+		var colWidth;
 
 		console.log("resize");
 		// Get the tbody columns width array
@@ -42,7 +44,7 @@
 			$(v).width(colWidth[i]);
 			console.log("po  : " + $(v).width());
 		});    
-	}).resize(); // Trigger resize handler
+	}
 
 </script>
 

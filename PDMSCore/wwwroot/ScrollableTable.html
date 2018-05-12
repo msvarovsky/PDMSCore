@@ -7,7 +7,7 @@
     <style>
 
 
-        table.GridTable tbody,
+        /* table.GridTable tbody,
         table.GridTable thead { display: block; }
 
         td, th{
@@ -17,7 +17,7 @@
         table.GridTable tbody {
             height: 60px;
             overflow-x: hidden;
-        }
+        } */
     </style>
     <script>
         console.log("script");
@@ -25,7 +25,7 @@
         
 
         // Adjust the width of thead cells when window resizes
-        $(window).resize(function() {
+        /*$(window).resize(function() {
 
             var $table = $('table.GridTable');
             var $bodyCells = $table.find('tbody tr:first').children();
@@ -43,6 +43,32 @@
                 $(v).width(colWidth[i]);
             });    
         }).resize(); // Trigger resize handler
+        */
+
+        $(window).resize(ResizeColumns()); // Trigger resize handler
+
+        function ResizeColumns() {
+            var $table = $('table.GridTable');
+            var $bodyCells = $table.find('tbody tr:first').children();
+            var colWidth;
+
+            console.log("resize");
+            // Get the tbody columns width array
+            colWidth = $bodyCells.map(function() {
+                return $(this).width();
+            }).get();
+
+            // Set the width of thead columns
+            $table.find('thead tr').children().each(function(i, v) {
+                
+                console.log("pred: " + $(v).width());
+                console.log("zmena: " + colWidth[i]);
+                $(v).width(colWidth[i]);
+                console.log("po  : " + $(v).width());
+            });    
+        }
+
+
     </script>
 </head>
 <body>
@@ -61,7 +87,7 @@
                     <div class="HeadCell">
                             <div>project</div>
                             <HeaderSearch>
-                               2
+                                <input class="filter" id="filter-Jmeno" oninput="OnDataGridFilterChange('filter-Jmeno')" placeholder="..." type="text">
                             </HeaderSearch>
                     </div>
                 </th>
@@ -94,32 +120,39 @@
         <tbody>
             <tr>
                 <td style="display:none">Content 1</td>
-                <td>Content 2</td>
-                <td>Content 3</td>
-                <td>Content 4</td>
-                <td>Content 5</td>
+                <td><div class="Cell"><label class="LabelField">Martin-26</label></div></td>
+                <td>Content 3</td><td>Content 4</td><td>Content 5</td>
             </tr>
             <tr>
                 <td style="display:none">Content 2</td>
                 <td>Lorem ipsum dolor sit amet.</td>
-                <td>Content 3</td>
-                <td>Content 4</td>
-                <td>Content 5</td>
+                <td>Content 3</td><td>Content 4</td><td>Content 5</td>
             </tr>
             <tr>
                 <td style="display:none">Content 1</td>
-                <td>Content 2</td>
-                <td>Content 3</td>
-                <td>Content 4</td>
-                <td>Content 5</td>
+                <td>Content 2</td><td>Content 3</td><td>Content 4</td><td>Content 5</td>
             </tr>
             <tr>
                 <td style="display:none">Content 1</td>
-                <td>Content 2</td>
-                <td>Content 3</td>
-                <td>Content 4</td>
-                <td>Content 5</td>
+                <td>Content 2</td><td>Content 3</td><td>Content 4</td><td>Content 5</td>
             </tr>
+            <tr>
+                <td style="display:none">Content 1</td>
+                <td>Content 2</td><td>Content 3</td><td>Content 4</td><td>Content 5</td>
+            </tr>
+            <tr>
+                <td style="display:none">Content 1</td>
+                <td>Content 2</td><td>Content 3</td><td>Content 4</td><td>Content 5</td>
+            </tr>
+            <tr>
+                <td style="display:none">Content 1</td>
+                <td>Content 2</td><td>Content 3</td><td>Content 4</td><td>Content 5</td>
+            </tr>
+            <tr>
+                <td style="display:none">Content 1</td>
+                <td>Content 2</td><td>Content 3</td><td>Content 4</td><td>Content 5</td>
+            </tr>
+            
 
         </tbody>
     </table>
