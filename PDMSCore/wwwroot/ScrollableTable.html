@@ -4,25 +4,16 @@
 <head>
     <link rel="stylesheet" href="./css/Controls.css">
     <script src="./js/jquery-3.3.1.min.js"></script>
-    <style>
 
-
-        /* table.GridTable tbody,
-        table.GridTable thead { display: block; }
-
-        td, th{
-            border:1px solid black;
-        }
-
-        table.GridTable tbody {
-            height: 60px;
-            overflow-x: hidden;
-        } */
-    </style>
     <script>
-        console.log("script");
-        // Change the selector if needed
+
+        $(document).ready(function () {
+            console.log("script");
+            ResizeColumns();
+        });
+
         
+        // Change the selector if needed
 
         // Adjust the width of thead cells when window resizes
         /*$(window).resize(function() {
@@ -45,14 +36,20 @@
         }).resize(); // Trigger resize handler
         */
 
-        $(window).resize(ResizeColumns()); // Trigger resize handler
+        
+
+        $(window).resize(function() {
+            console.log("resize");
+            ResizeColumns();
+        }).resize(); // Trigger resize handler
+        
 
         function ResizeColumns() {
             var $table = $('table.GridTable');
             var $bodyCells = $table.find('tbody tr:first').children();
             var colWidth;
 
-            console.log("resize");
+            console.log("ResizeColumns");
             // Get the tbody columns width array
             colWidth = $bodyCells.map(function() {
                 return $(this).width();
@@ -71,57 +68,61 @@
 
     </script>
 </head>
+
 <body>
-    <table class="GridTable">
+    <table class="GridTable" >
         <thead>
             <tr>
                 <th style="display:none">
                     <div class="HeadCell">
-                            <div>ID</div>
-                            <HeaderSearch>
-                                1
-                            </HeaderSearch>
+                        <HeaderLabel>ID</HeaderLabel>
+                        <HeaderSearch>
+                            <input type="text" value="Ahoj">
+                        </HeaderSearch>
                     </div>
                 </th>
                 <th>
                     <div class="HeadCell">
-                            <div>project</div>
-                            <HeaderSearch>
-                                <input class="filter" id="filter-Jmeno" oninput="OnDataGridFilterChange('filter-Jmeno')" placeholder="..." type="text">
-                            </HeaderSearch>
+                        <HeaderLabel>Project</HeaderLabel>
+                        <HeaderSearch>
+                            <input type="text" value="Ahoj">
+                        </HeaderSearch>
                     </div>
                 </th>
                 <th>
                     <div class="HeadCell">
-                            <div>p</div>
-                            <HeaderSearch>
-                                3
-                            </HeaderSearch>
+                        <HeaderLabel>Martin..NN</HeaderLabel>
+                        <HeaderSearch>
+                            <input type="text" value="Ahoj">
+                        </HeaderSearch>
                     </div>
                 </th>
                 <th>
                     <div class="HeadCell">
-                            <div>p</div>
-                            <HeaderSearch>
-                                4
-                            </HeaderSearch>
+                        <headerlabel>Aktivni</headerlabel>
+                        <headersearch>
+                            <select class="filter DropDownOptions" name="filter-ddf-1">
+                                <option value="">(All)</option>
+                                <option value="y">Yes</option>
+                                <option value="n">No</option>
+                            </select>
+                        </headersearch>
                     </div>
                 </th>
                 <th>
-                    <div class="HeadCell">
-                            <div>p</div>
-                            <HeaderSearch>
-                                5
-                            </HeaderSearch>
-                    </div>
+                    5
                 </th>
             </tr>
         </thead>
         <tbody>
             <tr>
                 <td style="display:none">Content 1</td>
-                <td><div class="Cell"><label class="LabelField">Martin-26</label></div></td>
-                <td>Content 3</td><td>Content 4</td><td>Content 5</td>
+                <td>
+                    <div class="Cell">
+                        <label class="LabelField">Martin-26</label>
+                    </div>
+                </td>
+                <td style="min-width: 60px">Content 3</td><td>Content 4</td><td>Content 5</td>
             </tr>
             <tr>
                 <td style="display:none">Content 2</td>
@@ -152,6 +153,187 @@
                 <td style="display:none">Content 1</td>
                 <td>Content 2</td><td>Content 3</td><td>Content 4</td><td>Content 5</td>
             </tr>
+
+                <tr>
+                    <td style="display: none;">1</td>
+                    <td>
+                        <div class="Cell">
+                            <label class="LabelField">Martin-35</label>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="Cell">
+                            <label class="LabelField">Svarovsky</label>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="Cell">
+                            <div>
+                                <input checked="checked" disabled="disabled" name="" type="checkbox" value="">
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="display:none">2</td>
+                    <td>
+                        <div class="Cell">
+                            <label class="LabelField">Cecile-35</label>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="Cell">
+                            <label class="LabelField">Svarovska</label>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="Cell">
+                            <div>
+                                <input checked="checked" disabled="disabled" name="" type="checkbox" value="">
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="display:none">3</td>
+                    <td>
+                        <div class="Cell">
+                            <label class="LabelField">Jitka-35</label>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="Cell">
+                            <label class="LabelField">Svarovska</label>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="Cell">
+                            <div>
+                                <input checked="checked" disabled="disabled" name="" type="checkbox" value="">
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="display:none">4</td>
+                    <td>
+                        <div class="Cell">
+                            <label class="LabelField">Astrid-35</label>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="Cell">
+                            <label class="LabelField">Svarovska</label>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="Cell">
+                            <div>
+                                <input checked="checked" disabled="disabled" name="" type="checkbox" value="">
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="display:none">5</td>
+                    <td>
+                        <div class="Cell">
+                            <label class="LabelField">Lubos-35</label>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="Cell">
+                            <label class="LabelField">Svarovsky</label>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="Cell">
+                            <div>
+                                <input checked="checked" disabled="disabled" name="" type="checkbox" value="">
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="display:none">6</td>
+                    <td>
+                        <div class="Cell">
+                            <label class="LabelField">Dominique-35</label>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="Cell">
+                            <label class="LabelField">Champagne</label>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="Cell">
+                            <div>
+                                <input checked="checked" disabled="disabled" name="" type="checkbox" value="">
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="display:none">7</td>
+                    <td>
+                        <div class="Cell">
+                            <label class="LabelField">Nadine-35</label>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="Cell">
+                            <label class="LabelField">Champagne</label>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="Cell">
+                            <div>
+                                <input checked="checked" disabled="disabled" name="" type="checkbox" value="">
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="display:none">8</td>
+                    <td>
+                        <div class="Cell">
+                            <label class="LabelField">Thomas-35</label>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="Cell">
+                            <label class="LabelField">Champagne</label>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="Cell">
+                            <div>
+                                <input checked="checked" disabled="disabled" name="" type="checkbox" value="">
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="display:none">9</td>
+                    <td>
+                        <div class="Cell">
+                            <label class="LabelField">Noemie-35</label>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="Cell">
+                            <label class="LabelField">JeNeSaisPas</label>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="Cell">
+                            <div>
+                                <input checked="checked" disabled="disabled" name="" type="checkbox" value="">
+                            </div>
+                        </div>
+                    </td>
+                </tr>
             
 
         </tbody>

@@ -1,0 +1,113 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+
+<head>
+	<link rel="stylesheet" href="./css/Controls.css">
+
+	<script src="./js/jquery-3.3.1.min.js"></script>
+	<script src="./js/colResizable-1.6.min.js"></script>
+	<!-- http://www.bacubacu.com/colresizable/ -->
+</head>
+<!-- <script>
+		
+	console.log("$bodyCells");
+
+	$(window).resize(ResizeColumns()); // Trigger resize handler
+
+	function ResizeColumns() {
+
+		var $table = $('table.GridTable');
+		var $bodyCells = $table.find('tbody tr:first').children();
+		var colWidth;
+
+		console.log("resize");
+		// Get the tbody columns width array
+		colWidth = $bodyCells.map(function() {
+			return $(this).width();
+		}).get();
+		
+		// Set the width of thead columns
+		$table.find('thead tr').children().each(function(i, v) {
+			
+			console.log("pred: " + $(v).width());
+			console.log("zmena: " + colWidth[i]);
+			$(v).width(colWidth[i]);
+			console.log("po  : " + $(v).width());
+		});    
+	}
+
+</script> -->
+<style>
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    thead {
+        display: block;
+        /* width: 500px; */
+        overflow: auto;
+        color: #fff;
+        background: #000;
+    }
+
+    tbody {
+        display: block;
+        /* width: 500px; */
+        height: 100px;
+        background: pink;
+        overflow: auto;
+    }
+    .width200{
+        width:fit-content;
+    }
+
+    th,
+    td {
+        padding: .5em 1em;
+        text-align: left;
+        vertical-align: top;
+        border-left: 1px solid #fff;
+    }
+</style>
+
+<!-- http://jsfiddle.net/TweNm/ -->
+<!-- https://stackoverflow.com/questions/8232713/how-to-display-scroll-bar-onto-a-html-table -->
+<body>
+
+<table>
+    <thead>
+        <tr>
+            <th class="width200">Header 1</th>
+            <th class="width200">Header 2</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="width200">Cell 1, Row 1</td>
+            <td class="width200">Cell 2, Row 1</td>
+        </tr>
+        <tr>
+            <td class="width200">Cell 1, Row 2</td>
+            <td class="width200">Cell 2, Row 2</td>
+        </tr>
+        <tr>
+            <td class="width200">Cell 1, Row 3</td>
+            <td class="width200">Cell 2, Row 3</td>
+        </tr>
+        <tr>
+            <td class="width200">Cell 1, Row 4</td>
+            <td class="width200">Cell 2, Row 4</td>
+        </tr>
+        <tr>
+            <td class="width200">Cell 1, Row 5</td>
+            <td class="width200">Cell 2, Row 5</td>
+        </tr>
+        
+    </tbody>
+</table>
+
+</body>
+
+
+</html>

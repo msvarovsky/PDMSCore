@@ -1,0 +1,165 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+
+<head>
+	<!-- <link rel="stylesheet" href="./css/Controls.css"> -->
+
+	<script src="./js/jquery-3.3.1.min.js"></script>
+	<script src="./js/colResizable-1.6.min.js"></script>
+	<!-- http://www.bacubacu.com/colresizable/ -->
+</head>
+
+<style>
+
+.delegations-table {
+    margin: auto;
+    overflow: auto;
+    max-height: 150px;
+    overflow-y:scroll;
+    display:block;
+    border: 1px solid red;
+}
+
+th {
+    position:absolute;
+    background: green;
+    border: 1px solid yellow;
+    height: 30px;
+}
+.delegations-table tr td a {
+    display:block;
+    width:100%;
+    line-height: 2;
+    border: 1px solid black;
+}
+
+/*--- Fixed Header Table ----*/
+
+thead {
+    position:absolute;
+    top:1px;
+    left:0px;
+    right:0px;
+}
+tbody {
+    display:block;
+    margin-top: 30px;
+}
+tr {
+    /* width:100%; */
+    display:block;
+    margin-top:-2px;
+}
+
+td {
+    display:inline-block;
+}
+.col1 {
+    width:40%;
+}
+.col2 {
+    width:30%;
+}
+.col3 {
+    width:20%;
+}
+th.col1 {
+    left:0px;
+    right:80%;
+}
+th.col2 {
+    left:40%;
+    right:70%;
+}
+th.col3 {
+    left:70%;
+    right:50%;
+}
+
+.pade{
+    width: 70%;
+}
+
+</style>
+
+<body>
+    <div class="pade">
+    <table class="delegations-table">
+            <thead>
+                <tr class="del-head">
+                    <th class="col1">Région</th>
+                    <th class="col2">Ville/Quartier.Ville/Quartier.Ville/Quartier</th>
+                    <th class="col3">Lien</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="col1"><a href="#">1 Région de Rabat-Salé-Zemmour-Zaer</a>
+                    </td>
+                    <td class="col2"><a href="#">1 Délégation de Rabat</a>
+                    </td>
+                    <td class="col3">1 ahoj</td>
+                </tr>
+                <tr>
+                    <td class="col1"><a href="#">Région de Rabat-Salé-Zemmour-Zaer</a>
+                    </td>
+                    <td class="col2"><a href="#">Délégation de Sale</a>
+                    </td>
+                    <td class="col3">ahoj</td>
+                </tr>
+                <tr>
+                    <td class="col1"><a href="#">Région de Rabat-Salé-Zemmour-Zaer</a>
+                    </td>
+                    <td class="col2"><a href="#">Délégation de Temara</a>
+                    </td>
+                    <td class="col3">ahoj</td>
+                </tr>
+                <tr>
+                    <td class="col1"><a href="#">Région de Rabat-Salé-Zemmour-Zaer</a>
+                    </td>
+                    <td class="col2"><a href="#">Délégation de Touraga</a>
+                    </td>
+                    <td class="col3">ahoj</td>
+                </tr>
+                <tr>
+                    <td class="col1"><a href="#">Région de Rabat-Salé-Zemmour-Zaer</a>
+                    </td>
+                    <td class="col2"><a href="#">Délégation de Khemisset</a>
+                    </td>
+                    <td class="col3">ahoj</td>
+                </tr>
+                <tr>
+                    <td class="col1"><a href="#">Région de du Grand Casablanca</a>
+                    </td>
+                    <td class="col2"><a href="#">Délégation de Mohammedia</a>
+                    </td>
+                    <td class="col3">ahoj</td>
+                </tr>
+                <tr>
+                    <td class="col1"><a href="#">Région de du Grand Casablanca</a>
+                    </td>
+                    <td class="col2"><a href="#">Délégation de Mohammedia</a>
+                    </td>
+                    <td class="col3">ahoj</td>
+                </tr>
+                <tr>
+                    <td class="col1"><a href="#">Région de du Grand Casablanca</a>
+                    </td>
+                    <td class="col2"><a href="#">Délégation de Mohammedia</a>
+                    </td>
+                    <td class="col3">ahoj</td>
+                </tr>
+                <tr>
+                    <td class="col1"><a href="#">Région de du Grand Casablanca</a>
+                    </td>
+                    <td class="col2"><a href="#">Délégation de Mohammedia</a>
+                    </td>
+                    <td class="col3">ahoj</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+
+
+</html>

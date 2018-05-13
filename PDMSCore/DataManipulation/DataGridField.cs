@@ -24,6 +24,7 @@ namespace PDMSCore.DataManipulation
         public string FocusControlID { get; set; }
         private List<TableRow2> Data;
         private string[] HeaderLabels;
+        private int[] MinColumnWidtg;
 
         public DataGridField2()
         {
@@ -102,6 +103,10 @@ namespace PDMSCore.DataManipulation
         {
             HeaderLabels = a;
             FocusControlID = "filter-" + HeaderLabels[0];
+            MinColumnWidtg = new int[a.Length];
+
+            for (int i = 0; i < a.Length; i++)
+                MinColumnWidtg[i] = HeaderLabels[i].Length * 5;
         }
 
         public bool AddDataRow(TableRow2 tr, int? id = null)

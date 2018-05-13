@@ -91,21 +91,26 @@
     border-spacing: 0;
     /*musi byt kvuli collapse*/
     font-size: 0.9em;
+
+    height: 100px;
+    overflow-x: hidden;
+    overflow-y: scroll;
 }
 
-
+/* Zkusit TODO: http://jsfiddle.net/daCrosby/JXWfC/9/ */
 
 table.GridTable tbody,
 table.GridTable thead { display: block; }
 
 table.GridTable tbody {
-    height: 120px;
+    height: 100px;
     overflow-x: hidden;
+    overflow-y: auto;
 }
 
 table.GridTable thead tr th,
 table.GridTable tbody tr td{
-    min-width:70px;
+    min-width:100px;
 }
 
 
