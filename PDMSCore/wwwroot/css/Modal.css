@@ -24,21 +24,6 @@
     box-shadow: 1px 1px 2px black;
 }
 
-/* The Close Button */
-.CloseModal {
-    color: #aaaaaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-}
-
-.CloseModal:hover,
-.CloseModal:focus {
-    color: #000;
-    text-decoration: none;
-    cursor: pointer;
-}
-
 .ModalTitle
 {
     font-size: 1.2em;
@@ -68,24 +53,18 @@
     margin: 0px;
     cursor: pointer;
     border-radius: 2px;
-    min-width: 100px;
 }
 
 .OkBtn
 {
     background-color: #4CAF50;
 }
-
 .CancelBtn
 {
     background-color: grey;
 }
 
-.OkBtn:hover:enabled,
+.OkBtn:hover,
 .CancelBtn:hover{
     box-shadow:0 8px 16px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
-}
-.OkBtn:disabled {
-    background-color: grey;
-    cursor: not-allowed;
 }
