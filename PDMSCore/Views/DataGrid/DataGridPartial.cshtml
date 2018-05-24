@@ -5,44 +5,136 @@
 @model PDMSCore.DataManipulation.DataGridField2
 
 
-<table class="GridTable" id=@Model.ID>
+@*<table class="GridTable" id=@Model.ID>
     <thead>@Model.HtmlTextHeaderRow()</thead>
     <tbody id="DataGridContent"></tbody>
-</table>
+</table>*@
+
+<div class="TableWrapper">
+    <div class="tbl-header">
+        <table class="GridTable" id="dg-@Model.ID-h">
+            <thead>@Model.HtmlTextHeaderRow()</thead>
+        </table>
+    </div>
+    <div class="tbl-content">
+        <table class="GridTable">
+            <tbody id="dg-@Model.ID-b">
+            </tbody>
+        </table>
+    </div>
+</div>
 
 <input type="button" id="RefreshGrid" onclick="ReloadDataGrid('gridID-input','Hovno')" />
 
 
 <script>
 
+    var DataGridHeaderID, DataGridBodyID;
+
     $(document).ready(function () {
         ReloadDataGrid("gridID", "any");
         document.getElementById("@Model.FocusControlID").focus();
-        ResizeColumns();
+        //ResizeColumns();
+        DataGridHeaderID = 'dg-@Model.ID-h';
+        DataGridBodyID = 'dg-@Model.ID-b';
+
+        console.log("ready");
+       
     });
 
-    function ResizeColumns() { 
+    //http://jsfiddle.net/thrilleratplay/epcybL4v/
+    $(function () {
+        var thElm;
+        var startOffset;
 
-    };
+        Array.prototype.forEach.call(
+            document.querySelectorAll("table th"),
+            function (th)
+            {
+                th.style.position = 'relative';
 
-    $(window).resize(function () {
+                var grip = document.createElement('div');
+                grip.innerHTML = "&nbsp;";
+                //grip.style.backgroundColor = 'red';
+                grip.style.zIndex = '2';
+                grip.style.top = 0;
+                grip.style.right = '-8px';
+                grip.style.bottom = 0;
+                grip.style.width = '15px';
 
-        var $table = $('table.GridTable');
-        var $bodyCells = $table.find('tbody tr:first').children();
-        var colWidth;
+                grip.style.position = 'absolute';
+                grip.style.cursor = 'col-resize';
+                grip.addEventListener('mousedown', function (e) {
+                    console.log("mousedown:" + th);
 
-        // Get the tbody columns width array
-        colWidth = $bodyCells.map(function () {
-            console.log("map");
+                    thElm = th;
+                    startOffset = th.offsetWidth - e.pageX;
+                });
+
+                th.appendChild(grip);
+            });
+
+        document.addEventListener('mousemove', function (e) {
+
+            if (thElm) {
+
+                //$(thElm).prev()[0].style.width = startOffset + e.pageX + 'px'; //Nakonec tohle nebylo nutne
+                thElm.style.width = startOffset + e.pageX + 'px';
+
+                console.log("mousemove");
+                ResizeColumns();
+            }
+        });
+
+        document.addEventListener('mouseup', function () {
+            thElm = undefined;
+        });
+    });
+
+    function ResizeColumns() {
+        console.log("ResizeColumns");
+        //var $HeaderTable = $('#tbl-headerTable');
+        var $HeaderTable = $('#' + DataGridHeaderID);
+        var $BodyTable = $('#' + DataGridBodyID);
+        var $HeaderCells = $HeaderTable.find('thead tr:first').children();
+
+        var colWidths = $HeaderCells.map(function () {
             return $(this).width();
         }).get();
 
-        // Set the width of thead columns
-        $table.find('thead tr').children().each(function (i, v) {
-            console.log("each");
-            $(v).width(colWidth[i]);
+        //$BodyTable.find('tbody tr').children().each(function (i, v) {
+        $BodyTable.find('tr').children().each(function (i, v) {
+            $(v).width(colWidths[i]);
         });
-    }).resize(); // Trigger resize handler
+    }
+
+    /*$(window).on("load resize ", function () {
+        //https://codepen.io/nikhil8krishnan/pen/WvYPvv?editors=1100
+        //  https://davidwalsh.name/detect-scrollbar-width
+
+        console.log("load resize");
+
+        var scrollDiv = document.getElementsByClassName("tbl-content");
+        if (scrollDiv[0] != null) {
+            var scrollbarWidth = scrollDiv[0].offsetWidth - scrollDiv[0].clientWidth - 1;
+            $('.tbl-header').css({ 'padding-right': scrollbarWidth });
+        }
+    }).resize();*/
+
+    $(window).on("load resize ", OnPageResize).resize();
+
+    function OnPageResize() { 
+        //https://codepen.io/nikhil8krishnan/pen/WvYPvv?editors=1100
+        //  https://davidwalsh.name/detect-scrollbar-width
+
+        console.log("OnPageResize");
+
+        var scrollDiv = document.getElementsByClassName("tbl-content");
+        if (scrollDiv[0] != null) {
+            var scrollbarWidth = scrollDiv[0].offsetWidth - scrollDiv[0].clientWidth - 1;
+            $('.tbl-header').css({ 'padding-right': scrollbarWidth });
+        }
+    };
 
     //Nemuzu pouzit toto:  "$(".GridTable td").click(function () {"  na dynamicky generovany obsah.
     $(document).on("click", '.GridTable td', function (event) {
@@ -56,7 +148,7 @@
         //ReloadDataGrid("dataGridID-TODO", "bla");
     });
 
-    // Toto se Ajaxem neobnovuje a proto to muze zustat 
+    // Toto se Ajaxem neobnovuje a proto to muze zustat
     $(".GridTable th").click(function () {
         $(this).parent().parent().parent().find("tr").removeClass('SingleSelected');
         $('#ModalOk').attr("disabled", "");
@@ -95,7 +187,7 @@
 
     function ReloadDataGrid(DataGridID, returnFieldID) {
         //var FilterValues = GetHeaderRowValues($(this).closest('table'));
-        var filterValues = GetHeaderRowValuesFromID(@Model.ID);
+        var filterValues = GetHeaderRowValuesFromID(DataGridHeaderID);
 
         $.ajax({
             type: "GET",
@@ -106,18 +198,22 @@
                 DataGridID: @Model.ID,
                 FilterValues: filterValues,
             },
-            
+
             contentType: "application/json; charset=utf-8",
 
             success: function (partialViewResult) {
                 console.log("ReloadDataGrid: success");
+                
                 if (partialViewResult.length > 0)
                     //$("#DataGridContent").html(partialViewResult);
-                    $("#DataGridContent").replaceWith(partialViewResult);
+                    $("#" + DataGridBodyID).replaceWith(partialViewResult);
+                OnPageResize();
+                ResizeColumns();
+                
             },
             error: function (result) {
                 console.log("ReloadDataGrid: error");
-                $("#" + @Model.ID).replaceWith("<span>DataGridPartialView: Ajax failed...</span>");
+                $("#" + DataGridBodyID).replaceWith("<span>DataGridPartialView: Ajax failed...</span>");
             }
         });
     };
@@ -134,12 +230,12 @@
         var value = $("#" + FilterID).val();
         ReloadDataGrid('gridID-input', 'Hovno')
 
-        //if (value.length > 2) { 
+        //if (value.length > 2) {
         //    console.log(">2");
         //    ReloadDataGrid('gridID-input', 'Hovno')
         //}
 
-        
+
     };
-    
+
 </script>

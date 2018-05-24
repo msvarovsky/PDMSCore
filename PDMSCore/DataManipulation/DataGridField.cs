@@ -137,6 +137,8 @@ namespace PDMSCore.DataManipulation
 
         public void ApplyFilters(string[] filters, FilteringType ft )
         {
+            if (filters.Length == 0)
+                return;
             filters = ToLowerCase(filters);
 
             for (int r = 0; r < Data.Count; r++)
@@ -213,7 +215,8 @@ namespace PDMSCore.DataManipulation
         public TagBuilder HtmlTextTableBody()
         {
             TagBuilder tbTableBody = new TagBuilder("tbody");
-            tbTableBody.Attributes.Add("id", "DataGridContent");
+            //tbTableBody.Attributes.Add("id", "DataGridContent");
+            tbTableBody.Attributes.Add("id", "dg-" + this.ID + "-b");
 
             for (int i = 0; i < Data.Count; i++)
                 tbTableBody.InnerHtml.AppendHtml(Data[i].HtmlText());

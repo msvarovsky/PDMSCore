@@ -92,18 +92,22 @@
     /*musi byt kvuli collapse*/
     font-size: 0.9em;
 
-    height: 100px;
+    /* height: 100px; */
     overflow-x: hidden;
     overflow-y: scroll;
+
+    table-layout: fixed;
 }
 
 /* Zkusit TODO: http://jsfiddle.net/daCrosby/JXWfC/9/ */
 
-table.GridTable tbody,
-table.GridTable thead { display: block; }
+/* table.GridTable thead,
+table.GridTable tbody { 
+    display: block; 
+} */
 
 table.GridTable tbody {
-    height: 100px;
+    /* height: 100px; */
     overflow-x: hidden;
     overflow-y: auto;
 }
@@ -111,6 +115,14 @@ table.GridTable tbody {
 table.GridTable thead tr th,
 table.GridTable tbody tr td{
     min-width:100px;
+}
+
+
+.tbl-content{
+    height: 150px;
+    overflow-x:auto;
+    /* margin-top: 0px; */
+    /* border: 1px solid rgba(255,255,255,0.3); */
 }
 
 
