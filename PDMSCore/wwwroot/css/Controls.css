@@ -84,11 +84,17 @@
     --SelectedRowColor: rgb(121, 189, 255);
 
     width: 100%;
-    border: 1px solid var(--ExternalBorderColor);
+    
+
+    /* outline: 1px solid red;
+    outline-offset: -2px; */
+
+    /* border: 1px solid var(--ExternalBorderColor);
     border-radius: var(--BorderRadius);
-    border-collapse: separate;
+    border-collapse: separate; */
     /*musi byt kvuli radiusu*/
     border-spacing: 0;
+
     /*musi byt kvuli collapse*/
     font-size: 0.9em;
 
@@ -114,18 +120,28 @@ table.GridTable tbody {
 
 table.GridTable thead tr th,
 table.GridTable tbody tr td{
-    min-width:100px;
+    min-width:50px;
 }
 
 
 .tbl-content{
     height: 150px;
-    overflow-x:auto;
+    overflow-x:hidden;
+    overflow-y: scroll;
+    
     /* margin-top: 0px; */
     /* border: 1px solid rgba(255,255,255,0.3); */
+
+    outline: 1px solid lightgray;
+
+    /* outline-offset: -1px; */
 }
 
-
+.TableWrapper{
+    /* border: 2px solid var(--ExternalBorderColor); */
+    /* border-bottom: 1px solid grey;
+    border-left: 1px solid grey; */
+}
 
 /* #GridTableWrapper{
     position:relative;
@@ -167,7 +183,7 @@ th:last-child {
 }
 
 tr:last-child td {
-    border-bottom: 0;
+    /* border-bottom: 0; */
 }
 
 th {

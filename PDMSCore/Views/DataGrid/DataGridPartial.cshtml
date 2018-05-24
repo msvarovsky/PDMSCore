@@ -134,6 +134,8 @@
             var scrollbarWidth = scrollDiv[0].offsetWidth - scrollDiv[0].clientWidth - 1;
             $('.tbl-header').css({ 'padding-right': scrollbarWidth });
         }
+        ResizeColumns();
+
     };
 
     //Nemuzu pouzit toto:  "$(".GridTable td").click(function () {"  na dynamicky generovany obsah.
@@ -150,7 +152,10 @@
 
     // Toto se Ajaxem neobnovuje a proto to muze zustat
     $(".GridTable th").click(function () {
-        $(this).parent().parent().parent().find("tr").removeClass('SingleSelected');
+        //console.log(".GridTable th");
+
+        $(this).closest(".TableWrapper").find(".SingleSelected").removeClass('SingleSelected');
+        
         $('#ModalOk').attr("disabled", "");
         //console.log($(this));
     });
@@ -208,7 +213,6 @@
                     //$("#DataGridContent").html(partialViewResult);
                     $("#" + DataGridBodyID).replaceWith(partialViewResult);
                 OnPageResize();
-                ResizeColumns();
                 
             },
             error: function (result) {
