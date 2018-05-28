@@ -190,7 +190,8 @@
         return al;
     };
 
-    function ReloadDataGrid(DataGridID, returnFieldID) {
+    function ReloadDataGrid(DataGridID, returnFieldID)
+    {
         //var FilterValues = GetHeaderRowValues($(this).closest('table'));
         var filterValues = GetHeaderRowValuesFromID(DataGridHeaderID);
 
@@ -213,7 +214,12 @@
                     //$("#DataGridContent").html(partialViewResult);
                     $("#" + DataGridBodyID).replaceWith(partialViewResult);
                 OnPageResize();
-                
+
+                if (GetTableRowCount(DataGridBodyID) == 1)
+                    $('#ModalOk').removeAttr("disabled");
+                else
+                    $('#ModalOk').attr("disabled", "");
+
             },
             error: function (result) {
                 console.log("ReloadDataGrid: error");
@@ -222,13 +228,32 @@
         });
     };
 
+    // Automaticke zvoleni radky v table po stisku Enter pokud je vyfiltrovana pouze jedina radka.
+    $('.filter').keyup(function (e) {
+        if (e.keyCode == 13) {
+            if (GetTableRowCount(DataGridBodyID) == 1) {
+                var OnlyRowInTable = $("#" + DataGridBodyID).find('tr:first');
+                if (OnlyRowInTable != null) {
+                    var RowID = $(OnlyRowInTable).find('td:first').html();
+                    OkButtonClicked(RowID);
 
-    //$(document).keyup(function (e) {
-    //    if (e.keyCode == 13) {
-    //        ReloadDataGrid('gridID-input', 'Hovno')
-    //    }
-    //});
+                }
+            }
+        }
+    });
 
+
+
+
+    function GetTableRowCount(tableID) { 
+        var obj = document.getElementById(tableID).getElementsByTagName("tr");
+        if (obj != null) {
+            var rows = obj.length;
+            return rows;
+        }
+        return -1;
+    }
+    
     function OnDataGridFilterChange(FilterID) {
         console.log("OnDataGridFilterChange");
         var value = $("#" + FilterID).val();
