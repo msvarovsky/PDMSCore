@@ -1,0 +1,120 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+
+<head>
+	<link rel="stylesheet" href="./css/Layout.css">
+
+	<script src="./js/jquery-3.3.1.min.js"></script>
+	<script src="./js/colResizable-1.6.min.js"></script>
+	<!-- http://www.bacubacu.com/colresizable/ -->
+</head>
+<script>
+</script>
+<style>
+
+  .Login{
+    width: 100%;
+    height: 100%;
+    /* background-color: var(--GreyBackgroundColor); */
+    background-image: url("./images/login-field.jpg");
+    background-size: cover;
+    background-position: center;
+  }
+
+  .LoginWindow{
+    border-radius: 5px;
+    background-color: rgba(0,0,0,0.7);
+    /* background-image: url("./images/login-field.jpg"); */
+
+    box-shadow:0 8px 16px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.9);
+
+    width: 300px;
+    height: 350px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform:translate(-50%,-50%);
+    /* box-sizing: border-box; */
+
+    color:white;
+    padding: 70px 30px;
+
+  }
+
+  .LoginWindow input {
+    width: 100%;
+    margin-bottom: 40px;
+  }
+
+  .LoginWindow input[type="text"]:hover,
+  .LoginWindow input[type="password"]:hover,
+  {
+    box-shadow: inset 1px -1px red;
+    margin-bottom: 50px;
+  }
+
+  .LoginWindow h1  {
+    width: 100%;
+    margin-bottom: 40px;
+    text-align: center;
+  }
+
+  .LoginWindow p {
+    margin: 0px;
+  }
+
+  .LoginWindow input[type="submit"] {
+    width: 100%;
+    margin-bottom: 40px;
+    height: 40px;
+    border-radius: 5px;
+  }
+
+  .LoginWindow a {
+    text-decoration: none;
+    color: lightgray;
+  }
+
+  .LoginLang{
+    background: red;
+    width: 10px;
+    height: 10px;
+    position: absolute;
+    float: left;
+  }
+
+</style>
+
+<body>
+    <div class="LoginLang">
+
+      </div>
+  <div class="Login">
+    <div class="LoginWindow">
+      
+
+      <form>
+
+        <h1>Login</h1>
+
+        <p>Username</p>
+        <input type="text" name="username" placeholder="Enter user name">
+
+        <p>Password</p>
+        <input type="password" name="password" placeholder="Enter password">
+
+        <input type="submit" name="submit" value="Login">
+        <a href="#">I've forgotten my password</a>
+
+      </form>
+
+    </div>
+  
+
+  </div>
+
+
+
+
+</body>
+</html>
