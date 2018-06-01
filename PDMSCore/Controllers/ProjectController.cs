@@ -1,17 +1,6 @@
 ﻿using PDMSCore.BusinessObjects;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
-using System.Collections.Generic;
-using System;
-using System.Text;
-using PDMSCore.DataManipulation;
-using System.Runtime.Serialization.Json;
-using System.IO;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
-using System.Linq;
-using System.Web;
-using System.Threading.Tasks;
 
 namespace PDMSCore.Controllers
 {
@@ -53,13 +42,6 @@ namespace PDMSCore.Controllers
             return View(p);
         }
 
-        [HttpPost]
-        public ActionResult ShowAll(IFormCollection fc)
-        {
-            //Project.SaveFromHtml(fc);
-            return RedirectToAction("Index");
-        }
-
         [HttpGet]
         public ActionResult ShowProject()
         {
@@ -67,6 +49,7 @@ namespace PDMSCore.Controllers
 
             //p = Project.GetProject(PanelID);
             p = new Project();
+            ViewData["panelOwnerID"] = "ID projektu";
 
             p.GetRandom();
             return View(p);
@@ -75,7 +58,6 @@ namespace PDMSCore.Controllers
         [HttpPost]
         public ActionResult ShowProject(IFormCollection fc)
         {
-
             //p = Project.GetProject(PanelID);
             p = new Project();
             p.GetRandom();
@@ -84,98 +66,29 @@ namespace PDMSCore.Controllers
             return View(p);
         }
 
+        /// <summary>
+        /// Uschova do cookie link kliknuteho menu 
+        /// </summary>
+        /// <param name="href"></param>
         [HttpPost]
         public void OpenMenuUpdate(string href)
         {
             HttpContext.Session.SetString("OpenMenu", href);
         }
 
-        [HttpGet]
-        public ActionResult PanelMenuItemClick(string PanelMenuID, string PanelMenuItemID)
-        {
-            int MenuItemCode = int.Parse(PanelMenuItemID);
-            if (MenuItemCode == 0)    // Refresh
-            {
-                Panel p = new Panel(5, "Label:" + DateTime.Now.ToLongTimeString(), 1);
-                p.GenerateRandomPanelMenuItems(5);
-                return PartialView("PartialPanel", p);
-            }
-            else if (MenuItemCode == 1) //  Save
-            {
-                System.Threading.Thread.Sleep(100);
-                return PartialView();
-            }
-            else
-                return null;
-        }
-        public ActionResult DataGridPartial(string DialogID, string ReturnFieldID)
-        {
-            DataGridField2 d = new DataGridField2();
 
-            return PartialView("ModalPartial", d);
-        }
-
-        public ActionResult ModalPartial(string DialogID, string ReturnFieldID)
-        {
-            ModalDialog md = new ModalDialog("en", "Test title");
-
-            DataGridField dgf = DataGridField.GetRandom();
-
-            DataGridField2 d = new DataGridField2();
-            d.SetHeaderLabels("Jmeno", "Prijmeni", "Aktivni");
-
-            TableRow2 tr = new TableRow2();
-            tr.AddColumnCell(new LabelField("Jmeno"));
-            tr.AddColumnCell(new LabelField("Prijmeni"));
-            tr.AddColumnCell(new CheckBoxField("", "", true, new WebTagAttributes(true, "")));
-            
-            d.AddDataRow(tr,1);
-            d.AddDataRow(tr.MakeCopy());
-            d.AddDataRow(tr.MakeCopy());
+        //public ActionResult DataGridPartial(string DialogID, string ReturnFieldID)
+        //{
+        //    DataGridField2 d = new DataGridField2();
+        //    return PartialView("ModalPartial", d);
+        //}
 
 
-            md.AddField(d);
-            md.ReturnFieldID = ReturnFieldID;
-            //md.AddField(new LabelTextBoxField("testTextBoxDield", "Label", "already in"));
-
-
-            return PartialView("ModalPartial", md);
-        }
-
-        [HttpGet]
-        public ViewResult List()
-        {
-            return View();
-        }
-
-        [HttpGet]
-        //public async Task<ActionResult> Internet(string categoryId)
-        public PartialViewResult Internet()
-        {
-            return PartialView("AsyncShowProjects", null);
-        }
-
-        [HttpGet]
-        public PartialViewResult AsyncShowProjects()
-        {
-            string users = null;
-            return PartialView(users);
-        }
-
-        public ActionResult AnyPanelAction(string ID)
-        {
-            //return PartialView(vm);
-            return null;
-        }
-
-
-
+        /*
         [HttpPost]
         public JsonResult AjaxAutoComplete(string prefix, string id)
         {
             //  http://www.c-sharpcorner.com/blogs/how-to-create-autocomplete-textbox-in-asp-net-mvc-5
-
-            //This can be replaced with database call.  
             List<AutoCompleteSuggestion> objGameList = new List<AutoCompleteSuggestion>()
             {
                 new AutoCompleteSuggestion { Id = 1, Suggestion = "Leden" },
@@ -195,11 +108,9 @@ namespace PDMSCore.Controllers
             //var result = (from a in objGameList where a.Suggestion.ToLower().StartsWith(prefix.ToLower()) select new { a.Suggestion });
             var result = (from a in objGameList where a.Suggestion.ToLower().Contains(prefix.ToLower()) select new { a.Suggestion });
 
-
-
             //return Json(objGameList);
             return Json(result);
-        }
+        }*/
 
 
     }

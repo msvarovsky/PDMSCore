@@ -11,30 +11,35 @@ var changeChevron = function () {
 
 // $(".accordion").click(function (e) {
 $("*").click(function (e) {
+    
     var target;
     var tagClasses = $(e.target).attr('class');
+
+    
 
     if (typeof tagClasses == 'undefined')
         return;
 
     if ((tagClasses.indexOf("MenuItemText") != -1) || (tagClasses.indexOf("MIChevron") != -1)) {
         target = $(e.target).parent();
-
+        event.stopPropagation();//  Nemuze byt na zacatku teto funkce.
         if (tagClasses.indexOf("MenuItemText") != -1) {
+            //console.log("MenuItemText");
             var href = e.target.getAttribute("href");
             OpenMenuUpdate(href);
         }
         if (tagClasses.indexOf("MIChevron") != -1) {
+            //console.log("MIChevron: Redirecting to MenuItemText...");
             var children = $(target).children(".MenuItemText");
-            console.log('*.MIChevron: Redirecting to MenuItemText...');
             children[0].click();
             return;
         }
     }
     else if (tagClasses.indexOf("MenuItemL") != -1) {
+        //console.log('MenuItemL: Redirecting to MenuItemText...');
+        event.stopPropagation();    //  Nemuze byt na zacatku teto funkce.
         target = e.target;
         var children = $(target).children(".MenuItemText");
-        console.log('*.MenuItemL: Redirecting to MenuItemText...');
         children[0].click();
         return;
     }
@@ -83,7 +88,7 @@ $("*").click(function (e) {
 });
 
 function OpenMenuUpdate(href) {
-  console.log('OpenMenuUpdate.href:', href);
+  //console.log('OpenMenuUpdate.href:', href);
 
   $.ajax({
     url: "/Project/OpenMenuUpdate/",

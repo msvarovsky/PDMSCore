@@ -48,8 +48,12 @@
         var ReturnVariable = document.getElementById("@Model.ReturnFieldID");
         if (RowID != null)
             ReturnVariable.innerHTML = RowID;
-        else
-            ReturnVariable.innerHTML = $('.SingleSelected').children("td")[0].innerHTML;
+        else {
+            //ReturnVariable.innerHTML = $('.SingleSelected').children("td")[0].innerHTML;
+            var ns = $('.SingleSelected').children("td").length;
+            if (ns > 0)
+                ReturnVariable.innerHTML = $('.SingleSelected').children("td")[0].innerHTML;
+        }
         CloseModal();
     }
 

@@ -190,8 +190,7 @@
         return al;
     };
 
-    function ReloadDataGrid(DataGridID, returnFieldID)
-    {
+    function ReloadDataGrid(DataGridID, returnFieldID) {
         //var FilterValues = GetHeaderRowValues($(this).closest('table'));
         var filterValues = GetHeaderRowValuesFromID(DataGridHeaderID);
 
@@ -216,7 +215,11 @@
                 OnPageResize();
 
                 if (GetTableRowCount(DataGridBodyID) == 1)
+                {
+                    //console.log("Debugging");
+                    $('#' + DataGridBodyID).find('tr:first').addClass('SingleSelected');
                     $('#ModalOk').removeAttr("disabled");
+                }
                 else
                     $('#ModalOk').attr("disabled", "");
 

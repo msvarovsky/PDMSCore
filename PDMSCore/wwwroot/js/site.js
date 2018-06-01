@@ -6,12 +6,8 @@
 
 $(document).ready(function () {
 
-    
-    //window.async.getFromController('/Async/AsyncList', 'list', null);
-
-    //$("#PartialViewWrapperHovno").addClass("fjgfdkhjgdf");
     console.log("site.js-ready");
-    OpenModal('myModal1', 'Hovno');
+    //OpenModal('myModal1', 'Hovno');
 
     $('li ul').slideUp();
     $('.no-js li a.MainMenuLevel1').on("click", function () {
@@ -41,11 +37,6 @@ $(document).ready(function () {
         }
         return false;
     });
-
-
-
-    
-
 });
 
 
@@ -90,59 +81,31 @@ function onPanelMenuClick(e) {
 }
 
 
-function onPanelMenuItemClick(panelMenuID,panelMenuItemID) {
+function onPanelMenuItemClick(panelOwnerID, panelID, panelMenuItemID) {
 
-    //alert("LoadPartialView:" + panelMenuID);
-
-    //var modal = $('<div>').dialog({ modal: true });
-    //modal.dialog('widget').hide();
     $('#ajax_loader').show();
 
-
     $.ajax({
-        url: "/Project/PanelMenuItemClick/",
+        //url: "/Project/PanelMenuItemClick/",
+        url: "/Panel/PanelMenuItemClick/",
         type: "GET",
-        data: { PanelMenuID: panelMenuID, PanelMenuItemID: panelMenuItemID },
+        data: { PanelOwnerID: panelOwnerID, PanelMenuID: panelID, PanelMenuItemID: panelMenuItemID },
         success: function (partialViewResult) {
             $('#ajax_loader').hide();
             if (partialViewResult.length > 0)
-                $("#Panel-" + panelMenuID).replaceWith(partialViewResult);
+                $("#Panel-" + panelID).replaceWith(partialViewResult);
         },
         error: function (result) {
             alert("error!" + result);
             $('#ajax_loader').hide();
         }
     });
-
-
-    //$.ajax({
-    //    url: "/Project/PanelMenuItemClick/",
-    //    type: "GET",
-    //    data: { PanelMenuID: panelMenuID, PanelMenuItemID: panelMenuItemID }
-    //})
-    //    .done(function (partialViewResult) {
-    //        if (partialViewResult.length > 0)
-    //            $("#Panel-" + panelMenuID).replaceWith(partialViewResult);
-    //    });
-
-
-    //alert("ahojky refresh:" + PanelMenuID + ", ", PanelMenuItemID);
-    //$.ajax({
-    //    url: "/Project/PanelMenuItemClick/",
-    //    type: "POST",
-    //    highlightPhrase: false,
-    //    dataType: "json",
-    //    data: { PanelMenuID: panelMenuID, PanelMenuItemID: panelMenuItemID  },
-    //    success: function (data) { }
-    //})
 }
 
 
-// When the user clicks on <span> (x), close the modal
 $('.CancelBtn, .OkBtn').click(function () {
     //$(this).parent().css({"display":"none"}); // Nefunguje dobre
     //this.panentNode.style.display = "none";   // Nefunguje dobre
-
     var modals = document.getElementsByClassName("Modal");
     for (i = 0; i < modals.length; i++) {
         modals[i].style.display = "none";
@@ -158,13 +121,13 @@ function OpenModal(dialogID, returnFieldID) {
     console.log("OpenModal");
     
     $.ajax({
-        url: "/Project/ModalPartial/",
+        //url: "/Project/ModalPartial/",
+        url: "/ModalDialog/ModalPartial/",
         type: "GET",
         data: { DialogID: dialogID, ReturnFieldID: returnFieldID },
         success: function (partialViewResult) {
             if (partialViewResult.length > 0) {
                 $("#" + dialogID).html(partialViewResult);
-            
             }
         },
         error: function (result) {

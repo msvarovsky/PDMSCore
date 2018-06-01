@@ -9,6 +9,7 @@
     ViewBag.Title = "partial view panels";
 }
 
+
 <div class="Panel @Model.Size" id="Panel-@Model.id">
 
     <div id='ajax_loader' style="position: fixed; left: 50%; top: 50%; display: none;">
@@ -22,7 +23,7 @@
         </div>
 
         <div class="Panel-Header-Right">
-            @Model.menu.HtmlText()
+            @Model.menu.HtmlText(@ViewData["panelOwnerID"])
         </div>
 
     </div>

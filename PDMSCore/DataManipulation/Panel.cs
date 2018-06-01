@@ -81,12 +81,13 @@ namespace PDMSCore.DataManipulation
 
         public void GenerateRandomPanelMenuItems(int count)
         {
-            menu.items.Add(new PanelMenuItem(true, "Refresh", "0"));
-            menu.items.Add(new PanelMenuItem(true, "Save", "1"));
+            string PanelID = id.ToString();
+
+            menu.items.Add(new PanelMenuItem(true, "Refresh", "0", PanelID));
+            menu.items.Add(new PanelMenuItem(true, "Save", "1", PanelID));
 
             for (int i = 2; i < count; i++)
-                //menu.items.Add(new PanelMenuItem(i.ToString(), "www" + i + ".cz"));
-                menu.items.Add(new PanelMenuItem(false, i.ToString(), "www" + i + ".cz"));
+                menu.items.Add(new PanelMenuItem(false, i.ToString(), "www" + i + ".cz", PanelID));
         }
 
     }
@@ -100,19 +101,22 @@ namespace PDMSCore.DataManipulation
         public bool IsActionAsync { get; set; }
         public string ItemText { get; set; }
         public string ItemLinkOrAsyncAction { get; set; }
+        private string PanelMenuId { get; set; }
 
-        public PanelMenuItem(bool Async, string Text, string LinkOrAsyncAction)
+        public PanelMenuItem(bool Async, string Text, string LinkOrAsyncAction, string PanelMenuId)
         {
             IsActionAsync = Async;
             ItemText = Text;
             ItemLinkOrAsyncAction = LinkOrAsyncAction;
+            this.PanelMenuId = PanelMenuId;
         }
 
-        public TagBuilder HtmlText(string PanelMenuID=null)
+        public TagBuilder HtmlText(string PanelOwnerID, string PanelID)
         {
             TagBuilder tb = new TagBuilder("a");
             if (IsActionAsync)
-                tb.Attributes.Add("onclick", "onPanelMenuItemClick('" + PanelMenuID + "','"+ ItemLinkOrAsyncAction + "')");
+                //tb.Attributes.Add("onclick", "onPanelMenuItemClick('" + PanelID + "','"+ ItemLinkOrAsyncAction + "')");
+                tb.Attributes.Add("onclick", "onPanelMenuItemClick('" + PanelOwnerID + "','" + PanelID + "','" + ItemLinkOrAsyncAction + "')");
             else
                 tb.Attributes.Add("href", ItemLinkOrAsyncAction);
 
@@ -121,7 +125,7 @@ namespace PDMSCore.DataManipulation
         }
     }
 
-    public class PanelMenu : IHtmlTag
+    public class PanelMenu
     {   
         /*  <div class="dd-menu">
                 <i class="fa fa-gear dd-menu-btn" onclick="onPanelMenuClick()" aria-hidden="true"></i>
@@ -130,12 +134,12 @@ namespace PDMSCore.DataManipulation
             </div>          */
 
         public List<PanelMenuItem> items { get; set; }
-        private string PanelMenuId { get; set; }
+        private string PanelId { get; set; }
 
         public PanelMenu(int id)
         {
             //PanelMenuId = "PanelMenu" + id;
-            PanelMenuId = id.ToString();
+            PanelId = id.ToString();
 
             items = new List<PanelMenuItem>();
         }
@@ -145,24 +149,25 @@ namespace PDMSCore.DataManipulation
             items.Add(pmi);
         }
 
-        public TagBuilder HtmlText()
+        public TagBuilder HtmlText(object PanelOwner)
         {
+            string PanelOwnerID = (string)PanelOwner;
             TagBuilder tbDiv = new TagBuilder("div");
             tbDiv.AddCssClass("dd-menu");
 
             TagBuilder tbI = new TagBuilder("i");
             tbI.AddCssClass("fa fa-gear dd-menu-btn");
-            tbI.Attributes.Add("onclick", "onPanelMenuClick('" + HttpUtility.JavaScriptStringEncode(PanelMenuId) + "')");
+            tbI.Attributes.Add("onclick", "onPanelMenuClick('" + HttpUtility.JavaScriptStringEncode(PanelId) + "')");
             tbI.Attributes.Add("aria-hidden", "true");
             tbI.RenderSelfClosingTag();
 
             TagBuilder tbDivContent = new TagBuilder("div");
-            tbDivContent.Attributes.Add("id", PanelMenuId);
+            tbDivContent.Attributes.Add("id", PanelId);
             tbDivContent.AddCssClass("dd-menu-content");
 
             for (int i = 0; i < items.Count; i++)
             {
-                tbDivContent.InnerHtml.AppendHtml(items[i].HtmlText(PanelMenuId));
+                tbDivContent.InnerHtml.AppendHtml(items[i].HtmlText(PanelOwnerID, PanelId));
             }
 
             tbDiv.InnerHtml.AppendHtml(tbI);
