@@ -39,6 +39,7 @@
     });
 
     $('.OkBtn').click(function () {
+        console.log(".OkBtn");
         OkButtonClicked(null);
     });
 
@@ -50,9 +51,10 @@
             ReturnVariable.innerHTML = RowID;
         else {
             //ReturnVariable.innerHTML = $('.SingleSelected').children("td")[0].innerHTML;
-            var ns = $('.SingleSelected').children("td").length;
-            if (ns > 0)
-                ReturnVariable.innerHTML = $('.SingleSelected').children("td")[0].innerHTML;
+
+            var selectedRow = $("#@Model.ModalDialogID").find('.SingleSelected');
+            if (selectedRow.length > 0)
+                ReturnVariable.innerHTML = selectedRow.children("td")[0].innerHTML;
         }
         CloseModal();
     }

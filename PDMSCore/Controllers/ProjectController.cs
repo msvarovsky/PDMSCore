@@ -13,35 +13,47 @@ namespace PDMSCore.Controllers
     public class ProjectController : Controller
     {
         Project p;
-
-        // GET: Project
+        
         [HttpGet]
         public ActionResult Index()
-        {   //  Show all projects
-
-            //this.RedirectToAction("ShowAll");
-            TempData.Add("a", "b");
-
-            p = new Project();
-            
-
-            //DataManipulation.Panel panel = new DataManipulation.Panel(1, "Prvni", 1);
-            //panel.AddFields(new DataManipulation.LabelTextAreaField("labeltext", "", "neco napis", 5));
-            //p.AddPanel(panel);
-            //p.AddPanel(panel);
-
-            //ViewBag.Panels = p.GetRandom();
-            return View(p);
+        {
+            //TempData.Add("a", "b");
+            //p = new Project();
+            //return View(p);
+            return this.RedirectToAction("ShowProject", "Project");
         }
 
         [HttpGet]
         public ActionResult CreateNewProject()
         {
-            Project p = new Project();
-            p.GetRandom();
-            return View(p);
+            p = new Project();
+            p.CreateNew();
+            ViewData["panelOwnerID"] = "ID projektu";
+            return View("ShowProject",p);
+        }
+        [HttpPost]
+        public ActionResult CreateNewProject(IFormCollection fc)
+        {
+            return View();
         }
 
+        
+
+        /// <summary>
+        /// Save
+        /// </summary>
+        /// <param name="fc"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult ShowProject(IFormCollection fc)
+        {
+            //p = Project.GetProject(PanelID);
+            p = new Project();
+            p.GetRandom();
+            p.SideMenu.Select(HttpContext.Session.GetString("OpenMenu"));
+
+            return View(p);
+        }
         [HttpGet]
         public ActionResult ShowProject()
         {
@@ -55,17 +67,6 @@ namespace PDMSCore.Controllers
             return View(p);
         }
 
-        [HttpPost]
-        public ActionResult ShowProject(IFormCollection fc)
-        {
-            //p = Project.GetProject(PanelID);
-            p = new Project();
-            p.GetRandom();
-            p.SideMenu.Select(HttpContext.Session.GetString("OpenMenu"));
-
-            return View(p);
-        }
-
         /// <summary>
         /// Uschova do cookie link kliknuteho menu 
         /// </summary>
@@ -75,13 +76,6 @@ namespace PDMSCore.Controllers
         {
             HttpContext.Session.SetString("OpenMenu", href);
         }
-
-
-        //public ActionResult DataGridPartial(string DialogID, string ReturnFieldID)
-        //{
-        //    DataGridField2 d = new DataGridField2();
-        //    return PartialView("ModalPartial", d);
-        //}
 
 
         /*
@@ -111,7 +105,5 @@ namespace PDMSCore.Controllers
             //return Json(objGameList);
             return Json(result);
         }*/
-
-
     }
 }

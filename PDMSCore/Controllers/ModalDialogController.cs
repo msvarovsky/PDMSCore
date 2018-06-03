@@ -30,6 +30,7 @@ namespace PDMSCore.Controllers
 
             md.AddField(d);
             md.ReturnFieldID = ReturnFieldID;
+            md.ModalDialogID = DialogID;
             //md.AddField(new LabelTextBoxField("testTextBoxDield", "Label", "already in"));
 
 

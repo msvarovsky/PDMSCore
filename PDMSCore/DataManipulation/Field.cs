@@ -180,11 +180,11 @@ namespace PDMSCore.DataManipulation
         public TextAreaField textArea { get; set; }
 
 
-        public LabelTextAreaField(string Id, string LabelText, string Text, string Placeholder = "...", int Rows = 4)
+        public LabelTextAreaField(int Id, string LabelText, string Text="", string Placeholder = "...", int Rows = 4)
         {
             
             label = new LabelField(LabelText, true);
-            textArea = new TextAreaField(Id, Text, Placeholder, Rows);
+            textArea = new TextAreaField(Id.ToString(), Text, Placeholder, Rows);
         }
 
         public override TagBuilder HtmlText()
@@ -197,7 +197,7 @@ namespace PDMSCore.DataManipulation
             return tb;
         }
 
-        public static Field GetRandom(string id)
+        public static Field GetRandom(int id)
         {
             LabelTextAreaField a = new LabelTextAreaField(id, "TextArea label", null, "holder", 4);
             return a;
@@ -217,7 +217,7 @@ namespace PDMSCore.DataManipulation
         public string Name { get; set; }
         private string CSS { get; set; }
 
-        public TextBoxField(string NameId, string CSS, string Text, string PlaceHolder = "", string ToolTip="")
+        public TextBoxField(string NameId, string CSS, string Text="", string PlaceHolder = "", string ToolTip="")
         {
             this.Name = NameId;
             this.Text = Text;
@@ -255,13 +255,13 @@ namespace PDMSCore.DataManipulation
         private LabelField label;
         private TextBoxField txtb;
 
-        public LabelTextBoxField(string Id, string LabelText, string Text, string Placeholder="...", string ToolTip="")
+        public LabelTextBoxField(int Id, string LabelText, string Text, string Placeholder="...", string ToolTip="")
         {
             label = new LabelField(LabelText,true);
-            txtb = new TextBoxField(Id, "ControlOfLabelControlDuo", Text, Placeholder, ToolTip);
+            txtb = new TextBoxField(Id.ToString(), "ControlOfLabelControlDuo", Text, Placeholder, ToolTip);
         }
 
-        public static Field GetRandom(string Id)
+        public static Field GetRandom(int Id)
         {
             LabelTextBoxField a = new LabelTextBoxField(Id,Id+":labelText","","placeholder","tooltip");
             return a;
@@ -456,13 +456,13 @@ namespace PDMSCore.DataManipulation
         private LabelField Label;
         private DatePickerField DatePicker;
 
-        public LabelDatePickerField(string Id, string HtmlLabel, DateTime? Value = null, DateTime? MinDate = null, DateTime? MaxDate = null)
+        public LabelDatePickerField(int Id, string HtmlLabel, DateTime? Value = null, DateTime? MinDate = null, DateTime? MaxDate = null)
         {
             this.Label = new LabelField(HtmlLabel, true);
-            this.DatePicker = new DatePickerField(Id, Value, MinDate, MaxDate);
+            this.DatePicker = new DatePickerField(Id.ToString(), Value, MinDate, MaxDate);
         }
 
-        public static Field GetRandom(string Id, DateTime? DefaultValue = null)
+        public static Field GetRandom(int Id, DateTime? DefaultValue = null)
         {
             DefaultValue = (DefaultValue == null ? DateTime.Now : DefaultValue);
             LabelDatePickerField a = new LabelDatePickerField(Id,"DP Label",DefaultValue );
@@ -493,8 +493,8 @@ namespace PDMSCore.DataManipulation
 
         public DropDownOption(string ValueId, string Label, bool Enabled = true)
         {
-            this.NameId = ValueId;
-            //this.Value = ValueId;
+            //this.NameId ="DD" + ValueId.ToString();
+            NameId = ValueId;
             this.Label = Label;
             this.Enabled = Enabled;
         }
@@ -540,12 +540,12 @@ namespace PDMSCore.DataManipulation
             Classes.Add(newClass);
         }
 
-        public static DropDownField GetRandom(string id, int count)
+        public static DropDownField GetRandom(int id, int count)
         {
             DropDownField n = new DropDownField(id+":DD", count - 1);
             for (int i = 0; i < count; i++)
             {
-                DropDownOption no = new DropDownOption("DD" + i.ToString(), "DD" + i.ToString(), i % 2 == 0);
+                DropDownOption no = new DropDownOption(i.ToString(), "DD" + i.ToString(), i % 2 == 0);
                 n.Add(no);
             }
             return n;
@@ -560,9 +560,6 @@ namespace PDMSCore.DataManipulation
             tbDropDown.Attributes.Add("name", NameId);
             if (Size > 1)
                 tbDropDown.Attributes.Add("size", Size.ToString());
-
-            /*if (!Enabled)
-                tbDropDown.Attributes.Add("disabled", "");*/
 
             for (int i = 0; i < Options.Count; i++)
             {
@@ -582,13 +579,13 @@ namespace PDMSCore.DataManipulation
         public LabelField Label { get; set; }
         public DropDownField Dropdown { get; set; }
 
-        public LabelDropDownField(string Id, string label, int VisibleRows = 1)
+        public LabelDropDownField(int Id, string label, int VisibleRows = 1)
         {
             Label = new LabelField(label, true);
-            Dropdown = new DropDownField(Id, VisibleRows);
+            Dropdown = new DropDownField(Id.ToString(), VisibleRows);
         }
 
-        public static Field GetRandom(string id, int count)
+        public static Field GetRandom(int id, int count)
         {
             LabelDropDownField n = new LabelDropDownField(id, id + ":DDLabel");
             n.Dropdown = DropDownField.GetRandom(id, count);
@@ -657,8 +654,10 @@ namespace PDMSCore.DataManipulation
 
         public override string GetValue()
         {
-            return Value;
+            return Checked ? "1" : "-1";
         }
+
+
     }
 
     public class LabelCheckBoxField : Field

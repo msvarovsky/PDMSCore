@@ -83,8 +83,8 @@ namespace PDMSCore.DataManipulation
         {
             string PanelID = id.ToString();
 
-            menu.items.Add(new PanelMenuItem(true, "Refresh", "0", PanelID));
-            menu.items.Add(new PanelMenuItem(true, "Save", "1", PanelID));
+            menu.items.Add(new PanelMenuItem(true, "Refresh", "refresh", PanelID));
+            menu.items.Add(new PanelMenuItem(true, "Save", "save", PanelID));
 
             for (int i = 2; i < count; i++)
                 menu.items.Add(new PanelMenuItem(false, i.ToString(), "www" + i + ".cz", PanelID));

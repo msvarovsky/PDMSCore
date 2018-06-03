@@ -82,35 +82,44 @@ function onPanelMenuClick(e) {
 
 
 function onPanelMenuItemClick(panelOwnerID, panelID, panelMenuItemID) {
+    console.log("onPanelMenuItemClick");
 
-    $('#ajax_loader').show();
-
-    $.ajax({
-        //url: "/Project/PanelMenuItemClick/",
-        url: "/Panel/PanelMenuItemClick/",
-        type: "GET",
-        data: { PanelOwnerID: panelOwnerID, PanelMenuID: panelID, PanelMenuItemID: panelMenuItemID },
-        success: function (partialViewResult) {
-            $('#ajax_loader').hide();
-            if (partialViewResult.length > 0)
-                $("#Panel-" + panelID).replaceWith(partialViewResult);
-        },
-        error: function (result) {
-            alert("error!" + result);
-            $('#ajax_loader').hide();
-        }
-    });
+    if (panelMenuItemID == "save") {
+        console.log("save");
+        var form = $("#Form-" + panelID);
+        if (form != null)
+            form.submit();
+    }
+    else {
+        $('#ajax_loader').show();
+        $.ajax({
+            //url: "/Project/PanelMenuItemClick/",
+            url: "/Panel/PanelMenuItemClick/",
+            type: "GET",
+            data: { PanelOwnerID: panelOwnerID, PanelMenuID: panelID, PanelMenuItemID: panelMenuItemID },
+            success: function (partialViewResult) {
+                $('#ajax_loader').hide();
+                if (partialViewResult.length > 0)
+                    $("#Panel-" + panelID).replaceWith(partialViewResult);
+            },
+            error: function (result) {
+                alert("error!" + result);
+                $('#ajax_loader').hide();
+            }
+        });
+    }
 }
 
 
-$('.CancelBtn, .OkBtn').click(function () {
-    //$(this).parent().css({"display":"none"}); // Nefunguje dobre
-    //this.panentNode.style.display = "none";   // Nefunguje dobre
-    var modals = document.getElementsByClassName("Modal");
-    for (i = 0; i < modals.length; i++) {
-        modals[i].style.display = "none";
-    }
-});
+//$('.CancelBtn, .OkBtn').click(function () {
+//    //$(this).parent().css({"display":"none"}); // Nefunguje dobre
+//    //this.panentNode.style.display = "none";   // Nefunguje dobre
+//    console.log(".CancelBtn, .OkBtn");
+//    var modals = document.getElementsByClassName("Modal");
+//    for (i = 0; i < modals.length; i++) {
+//        modals[i].style.display = "none";
+//    }
+//});
 
 
 

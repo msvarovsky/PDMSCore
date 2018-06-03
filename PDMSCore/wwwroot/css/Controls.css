@@ -16,22 +16,22 @@
 }
 .BoldLabelField {
     font-weight: bold;
+    margin-right: 10px;
 }
 
 .TextAreaField {
     width: 100%;
-    margin-left: 10px;
+    /* margin-left: 10px; */
 }
 
 .GroupOfCheckBoxes, .GroupOfRadioButtons, .DropDownOptions {
     width: 100%;
-    /*margin-left: 10px;*/
 }
 
 /*.CustomTextBox, .CustomDatePicker {*/
 .ControlOfLabelControlDuo {
     width: 100%;
-    margin-left: 10px;
+    /* margin-left: 10px; */
     /*                    border:1px solid #d1c7ac;*/
 }
 

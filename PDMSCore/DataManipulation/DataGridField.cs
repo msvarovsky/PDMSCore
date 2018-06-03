@@ -46,6 +46,12 @@ namespace PDMSCore.DataManipulation
             d.AddDataRow(tr, 1);
 
             tr = new TableRow2();
+            tr.AddColumnCell(new LabelField("Martin-" + DateTime.Now.Second));
+            tr.AddColumnCell(new LabelField("SpatnePrijmeni"));
+            tr.AddColumnCell(new CheckBoxField("", "", false, new WebTagAttributes(true, "")));
+            d.AddDataRow(tr, 1);
+
+            tr = new TableRow2();
             tr.AddColumnCell(new LabelField("Cecile-" + DateTime.Now.Second));
             tr.AddColumnCell(new LabelField("Svarovska"));
             tr.AddColumnCell(new CheckBoxField("", "", true, new WebTagAttributes(true, "")));
@@ -186,8 +192,8 @@ namespace PDMSCore.DataManipulation
                 {
                     DropDownField ddf = new DropDownField("filter-ddf-1", 1);
                     ddf.Add(new DropDownOption("", "(All)"));
-                    ddf.Add(new DropDownOption("y", "Yes"));
-                    ddf.Add(new DropDownOption("n", "No"));
+                    ddf.Add(new DropDownOption("1", "Yes"));
+                    ddf.Add(new DropDownOption("-1", "No"));
                     ddf.AddClass("filter");
 
                     tbHs.InnerHtml.AppendHtml(ddf.HtmlText());

@@ -9,7 +9,7 @@ namespace PDMSCore.BusinessObjects
 {
     public class Project
     {
-        public int Id { get; set; }
+        public int ID { get; set; }
         public string Name { get; set; }
         public List<Panel> PanelList { get; set; }
         public Menu SideMenu { get; set; }
@@ -22,8 +22,42 @@ namespace PDMSCore.BusinessObjects
         public bool Create()
         {
             // jdi do DB a vytvor novy projekt.
-            Id = (Int32)DateTime.Now.Ticks;
+            ID = (Int32)DateTime.Now.Ticks;
             return true;
+        }
+        public void CreateNew()
+        {
+            // jdi do DB a vytvor novy projekt.
+            //ID = (Int32)DateTime.Now.Ticks;
+            //ID = DateTime.Now.Hour * 100000000 + DateTime.Now.Minute * 1000000 + DateTime.Now.Second * 10000 + DateTime.Now.Millisecond * 100;
+            ID = DateTime.Now.Millisecond * 100;
+
+            SideMenu.GetRandomMenu();
+            List<Field> fields = new List<Field>();
+
+            fields.Add(new LabelTextBoxField(ID++, "Project name", "", "...", "Give your project a name."));
+            fields.Add(new LabelTextAreaField(ID++, "Project description:"));
+            fields.Add(Field.NewLine());
+
+            LabelDropDownField dd = new LabelDropDownField(ID++, "Project type:");
+            dd.Dropdown.Add(new DropDownOption(1.ToString(), "Novy"));
+            dd.Dropdown.Add(new DropDownOption(2.ToString(), "Stary"));
+            dd.Dropdown.Add(new DropDownOption(3.ToString(), "Refresh"));
+            fields.Add(dd);
+
+            LabelDropDownField dd2 = new LabelDropDownField(ID++, "pt:");
+            dd2.Dropdown.Add(new DropDownOption(1.ToString(), "Novy"));
+            dd2.Dropdown.Add(new DropDownOption(2.ToString(), "Stary"));
+            dd2.Dropdown.Add(new DropDownOption(3.ToString(), "Refresh"));
+            fields.Add(dd2);
+
+            fields.Add(new LabelDatePickerField(ID++, "Creation date:", DateTime.Now));
+
+
+            Panel panel = new Panel(1, "New project:", 2);
+            panel.GenerateRandomPanelMenuItems(5);
+            panel.Content = fields;
+            PanelList.Add(panel);
         }
 
         public bool SaveFromHtml(IFormCollection fc)
@@ -121,14 +155,14 @@ namespace PDMSCore.BusinessObjects
             fields.Add(new LabelField("Bold text",true));
             fields.Add(Field.NewLine());
 
-            fields.Add(LabelTextBoxField.GetRandom((id++).ToString()));
-            fields.Add(LabelTextAreaField.GetRandom((id++).ToString()));
+            fields.Add(LabelTextBoxField.GetRandom(id++));
+            fields.Add(LabelTextAreaField.GetRandom(id++));
             fields.Add(Field.NewLine());
 
             fields.Add(LabelRBCBControl<LabelRadioButtonField>.GetRandom((id++).ToString(),3));
             fields.Add(LabelRBCBControl<LabelCheckBoxField>.GetRandom((id++).ToString(), 4));
-            fields.Add(LabelDropDownField.GetRandom((id++).ToString(),4));
-            fields.Add(LabelDatePickerField.GetRandom((id++).ToString()));
+            fields.Add(LabelDropDownField.GetRandom(id++,4));
+            fields.Add(LabelDatePickerField.GetRandom(id++));
 
             fields.Add(LabelFileUploadField.GetRandom());
             fields.Add(LabelFileUploadField.GetRandom(true));
@@ -146,14 +180,14 @@ namespace PDMSCore.BusinessObjects
             Panel panel = new Panel(1,"GetRandom",1);
             //panel.Content = fields;
             fields = new List<Field>();
-            fields.Add(LabelTextBoxField.GetRandom((id++).ToString()));
+            fields.Add(LabelTextBoxField.GetRandom(id++));
             panel.GenerateRandomPanelMenuItems(5);
             panel.Content = fields;
             //ToShow.Add(panel);
 
             Panel panel2 = new Panel(2, "Grid", 1);
             List<Field> fields2 = new List<Field>();
-            fields2.Add(LabelTextBoxField.GetRandom((id++).ToString()));
+            fields2.Add(LabelTextBoxField.GetRandom(id++));
             fields2.Add(LabelDataGridField.GetRandom("Grid"));
 
             panel2.Content = fields2;
