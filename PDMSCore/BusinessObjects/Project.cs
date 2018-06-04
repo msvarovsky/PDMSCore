@@ -53,6 +53,8 @@ namespace PDMSCore.BusinessObjects
 
             fields.Add(new LabelDatePickerField(ID++, "Creation date:", DateTime.Now));
 
+            fields.Add(new LabelSelectableTextBoxField(ID++, "Choose user:", "...", "sp_AllUsers"));
+
 
             Panel panel = new Panel(1, "New project:", 2);
             panel.GenerateRandomPanelMenuItems(5);

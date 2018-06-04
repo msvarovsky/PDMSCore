@@ -9,7 +9,7 @@ namespace PDMSCore.Controllers
 {
     public class ModalDialogController : Controller
     {
-        public ActionResult ModalPartial(string DialogID, string ReturnFieldID)
+        public ActionResult ModalPartial(string DialogID, string TagIDOfReturnedID, string TagIDOfReturnedLabel)
         {
             ModalDialog md = new ModalDialog("en", "Test title");
 
@@ -29,8 +29,11 @@ namespace PDMSCore.Controllers
 
 
             md.AddField(d);
-            md.ReturnFieldID = ReturnFieldID;
+            md.TagIDOfReturnedID = TagIDOfReturnedID;
+            md.TagIDOfReturnedLabel = TagIDOfReturnedLabel;
             md.ModalDialogID = DialogID;
+            
+            //md.ReturnLabelFieldID = ReturnLabelFieldID;
             //md.AddField(new LabelTextBoxField("testTextBoxDield", "Label", "already in"));
 
 

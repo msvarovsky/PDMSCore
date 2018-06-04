@@ -8,26 +8,25 @@ namespace PDMSCore.Controllers
 {
     public class DataGridController : Controller
     {
-        
-        public ActionResult DataGridPartial(string DataGridID)
-        {
-            DataGridField2 d = new DataGridField2();
-            d.ID = Int32.Parse(DataGridID);
-            d.SetHeaderLabels("Jmeno", "Prijmeni", "Aktivni");
+        //public ActionResult DataGridPartial(string DataGridID)
+        //{
+        //    DataGridField2 d = new DataGridField2();
+        //    d.ID = Int32.Parse(DataGridID);
+        //    d.SetHeaderLabels("Jmeno", "Prijmeni", "Aktivni");
 
-            TableRow2 tr = new TableRow2();
-            tr.AddColumnCell(new LabelField("Jmeno"));
-            tr.AddColumnCell(new LabelField("Prijmeni"));
-            tr.AddColumnCell(new CheckBoxField("", "", true, new WebTagAttributes(true, "")));
+        //    TableRow2 tr = new TableRow2();
+        //    tr.AddColumnCell(new LabelField("Jmeno"));
+        //    tr.AddColumnCell(new LabelField("Prijmeni"));
+        //    tr.AddColumnCell(new CheckBoxField("", "", true, new WebTagAttributes(true, "")));
 
-            d.AddDataRow(tr, 1);
-            d.AddDataRow(tr.MakeCopy());
-            d.AddDataRow(tr.MakeCopy());
+        //    d.AddDataRow(tr, 1);
+        //    d.AddDataRow(tr.MakeCopy());
+        //    d.AddDataRow(tr.MakeCopy());
 
-            return PartialView("DataGridPartial", d);
-        }
+        //    return PartialView("DataGridPartial", d);
+        //}
 
-        public ActionResult GetDataGridContent(string DataGridID, string[] FilterValues)
+        public ActionResult GetDataGridContent(string DataGridID, string ContentID, string[] FilterValues)
         {
             /*DataGridField2 d = new DataGridField2();
             d.ID = Int32.Parse(DataGridID);

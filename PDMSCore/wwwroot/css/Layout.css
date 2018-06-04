@@ -79,6 +79,7 @@ body {
 
 .PageContent {
     grid-area: PageContent;
-    background-color: #8ca0ff;
+    /*background-color: #8ca0ff;*/
+    background-color: var(--GreyBackgroundColor);
     z-index: 0;
 }

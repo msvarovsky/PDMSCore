@@ -39,10 +39,6 @@ $(document).ready(function () {
     });
 });
 
-
-
-
-
 document.onclick = function (event) {
     var i;
 
@@ -80,7 +76,6 @@ function onPanelMenuClick(e) {
     document.getElementById(e).classList.toggle("show");
 }
 
-
 function onPanelMenuItemClick(panelOwnerID, panelID, panelMenuItemID) {
     console.log("onPanelMenuItemClick");
 
@@ -110,20 +105,7 @@ function onPanelMenuItemClick(panelOwnerID, panelID, panelMenuItemID) {
     }
 }
 
-
-//$('.CancelBtn, .OkBtn').click(function () {
-//    //$(this).parent().css({"display":"none"}); // Nefunguje dobre
-//    //this.panentNode.style.display = "none";   // Nefunguje dobre
-//    console.log(".CancelBtn, .OkBtn");
-//    var modals = document.getElementsByClassName("Modal");
-//    for (i = 0; i < modals.length; i++) {
-//        modals[i].style.display = "none";
-//    }
-//});
-
-
-
-function OpenModal(dialogID, returnFieldID) {
+function OpenModal(dialogID, tagIDOfReturnedID, tagIDOfReturnedLabel) {
 
     // alert(DialogID);
     // $(DialogID).style.display = "block";
@@ -133,7 +115,8 @@ function OpenModal(dialogID, returnFieldID) {
         //url: "/Project/ModalPartial/",
         url: "/ModalDialog/ModalPartial/",
         type: "GET",
-        data: { DialogID: dialogID, ReturnFieldID: returnFieldID },
+
+        data: { DialogID: dialogID, TagIDOfReturnedID: tagIDOfReturnedID, TagIDOfReturnedLabel: tagIDOfReturnedLabel },
         success: function (partialViewResult) {
             if (partialViewResult.length > 0) {
                 $("#" + dialogID).html(partialViewResult);
@@ -146,54 +129,7 @@ function OpenModal(dialogID, returnFieldID) {
     });
 
     document.getElementById(dialogID).style.display = "block";
-
-    
-    // Get the modal
-    // var modal = document.getElementById('myModal');
-
-
-
-    //$("#ModalDialog1").OpenModal("#ModalDialog1");
-
-    //$("ModalDialog1").dialog({
-    //    autoOpen: true,
-    //    width: 400,
-    //    resizable: false,
-    //    title: 'My Table',
-    //    modal: true,
-    //    open: function (event, ui) {
-    //        $(this).load('@Url.Action("ModalPartialView", "Project")');
-    //    },
-    //    buttons: {
-            
-    //        "Close": function () {
-    //            alert("close");
-    //            $(this).dialog("close");
-    //        }
-    //    }
-    //});
 };
-
-
-
-
-// $('#my-dialog').dialog({
-//     autoOpen: false,
-//     width: 400,
-//     resizable: false,
-//     modal: true
-// });
-
-//$('#show-modal').click(function () {
-//    $('#my-dialog').load("/Project/ModalPartialView/", function () {
-//        $(this).dialog('open');
-//    });
-//    return false;
-//});
-
-
-
-//window.onclick = function () { alert('test'); }
 
 
 $(function () {

@@ -1,6 +1,7 @@
 ﻿using PDMSCore.BusinessObjects;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
+using PDMSCore.DataManipulation;
 
 namespace PDMSCore.Controllers
 {
@@ -28,12 +29,16 @@ namespace PDMSCore.Controllers
         {
             p = new Project();
             p.CreateNew();
+            
             ViewData["panelOwnerID"] = "ID projektu";
             return View("ShowProject",p);
         }
         [HttpPost]
         public ActionResult CreateNewProject(IFormCollection fc)
         {
+            
+
+
             return View();
         }
 

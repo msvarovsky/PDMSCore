@@ -1,14 +1,4 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
-*@
-
-@model PDMSCore.DataManipulation.DataGridField2
-
-
-@*<table class="GridTable" id=@Model.ID>
-    <thead>@Model.HtmlTextHeaderRow()</thead>
-    <tbody id="DataGridContent"></tbody>
-</table>*@
+﻿@model PDMSCore.DataManipulation.DataGridField2
 
 <div class="TableWrapper">
     <div class="tbl-header">
@@ -23,23 +13,20 @@
         </table>
     </div>
 </div>
-
-<input type="button" id="RefreshGrid" onclick="ReloadDataGrid('gridID-input','Hovno')" />
-
+@*<input type="button" id="RefreshGrid" onclick="ReloadDataGrid('gridID-input','Hovno')" />*@
 
 <script>
 
     var DataGridHeaderID, DataGridBodyID;
-
+    
     $(document).ready(function () {
-        ReloadDataGrid("gridID", "any");
+        //ReloadDataGrid("gridID", "any");
+        ReloadDataGrid();
         document.getElementById("@Model.FocusControlID").focus();
         //ResizeColumns();
         DataGridHeaderID = 'dg-@Model.ID-h';
         DataGridBodyID = 'dg-@Model.ID-b';
-
-        console.log("ready");
-       
+        //console.log("ready");
     });
 
     //http://jsfiddle.net/thrilleratplay/epcybL4v/
@@ -93,7 +80,6 @@
 
     function ResizeColumns() {
         console.log("ResizeColumns");
-        //var $HeaderTable = $('#tbl-headerTable');
         var $HeaderTable = $('#' + DataGridHeaderID);
         var $BodyTable = $('#' + DataGridBodyID);
         var $HeaderCells = $HeaderTable.find('thead tr:first').children();
@@ -102,24 +88,10 @@
             return $(this).width();
         }).get();
 
-        //$BodyTable.find('tbody tr').children().each(function (i, v) {
         $BodyTable.find('tr').children().each(function (i, v) {
             $(v).width(colWidths[i]);
         });
     }
-
-    /*$(window).on("load resize ", function () {
-        //https://codepen.io/nikhil8krishnan/pen/WvYPvv?editors=1100
-        //  https://davidwalsh.name/detect-scrollbar-width
-
-        console.log("load resize");
-
-        var scrollDiv = document.getElementsByClassName("tbl-content");
-        if (scrollDiv[0] != null) {
-            var scrollbarWidth = scrollDiv[0].offsetWidth - scrollDiv[0].clientWidth - 1;
-            $('.tbl-header').css({ 'padding-right': scrollbarWidth });
-        }
-    }).resize();*/
 
     $(window).on("load resize ", OnPageResize).resize();
 
@@ -144,24 +116,15 @@
         var value = $(this).find('td:first').html();
         $('#ModalOk').removeAttr("disabled");
         console.log("click: .GridTable td");
-        //GetSelectedRowID($(this).closest('table').attr('id'));
-
-        //var FilterValues = GetHeaderRowValues($(this).closest('table'));
-        //ReloadDataGrid("dataGridID-TODO", "bla");
     });
 
     // Toto se Ajaxem neobnovuje a proto to muze zustat
     $(".GridTable th").click(function () {
-        //console.log(".GridTable th");
-
         $(this).closest(".TableWrapper").find(".SingleSelected").removeClass('SingleSelected');
-        
         $('#ModalOk').attr("disabled", "");
-        //console.log($(this));
     });
 
     $(document).on("dblclick", '.GridTable tr', function (event) {
-        //console.log("dblclick");
         $(this).addClass('SingleSelected').siblings().removeClass('SingleSelected');
         var RowID = $(this).find('td:first').html();
         OkButtonClicked(RowID);
@@ -190,7 +153,8 @@
         return al;
     };
 
-    function ReloadDataGrid(DataGridID, returnFieldID) {
+    //function ReloadDataGrid(DataGridID, returnFieldID) {
+    function ReloadDataGrid() {
         //var FilterValues = GetHeaderRowValues($(this).closest('table'));
         var filterValues = GetHeaderRowValuesFromID(DataGridHeaderID);
 
@@ -201,6 +165,7 @@
             traditional: true,
             data: {
                 DataGridID: @Model.ID,
+                ContentID: "TODO",
                 FilterValues: filterValues,
             },
 
@@ -245,9 +210,6 @@
         }
     });
 
-
-
-
     function GetTableRowCount(tableID) { 
         var obj = document.getElementById(tableID).getElementsByTagName("tr");
         if (obj != null) {
@@ -259,15 +221,16 @@
     
     function OnDataGridFilterChange(FilterID) {
         console.log("OnDataGridFilterChange");
-        var value = $("#" + FilterID).val();
-        ReloadDataGrid('gridID-input', 'Hovno')
 
+        //TODO: Pozdeji, pokud budu chtit aktualizovat datagrid pouze kdyz bude velikost filtru > X znaku.
+        //var value = $("#" + FilterID).val();
         //if (value.length > 2) {
         //    console.log(">2");
         //    ReloadDataGrid('gridID-input', 'Hovno')
         //}
 
-
+        //ReloadDataGrid('gridID-input', 'Hovno');
+        ReloadDataGrid();
     };
 
 </script>

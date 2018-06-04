@@ -12,7 +12,8 @@ namespace PDMSCore.DataManipulation
         public List<Field> Fields { get; set; }
         public string OkButtonLabel { get; set; }
         public string CancelButtonLabel { get; set; }
-        public string ReturnFieldID { get; set; }
+        public string TagIDOfReturnedID { get; set; }
+        public string TagIDOfReturnedLabel { get; set; }
         public string ModalDialogID { get; set; }
 
 

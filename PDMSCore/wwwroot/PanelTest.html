@@ -1,0 +1,112 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+
+<head>
+  <link rel="stylesheet" href="./css/Layout.css">
+  <link rel="stylesheet" href="./css/Controls.css">
+  <link rel="stylesheet" href="./css/ContentPanel.css">
+
+  <script src="./js/jquery-3.3.1.min.js"></script>
+</head>
+<script type="text/javascript">
+  //$(document).ready(function () {
+  //    document.getElementById("btnOpenModal").addEventListener("submit", function ());
+  //};
+
+  function OpenModal(dialogID, returnFieldID, returnLabelFieldID ) {
+    console.log("OpenModal");
+    alert("OpenModal");
+    $("#"+returnFieldID)[0].value = "ID:ahoj";
+    $("#"+returnLabelFieldID)[0].value = "Label:ahoj";
+    
+
+    74100
+  };
+</script>
+
+
+<body>
+  <div class="PageContent">
+    <div class="Content">
+      <div class="Panel x2" id="Panel-1">
+        <div class="Panel-Header">
+          <div class="Panel-Header-Left">
+            New project:
+          </div>
+          <div class="Panel-Header-Right">
+            <div class="dd-menu">
+              <i aria-hidden="true" class="fa fa-gear dd-menu-btn" onclick="onPanelMenuClick('1')"></i>
+              <div class="dd-menu-content" id="1">
+                <a onclick="onPanelMenuItemClick('ID projektu','1','refresh')">Refresh</a>
+                <a onclick="onPanelMenuItemClick('ID projektu','1','save')">Save</a>
+                <a href="www2.cz">2</a>
+                <a href="www3.cz">3</a>
+                <a href="www4.cz">4</a>
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <div class="Panel-Body">
+          <form id="Form-1" method="post">
+            <input name="PanelId" hidden="" type="text" value="1">
+            <div class="LabelControlDuo">
+              <label class="BoldLabelField">Project name</label>
+              <input class="ControlOfLabelControlDuo" name="74100" placeholder="..." title="Give your project a name." type="text">
+            </div>
+            <div class="LabelControlDuo">
+              <label class="BoldLabelField">Project description:</label>
+              <textarea class="TextAreaField" name="74101" placeholder="..." rows="4"></textarea>
+            </div>
+            <br>
+            <div class="LabelControlDuo">
+              <label class="BoldLabelField">Project type:</label>
+              <select class="DropDownOptions" name="74102" oninput="OnDataGridFilterChange()">
+                <option value="1">Novy</option>
+                <option value="2">Stary</option>
+                <option value="3">Refresh</option>
+              </select>
+            </div>
+            <div class="LabelControlDuo">
+              <label class="BoldLabelField">pt:</label>
+              <select class="DropDownOptions" name="74103" oninput="OnDataGridFilterChange()">
+                <option value="1">Novy</option>
+                <option value="2">Stary</option>
+                <option value="3">Refresh</option>
+              </select>
+            </div>
+            <div class="LabelControlDuo">
+              <label class="BoldLabelField">Creation date:</label>
+              <input class="ControlOfLabelControlDuo" name="74104" type="date" value="2018-06-04">
+            </div>
+
+            <div class="LabelControlDuo">
+              <label class="BoldLabelField">Select user:</label>
+              <!-- <input id="hovno" hidden="" type="text" value=""> -->
+              
+              <input type="text" readonly id="74100" name="74100" class="ControlOfLabelControlDuo" onclick="OpenModal('myModal1', '74100', 'SelectedIDOf74100')" value="aa">
+              <input type="hidden" id="SelectedIDOf74100" name="SelectedIDOf74100" onchange="UpdateFieldOnReturnFromModal('74100', 'IDToLookUp')" value="prev val">
+
+            </div>
+
+          </form>
+        </div>
+      </div>
+
+
+    </div>
+
+
+
+
+
+
+
+  </div>
+
+
+
+
+</body>
+
+</html>

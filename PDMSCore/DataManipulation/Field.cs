@@ -75,6 +75,28 @@ namespace PDMSCore.DataManipulation
             return tb;
         }
     }
+    public class HiddenField : Field
+    {
+        public string Value { get; set; }
+        public HiddenField(string NameId)
+        {
+            this.NameId = NameId;
+        }
+
+        public override TagBuilder HtmlText()
+        {
+            TagBuilder tb = new TagBuilder("input");
+            tb.Attributes.Add("type", "hidden");
+            tb.Attributes.Add("name", NameId);
+            tb.Attributes.Add("id", NameId);
+            return tb;
+        }
+
+        public override string GetValue()
+        {
+            return Value;
+        }
+    }
 
     public class LabelDataGridField : Field
     {
@@ -163,6 +185,7 @@ namespace PDMSCore.DataManipulation
             TagBuilder tb = new TagBuilder("textarea");
             tb.AddCssClass("TextAreaField");
             tb.Attributes.Add("name", NameId);
+            tb.Attributes.Add("id", NameId);
             tb.Attributes.Add("rows", Rows.ToString());
             tb.Attributes.Add("placeholder", Placeholder);
             tb.InnerHtml.AppendHtml(WebUtility.HtmlEncode(Text));
@@ -215,6 +238,8 @@ namespace PDMSCore.DataManipulation
         public string PlaceHolder { get; set; }
         public string ToolTip { get; set; }
         public string Name { get; set; }
+        public string OnClick { get; set; }
+        public bool ReadOnly { get; set; }
         private string CSS { get; set; }
 
         public TextBoxField(string NameId, string CSS, string Text="", string PlaceHolder = "", string ToolTip="")
@@ -225,6 +250,8 @@ namespace PDMSCore.DataManipulation
             this.ToolTip = ToolTip;
             this.Tag = "input";
             this.CSS = CSS;
+            this.ReadOnly = false;
+            OnClick = "";
         }
 
         public override TagBuilder HtmlText()
@@ -236,7 +263,14 @@ namespace PDMSCore.DataManipulation
             else
                 tb.AddCssClass(CSS);
 
+            if (ReadOnly)
+                tb.Attributes.Add("readonly","");
+
+            if (OnClick!="")
+                tb.Attributes.Add("onclick", OnClick);
+
             tb.Attributes.Add("name", this.Name);
+            tb.Attributes.Add("id", this.Name);
             tb.Attributes.Add("type", "text");
             if (ToolTip != "") 
                 tb.Attributes.Add("title", ToolTip);
@@ -281,6 +315,44 @@ namespace PDMSCore.DataManipulation
             return tb;
         }
     }
+
+    public class LabelSelectableTextBoxField : Field
+    {
+        private LabelField label;
+        private TextBoxField txtb;
+        private HiddenField hiddenField;
+        public string DataGridSP;
+
+        public LabelSelectableTextBoxField(int Id, string LabelText, string Text, string dataGridSP)
+        {
+            label = new LabelField(LabelText, true);
+            txtb = new TextBoxField(Id.ToString(), "ControlOfLabelControlDuo", Text);
+
+            //function OpenModal(dialogID,      tagIDOfReturnedID,  tagIDOfReturnedLabel)
+                   //  OpenModal('myModal1',    '74100',            'SelectedIDOf74100')
+            txtb.OnClick = "OpenModal(\'ErarniModal\',\'SelectedIDOf" + Id + "\', \'" + Id + "\')";
+            txtb.ReadOnly = true;
+            hiddenField = new HiddenField("SelectedIDOf" + Id);
+
+            DataGridSP = dataGridSP;
+        }
+
+        public override string GetValue()
+        {
+            return txtb.GetValue();
+        }
+
+        public override TagBuilder HtmlText()
+        {
+            TagBuilder tb = new TagBuilder("div");
+            tb.AddCssClass("LabelControlDuo");
+            tb.InnerHtml.AppendHtml(label.HtmlText());
+            tb.InnerHtml.AppendHtml(txtb.HtmlText());
+            tb.InnerHtml.AppendHtml(hiddenField.HtmlText());
+            return tb;
+        }
+    }
+
 
     public class FileUploadField : Field
     {
@@ -556,6 +628,8 @@ namespace PDMSCore.DataManipulation
             TagBuilder tbDropDown = new TagBuilder("select");
             for (int i = 0; i < Classes.Count; i++)
                 tbDropDown.AddCssClass(Classes[i]);
+
+            tbDropDown.Attributes.Add("oninput", "OnDataGridFilterChange()");
 
             tbDropDown.Attributes.Add("name", NameId);
             if (Size > 1)

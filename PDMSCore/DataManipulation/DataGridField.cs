@@ -49,7 +49,7 @@ namespace PDMSCore.DataManipulation
             tr.AddColumnCell(new LabelField("Martin-" + DateTime.Now.Second));
             tr.AddColumnCell(new LabelField("SpatnePrijmeni"));
             tr.AddColumnCell(new CheckBoxField("", "", false, new WebTagAttributes(true, "")));
-            d.AddDataRow(tr, 1);
+            d.AddDataRow(tr);
 
             tr = new TableRow2();
             tr.AddColumnCell(new LabelField("Cecile-" + DateTime.Now.Second));
@@ -175,11 +175,6 @@ namespace PDMSCore.DataManipulation
                 TagBuilder tbHl = new TagBuilder("HeaderLabel");
                 TagBuilder tbHs = new TagBuilder("HeaderSearch");
 
-                //if (i > HeaderLabels.Length)
-                //    tbHl.InnerHtml.AppendHtml("{Not defined}");
-                //else
-                //    tbHl.InnerHtml.AppendHtml(HeaderLabels[i]);
-
                 string colID;
                 if (i > HeaderLabels.Length)
                     colID = "{Not defined}";
@@ -252,6 +247,17 @@ namespace PDMSCore.DataManipulation
         public override string GetValue()
         {
             return "";
+        }
+
+        public string GetPresentableStringFromID(string id)
+        {
+            int iid;
+            if (Int32.TryParse(id, out iid))
+            {
+                TableRow2 tr2 = Data[iid - 1];
+                return tr2.Cells[0].GetValue() + " " + tr2.Cells[1].GetValue();
+            }
+            return null;
         }
     }
 
