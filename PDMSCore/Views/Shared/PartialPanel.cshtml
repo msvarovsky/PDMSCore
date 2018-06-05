@@ -9,7 +9,6 @@
     ViewBag.Title = "partial view panels";
 }
 
-
 <div class="Panel @Model.Size" id="Panel-@Model.id">
 
     <div id='ajax_loader' style="position: fixed; left: 50%; top: 50%; display: none;">
@@ -17,16 +16,14 @@
     </div>
 
     <div class="Panel-Header">
-
         <div class="Panel-Header-Left">
             @Model.Label
         </div>
-
         <div class="Panel-Header-Right">
             @Model.menu.HtmlText(@ViewData["panelOwnerID"])
         </div>
-
     </div>
+
     <div class="Panel-Body">
         <form id="Form-@Model.id" method="post">
             <input name="PanelId" hidden type="text" value="@Model.id" />
@@ -34,7 +31,38 @@
             {
                 @MSHelpers.Field(Model.Content[f]);
             }
-            @*<input type="submit">*@
         </form>
     </div>
 </div>
+
+<script>
+    function OpenModal(dialogTagID, tagIDOfReturnedID, tagIDOfReturnedLabel, dialogType, contentReference) {
+        // alert(DialogID);
+        // $(DialogID).style.display = "block";
+        console.log("OpenModal");
+        
+        $.ajax({
+            //url: "/Project/ModalPartial/",
+            //url: "/ModalDialog/ModalPartial/",
+            url: "/ModalDialog/NewModal/",
+            type: "GET",
+            data: {
+                DialogID:               dialogTagID,
+                TagIDOfReturnedID:      tagIDOfReturnedID,
+                TagIDOfReturnedLabel:   tagIDOfReturnedLabel,
+                //DialogType:             dialogType,
+                ContentReference:       contentReference
+            },
+            success: function (partialViewResult) {
+                if (partialViewResult.length > 0) {
+                    $("#" + dialogTagID).html(partialViewResult);
+                }
+            },
+            error: function (result) {
+                $("#" + dialogTagID).html("<div class=\"ModalBody\">\r\n<span class=\"CloseModal\">&times;</span>\r\n<p>Ajax failed...</p>\r\n</div>");
+            }
+        });
+
+        document.getElementById(dialogTagID).style.display = "block";
+    };
+</script>

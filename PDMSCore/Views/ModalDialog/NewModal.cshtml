@@ -1,0 +1,95 @@
+﻿@model PDMSCore.DataManipulation.ModalDialog
+
+<div class="ModalBody">
+    <div class="ModalTitle">
+        @Model.Title
+    </div>
+    <div class="ModalDescription">
+        @Model.Description
+    </div>
+    <hr />
+    <div class="ModalContent">
+        <form id="NewDialog-noIDneeded" method="post">
+            @for (int f = 0; f < Model.Fields.Count; f++)
+            {
+                if (@Model.Fields[f].GetType() == typeof(PDMSCore.DataManipulation.DataGridField2))
+                {
+                    @await Html.PartialAsync("~/Views/DataGrid/DataGridPartial.cshtml", (PDMSCore.DataManipulation.DataGridField2)@Model.Fields[f] /*To be changed*/);
+                }
+                else
+                {
+                    @Model.Fields[f].HtmlText();
+                }
+            }
+        </form>
+
+    </div>
+    <p />
+    <div class="ModalBottom">
+        <input type="button" id="ModalCancel" class="CancelBtn" value=@Model.CancelButtonLabel />
+        <input type="button" id="ModalOk" class="OkBtn" disabled value=@Model.OkButtonLabel />
+    </div>
+</div>
+
+
+<script>
+
+    $(document).keyup(function (e) {
+        if (e.keyCode == 27) {
+            CloseModal();
+        }
+    });
+    $('.CancelBtn').click(function () {
+        CloseModal();
+    });
+
+    $('.OkBtn').click(function () {
+        console.log(".OkBtn");
+        OkButtonClicked(null);
+    });
+
+    function OkButtonClicked(RowID) {
+        //TODO: Toto je vola nekolikrat pri dvojkliku. Musim se na to nekdy podivat a zajistit, ze se to spousti pouze jednou.
+        var ReturnFieldID = document.getElementById("@Model.TagIDOfReturnedID");
+        if ("@Model.ModalDialogID" != "") {
+            var selectedRow = $("#@Model.ModalDialogID").find('.SingleSelected');
+            if (selectedRow.length > 0) {
+                var SelectedItemID = selectedRow.children("td")[0].innerHTML;
+                if ("@Model.TagIDOfReturnedID" != "")
+                    ReturnFieldID.value = SelectedItemID;
+                UpdateFieldOnReturnFromModal('@Model.TagIDOfReturnedLabel', SelectedItemID)
+            }
+        }
+        CloseModal();
+    };
+
+    function CloseModal() {
+        var modals = document.getElementsByClassName("Modal");
+        for (i = 0; i < modals.length; i++) {
+            modals[i].style.display = "none";
+        }
+    };
+
+    // Kdyz se v Modal/DataGridu zvoli hodnota(ID) tak zde se ji najde string ktery pak muzeme ukazat na panelu, ktery ten modal zavolal.
+    function UpdateFieldOnReturnFromModal(targetFieldID, fieldIDToLookUp) {
+        if (targetFieldID == null || targetFieldID == "" || fieldIDToLookUp == null || fieldIDToLookUp == "")
+            return;
+        console.log("UpdateFieldOnReturnFromModal");
+        $.ajax({
+            url: "/Panel/ReturnFromModalFieldUpdate/",
+            type: "GET",
+            data: { FieldIDToLookUp: fieldIDToLookUp },
+            success: function (partialViewResult) {
+                $('#ajax_loader').hide();
+                if (partialViewResult.length > 0) {
+                    console.log("Navraceno:" + partialViewResult);
+                    $('#' + targetFieldID)[0].value = partialViewResult;
+                }
+            },
+            error: function (result) {
+                alert("error!" + result);
+            }
+        });
+    };
+
+</script>

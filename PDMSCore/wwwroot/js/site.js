@@ -105,31 +105,7 @@ function onPanelMenuItemClick(panelOwnerID, panelID, panelMenuItemID) {
     }
 }
 
-function OpenModal(dialogID, tagIDOfReturnedID, tagIDOfReturnedLabel) {
 
-    // alert(DialogID);
-    // $(DialogID).style.display = "block";
-    console.log("OpenModal");
-    
-    $.ajax({
-        //url: "/Project/ModalPartial/",
-        url: "/ModalDialog/ModalPartial/",
-        type: "GET",
-
-        data: { DialogID: dialogID, TagIDOfReturnedID: tagIDOfReturnedID, TagIDOfReturnedLabel: tagIDOfReturnedLabel },
-        success: function (partialViewResult) {
-            if (partialViewResult.length > 0) {
-                $("#" + dialogID).html(partialViewResult);
-            }
-        },
-        error: function (result) {
-            $("#"+dialogID).html("<div class=\"ModalBody\">\r\n<span class=\"CloseModal\">&times;</span>\r\n<p>Ajax failed...</p>\r\n</div>");
-        }
-
-    });
-
-    document.getElementById(dialogID).style.display = "block";
-};
 
 
 $(function () {

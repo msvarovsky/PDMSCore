@@ -183,7 +183,7 @@ namespace PDMSCore.DataManipulation
         public override TagBuilder HtmlText()
         {
             TagBuilder tb = new TagBuilder("textarea");
-            tb.AddCssClass("TextAreaField");
+            tb.AddCssClass("ControlOfLabelControlDuo");
             tb.Attributes.Add("name", NameId);
             tb.Attributes.Add("id", NameId);
             tb.Attributes.Add("rows", Rows.ToString());
@@ -330,7 +330,7 @@ namespace PDMSCore.DataManipulation
 
             //function OpenModal(dialogID,      tagIDOfReturnedID,  tagIDOfReturnedLabel)
                    //  OpenModal('myModal1',    '74100',            'SelectedIDOf74100')
-            txtb.OnClick = "OpenModal(\'ErarniModal\',\'SelectedIDOf" + Id + "\', \'" + Id + "\')";
+            txtb.OnClick = "OpenModal(\'ErarniModal\',\'SelectedIDOf" + Id + "\', \'" + Id + "\',\'ModalDataGrid\',\'sp_Users\')";
             txtb.ReadOnly = true;
             hiddenField = new HiddenField("SelectedIDOf" + Id);
 
@@ -352,7 +352,6 @@ namespace PDMSCore.DataManipulation
             return tb;
         }
     }
-
 
     public class FileUploadField : Field
     {
@@ -592,6 +591,7 @@ namespace PDMSCore.DataManipulation
         List<DropDownOption> Options { get; set; }
         public int Size { get; set; }
         private List<string> Classes { get; set; }
+        public string jsOnInputFunction { get; set; }
 
         public DropDownField(string Id, int VisibleRows = 1)
         {
@@ -599,7 +599,8 @@ namespace PDMSCore.DataManipulation
             this.NameId = Id;
             this.Size = VisibleRows;
             Classes = new List<string>();
-            Classes.Add("DropDownOptions");
+            Classes.Add("ControlOfLabelControlDuo");
+            jsOnInputFunction = "";
         }
 
         public void Add(DropDownOption toBeAdded)
@@ -629,7 +630,8 @@ namespace PDMSCore.DataManipulation
             for (int i = 0; i < Classes.Count; i++)
                 tbDropDown.AddCssClass(Classes[i]);
 
-            tbDropDown.Attributes.Add("oninput", "OnDataGridFilterChange()");
+            if (jsOnInputFunction!="")
+                tbDropDown.Attributes.Add("oninput", jsOnInputFunction);
 
             tbDropDown.Attributes.Add("name", NameId);
             if (Size > 1)

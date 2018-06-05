@@ -5,10 +5,8 @@
     ViewBag.Title = "Index";
 }
 
-
-
 @*<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
-    <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>*@
+<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>*@
 
 @*<script src="~/js/jquery-1.10.2.js"></script>*@
 <script type="text/javascript">
@@ -115,7 +113,6 @@
     })*@</script>
 
 <div class="Content">
-
     @*TODO: Asi presunout nekam vise.*@
     <div id="ErarniModal" class="Modal">
         <div class="Modal-content">
@@ -123,25 +120,13 @@
             <p>....</p>
         </div>
     </div>
+
     @for (int i = 0; i < Model.PanelList.Count; i++)
     {
-
         //To nize mozna neni nutne. Toto take funguje:      @Html.Partial("PartialPanel", @Model.PanelList[i])
         //@await Html.PartialAsync("PartialPanel", @Model.PanelList[i])
         @await Html.PartialAsync("PartialPanel", @Model.PanelList[i], new ViewDataDictionary(this.ViewData))
-
-
-
-        @*<div>
-                <form method="post">
-                    <input class="AutoComplete" type="text" id="id1" name="jmeno1" placeholder="ph1" label="MujLabel1" />
-                    <input class="AutoComplete" type="text" id="id2" name="jmeno2" placeholder="ph2" label="MujLabel2" />
-                    <input class="AutoComplete" type="text" id="id3" name="jmeno3" placeholder="ph3" label="MujLabel3" />
-                    <input type="submit">
-                </form>
-            </div>*@
     }
-
 
     <div class="Panel x1" id="Panel-3">
         <div class="Panel-Header">
@@ -151,19 +136,14 @@
             </div>
         </div>
         <div class="Panel-Body">
-
             <div class="LabelControlDuo">
                 <label class="BoldLabelField">Choose user:</label>
                 <input class="ControlOfLabelControlDuo" id="Hovno" name="Hovno" onclick="OpenModal('ErarniModal','SelectedIDOfHovno', 'Hovno')" placeholder="Click to select a user..." readonly="" type="text">
                 <input id="SelectedIDOfHovno" name="SelectedIDOfHovno" type="hidden">
             </div>
-
         </div>
     </div>
-
 </div>
-
-
 
 @section SideMenu
 {
@@ -172,6 +152,4 @@
 
 @section UserSection
 {
-    
 }
-

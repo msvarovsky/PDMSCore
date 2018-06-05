@@ -186,6 +186,7 @@ namespace PDMSCore.DataManipulation
                 if (tr.Cells[i].GetType() == typeof(CheckBoxField))
                 {
                     DropDownField ddf = new DropDownField("filter-ddf-1", 1);
+                    ddf.jsOnInputFunction = "OnDataGridFilterChange()";
                     ddf.Add(new DropDownOption("", "(All)"));
                     ddf.Add(new DropDownOption("1", "Yes"));
                     ddf.Add(new DropDownOption("-1", "No"));

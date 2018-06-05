@@ -1,0 +1,313 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model PDMSCore.DataManipulation.ModalDialog
+
+
+<div class="ModalBody">
+    <div class="ModalTitle">
+        @Model.Title
+    </div>
+    <div class="ModalDescription">
+        @Model.Description
+    </div>
+    <hr />
+    <div class="ModalContent">
+
+        <div class="TableWrapper">
+            <div class="tbl-header">
+                <table class="GridTable" id="dg-@Model.ID-h">
+                    <thead>@Model.HtmlTextHeaderRow()</thead>
+                </table>
+            </div>
+            <div class="tbl-content">
+                <table class="GridTable">
+                    <tbody id="dg-@Model.ID-b"></tbody>
+                </table>
+            </div>
+        </div>
+
+        @*@await Html.PartialAsync("~/Views/DataGrid/DataGridPartial.cshtml", (PDMSCore.DataManipulation.DataGridField2)@Model.Fields[0] /*To be changed*/)*@
+    </div>
+    <p />
+    <div class="ModalBottom">
+        <input type="button" id="ModalCancel" class="CancelBtn" value=@Model.CancelButtonLabel />
+        <input type="button" id="ModalOk" class="OkBtn" disabled value=@Model.OkButtonLabel />
+    </div>
+</div>
+
+
+<script>
+
+    $(document).keyup(function (e) {
+        if (e.keyCode == 27) {
+            CloseModal();
+        }
+    });
+    $('.CancelBtn').click(function () {
+        CloseModal();
+    });
+
+    $('.OkBtn').click(function () {
+        console.log(".OkBtn");
+        OkButtonClicked(null);
+    });
+
+    function OkButtonClicked(RowID) {
+        //TODO: Toto je vola nekolikrat pri dvojkliku. Musim se na to nekdy podivat a zajistit, ze se to spousti pouze jednou.
+        var ReturnFieldID = document.getElementById("@Model.TagIDOfReturnedID");
+        var selectedRow = $("#@Model.ModalDialogID").find('.SingleSelected');
+        if (selectedRow.length > 0) {
+            var SelectedItemID = selectedRow.children("td")[0].innerHTML;
+            ReturnFieldID.value = SelectedItemID;
+            UpdateFieldOnReturnFromModal('@Model.TagIDOfReturnedLabel', SelectedItemID)
+        }
+        CloseModal();
+    };
+
+    function CloseModal() {
+        var modals = document.getElementsByClassName("Modal");
+        for (i = 0; i < modals.length; i++) {
+            modals[i].style.display = "none";
+        }
+    };
+
+    // Kdyz se v Modal/DataGridu zvoli hodnota(ID) tak zde se ji najde string ktery pak muzeme ukazat na panelu, ktery ten modal zavolal.
+    function UpdateFieldOnReturnFromModal(targetFieldID, fieldIDToLookUp) {
+        if (targetFieldID == null || targetFieldID == "" || fieldIDToLookUp == null || fieldIDToLookUp == "")
+            return;
+        console.log("UpdateFieldOnReturnFromModal");
+        $.ajax({
+            url: "/Panel/ReturnFromModalFieldUpdate/",
+            type: "GET",
+            data: { FieldIDToLookUp: fieldIDToLookUp },
+            success: function (partialViewResult) {
+                $('#ajax_loader').hide();
+                if (partialViewResult.length > 0) {
+                    console.log("Navraceno:" + partialViewResult);
+                    $('#' + targetFieldID)[0].value = partialViewResult;
+                }
+            },
+            error: function (result) {
+                alert("error!" + result);
+            }
+        });
+    };
+
+    var DataGridHeaderID, DataGridBodyID;
+    
+    $(document).ready(function () {
+        //ReloadDataGrid("gridID", "any");
+        ReloadDataGrid();
+        document.getElementById("@Model.FocusControlID").focus();
+        //ResizeColumns();
+        DataGridHeaderID = 'dg-@Model.ID-h';
+        DataGridBodyID = 'dg-@Model.ID-b';
+        //console.log("ready");
+    });
+
+    //http://jsfiddle.net/thrilleratplay/epcybL4v/
+    $(function () {
+        var thElm;
+        var startOffset;
+
+        Array.prototype.forEach.call(
+            document.querySelectorAll("table th"),
+            function (th)
+            {
+                th.style.position = 'relative';
+
+                var grip = document.createElement('div');
+                grip.innerHTML = "&nbsp;";
+                //grip.style.backgroundColor = 'red';
+                grip.style.zIndex = '2';
+                grip.style.top = 0;
+                grip.style.right = '-8px';
+                grip.style.bottom = 0;
+                grip.style.width = '15px';
+
+                grip.style.position = 'absolute';
+                grip.style.cursor = 'col-resize';
+                grip.addEventListener('mousedown', function (e) {
+                    console.log("mousedown:" + th);
+
+                    thElm = th;
+                    startOffset = th.offsetWidth - e.pageX;
+                });
+
+                th.appendChild(grip);
+            });
+
+        document.addEventListener('mousemove', function (e) {
+
+            if (thElm) {
+
+                //$(thElm).prev()[0].style.width = startOffset + e.pageX + 'px'; //Nakonec tohle nebylo nutne
+                thElm.style.width = startOffset + e.pageX + 'px';
+
+                console.log("mousemove");
+                ResizeColumns();
+            }
+        });
+
+        document.addEventListener('mouseup', function () {
+            thElm = undefined;
+        });
+    });
+
+    function ResizeColumns() {
+        console.log("ResizeColumns");
+        var $HeaderTable = $('#' + DataGridHeaderID);
+        var $BodyTable = $('#' + DataGridBodyID);
+        var $HeaderCells = $HeaderTable.find('thead tr:first').children();
+
+        var colWidths = $HeaderCells.map(function () {
+            return $(this).width();
+        }).get();
+
+        $BodyTable.find('tr').children().each(function (i, v) {
+            $(v).width(colWidths[i]);
+        });
+    }
+
+    $(window).on("load resize ", OnPageResize).resize();
+
+    function OnPageResize() { 
+        //https://codepen.io/nikhil8krishnan/pen/WvYPvv?editors=1100
+        //  https://davidwalsh.name/detect-scrollbar-width
+
+        console.log("OnPageResize");
+
+        var scrollDiv = document.getElementsByClassName("tbl-content");
+        if (scrollDiv[0] != null) {
+            var scrollbarWidth = scrollDiv[0].offsetWidth - scrollDiv[0].clientWidth - 1;
+            $('.tbl-header').css({ 'padding-right': scrollbarWidth });
+        }
+        ResizeColumns();
+
+    };
+
+    //Nemuzu pouzit toto:  "$(".GridTable td").click(function () {"  na dynamicky generovany obsah.
+    $(document).on("click", '.GridTable td', function (event) {
+        $(this).parent().addClass('SingleSelected').siblings().removeClass('SingleSelected');
+        var value = $(this).find('td:first').html();
+        $('#ModalOk').removeAttr("disabled");
+        console.log("click: .GridTable td");
+    });
+
+    // Toto se Ajaxem neobnovuje a proto to muze zustat
+    $(".GridTable th").click(function () {
+        $(this).closest(".TableWrapper").find(".SingleSelected").removeClass('SingleSelected');
+        $('#ModalOk').attr("disabled", "");
+    });
+
+    $(document).on("dblclick", '.GridTable tr', function (event) {
+        $(this).addClass('SingleSelected').siblings().removeClass('SingleSelected');
+        var RowID = $(this).find('td:first').html();
+        OkButtonClicked(RowID);
+    });
+
+    function GetHeaderRowValuesFromID(TableID) {
+        //console.log("TableID = " + TableID);
+
+        var table = $("#" + TableID);
+        var HeaderRow = $(table).find("tr");
+        console.log("GetHeaderRowValuesFromID");
+
+        //var filtres = $(HeaderRow).find("[id^=filter]");
+        var filtres = $(HeaderRow).find(".filter");
+        //console.log(filtres);
+
+        var al = [];
+        for (var i = 0; i < filtres.length; i++) {
+            //al.push(filtres[i].value);
+            al[i] = filtres[i].value;
+
+        }
+        //for (var i = 0; i < al.length; i++) {
+        //    console.log(al[i]);
+        //}
+        return al;
+    };
+
+    //function ReloadDataGrid(DataGridID, returnFieldID) {
+    function ReloadDataGrid() {
+        //var FilterValues = GetHeaderRowValues($(this).closest('table'));
+        var filterValues = GetHeaderRowValuesFromID(DataGridHeaderID);
+
+        $.ajax({
+            type: "GET",
+            //dataType: "json",  // Nesmi tu byt
+            url: "/DataGrid/GetDataGridContent/",
+            traditional: true,
+            data: {
+                DataGridID: @Model.ID,
+                ContentID: "TODO",
+                FilterValues: filterValues,
+            },
+
+            contentType: "application/json; charset=utf-8",
+
+            success: function (partialViewResult) {
+                console.log("ReloadDataGrid: success");
+                
+                if (partialViewResult.length > 0)
+                    //$("#DataGridContent").html(partialViewResult);
+                    $("#" + DataGridBodyID).replaceWith(partialViewResult);
+                OnPageResize();
+
+                if (GetTableRowCount(DataGridBodyID) == 1)
+                {
+                    //console.log("Debugging");
+                    $('#' + DataGridBodyID).find('tr:first').addClass('SingleSelected');
+                    $('#ModalOk').removeAttr("disabled");
+                }
+                else
+                    $('#ModalOk').attr("disabled", "");
+
+            },
+            error: function (result) {
+                console.log("ReloadDataGrid: error");
+                $("#" + DataGridBodyID).replaceWith("<span>DataGridPartialView: Ajax failed...</span>");
+            }
+        });
+    };
+
+    // Automaticke zvoleni radky v table po stisku Enter pokud je vyfiltrovana pouze jedina radka.
+    $('.filter').keyup(function (e) {
+        if (e.keyCode == 13) {
+            if (GetTableRowCount(DataGridBodyID) == 1) {
+                var OnlyRowInTable = $("#" + DataGridBodyID).find('tr:first');
+                if (OnlyRowInTable != null) {
+                    var RowID = $(OnlyRowInTable).find('td:first').html();
+                    OkButtonClicked(RowID);
+
+                }
+            }
+        }
+    });
+
+    function GetTableRowCount(tableID) { 
+        var obj = document.getElementById(tableID).getElementsByTagName("tr");
+        if (obj != null) {
+            var rows = obj.length;
+            return rows;
+        }
+        return -1;
+    }
+    
+    function OnDataGridFilterChange(FilterID) {
+        console.log("OnDataGridFilterChange");
+
+        //TODO: Pozdeji, pokud budu chtit aktualizovat datagrid pouze kdyz bude velikost filtru > X znaku.
+        //var value = $("#" + FilterID).val();
+        //if (value.length > 2) {
+        //    console.log(">2");
+        //    ReloadDataGrid('gridID-input', 'Hovno')
+        //}
+
+        //ReloadDataGrid('gridID-input', 'Hovno');
+        ReloadDataGrid();
+    };
+
+</script>

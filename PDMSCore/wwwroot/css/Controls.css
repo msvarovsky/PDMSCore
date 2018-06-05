@@ -20,19 +20,21 @@
 }
 
 .TextAreaField {
-    width: 100%;
+    /* width: 100%; */
     /* margin-left: 10px; */
 }
 
-.GroupOfCheckBoxes, .GroupOfRadioButtons, .DropDownOptions {
+/* .GroupOfCheckBoxes, .GroupOfRadioButtons, .DropDownOptions { */
+.GroupOfCheckBoxes, .GroupOfRadioButtons {
     width: 100%;
 }
 
 /*.CustomTextBox, .CustomDatePicker {*/
 .ControlOfLabelControlDuo {
     width: 100%;
+    margin-right: 10px;
     /* margin-left: 10px; */
-    /*                    border:1px solid #d1c7ac;*/
+    /*border:1px solid #d1c7ac;*/
 }
 
 .HeaderSrchCl {
@@ -141,6 +143,7 @@ table.GridTable tbody tr td{
     /* border: 2px solid var(--ExternalBorderColor); */
     /* border-bottom: 1px solid grey;
     border-left: 1px solid grey; */
+    margin-right:10px;
 }
 
 /* #GridTableWrapper{
