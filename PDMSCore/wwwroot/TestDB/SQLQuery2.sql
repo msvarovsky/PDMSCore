@@ -47,16 +47,57 @@ DBCC CHECKIDENT('Fields', RESEED, 0)
 
 
 
-SELECT	* 
-SELECT	
+SELECT	f.FieldID, f.FieldType, l.Label
 FROM	PanelsFields pf, Fields f, Labels l, Panels p
 WHERE	1 = 1
-AND		pf.FieldID = f.Id
-AND		f.Id = l.ID
-AND		p.Id = pf.PanelID
+AND		pf.FieldID = f.FieldID
+AND		f.FieldID = l.LabelID
+AND		p.PanelID = pf.PanelID
 AND		p.CompanyID = 1
 AND		pf.PanelID = 1
-AND		p.CompanyID = 1
 AND		l.LanguageID = 'en'
 ORDER BY	[PredecessorFieldID]
 
+
+GetPanelFields 1, 1, 'en'
+
+ALTER PROCEDURE GetPanelFields
+    @PanelID int,
+    @CompanyID int,
+	@LanguageID varchar(5)
+AS
+BEGIN
+	SELECT	f.FieldID, f.FieldType, l.Label
+	FROM	PanelsFields pf, Fields f, Labels l, Panels p
+	WHERE	1 = 1
+	AND		pf.FieldID = f.FieldID
+	AND		f.FieldID = l.LabelID
+	AND		p.PanelID = pf.PanelID
+	AND		p.CompanyID = @CompanyID
+	AND		pf.PanelID = @PanelID
+	AND		l.LanguageID = @LanguageID
+	ORDER BY	[PredecessorFieldID]
+END;
+
+
+GetPanelFields 1, 1, 'en'
+SELECT * FROM Projects
+
+update Projects SET	FieldValue = '2. field' WHERE FieldID= 2
+
+INSERT INTO Projects VALUES (1,1,3,'treti fields');
+
+
+SELECT	*
+--SELECT	f.FieldID, f.FieldType, l.Label, pj.StringValue, pj.*
+FROM	PanelsFields pf, Fields f, Labels l, Panels p, Projects pj
+WHERE	1 = 1
+AND		pf.FieldID = f.FieldID
+AND		f.FieldID = l.LabelID
+AND		p.PanelID = pf.PanelID
+AND		pj.FieldID = f.FieldID
+AND		pj.RetailerID = p.CompanyID
+AND		p.CompanyID = 1
+AND		pf.PanelID = 1
+AND		l.LanguageID = 'en'
+ORDER BY	[PredecessorFieldID]

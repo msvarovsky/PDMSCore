@@ -35,6 +35,8 @@
     margin-right: 10px;
     /* margin-left: 10px; */
     /*border:1px solid #d1c7ac;*/
+    /*TODO: Pozdeji dat do specialni class a tu priradit textarea.*/
+    resize: vertical;
 }
 
 .HeaderSrchCl {
