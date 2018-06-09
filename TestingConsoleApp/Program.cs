@@ -9,21 +9,9 @@ namespace TestingConsoleApp
     {
         static void Main(string[] args)
         {
-            //Menu m = new Menu();
-            //m.GetRandomMenu();
-            //m.HtmlText();
+            Panel p = new Panel(1,"ahoj", 2);
 
-            DataGridField2 d = new DataGridField2();
-
-            TableRow2 tr = new TableRow2();
-            tr.AddColumnCell(new TextBoxField("", "", "Jmeno"));
-            tr.AddColumnCell(new TextBoxField("", "", "Prijmeni"));
-            tr.AddColumnCell(new CheckBoxField("", "", true, new WebTagAttributes(true, "")));
-
-            d.SetHeaderLabels("Jmeno", "Prijmeni", "Aktivni");
-            d.AddDataRow(tr);
-
-            TagBuilder tb = d.HtmlText();
+            p.Load();
 
 
         }

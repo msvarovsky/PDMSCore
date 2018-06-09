@@ -45,6 +45,8 @@ namespace PDMSCore.Controllers
             DataGridField2 d = DataGridField2.GetTestData(id);
             d.ApplyFilters(FilterValues, FilteringType.StartWith);
 
+            //System.Threading.Thread.Sleep(2000);
+
 
 
             return Content(GetString(d.HtmlTextTableBody()));

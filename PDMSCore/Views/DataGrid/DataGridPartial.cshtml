@@ -6,12 +6,35 @@
             <thead>@Model.HtmlTextHeaderRow()</thead>
         </table>
     </div>
+    <div id="loader_container">
+        <div class="loader_div">
+            <div class="loader_div">
+                <div class="loader_div">
+                    <div class="loader_div">
+                        <div class="loader_div">
+                            <div class="loader_div">
+                                <div class="loader_div">
+                                    <div class="loader_div">
+                                        <div class="loader_div">
+                                            <div class="loader_div">
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="tbl-content">
         <table class="GridTable">
-            <tbody id="dg-@Model.ID-b">
-            </tbody>
+            <tbody id="dg-@Model.ID-b"></tbody>
         </table>
     </div>
+
 </div>
 
 <script>
@@ -157,42 +180,47 @@
         //var FilterValues = GetHeaderRowValues($(this).closest('table'));
         var filterValues = GetHeaderRowValuesFromID(DataGridHeaderID);
 
-        $.ajax({
-            type: "GET",
-            //dataType: "json",  // Nesmi tu byt
-            url: "/DataGrid/GetDataGridContent/",
-            traditional: true,
-            data: {
-                DataGridID: @Model.ID,
-                ContentID: "TODO",
-                FilterValues: filterValues,
-            },
+        try {
+            $('#loader_container').show();
 
-            contentType: "application/json; charset=utf-8",
+            $.ajax({
+                type: "GET",
+                //dataType: "json",  // Nesmi tu byt
+                url: "/DataGrid/GetDataGridContent/",
+                traditional: true,
+                data: {
+                    DataGridID: @Model.ID,
+                    ContentID: "TODO",
+                    FilterValues: filterValues,
+                },
+                contentType: "application/json; charset=utf-8",
+                success: function (partialViewResult) {
+                    console.log("ReloadDataGrid: success");
+                    $('#loader_container').hide();
 
-            success: function (partialViewResult) {
-                console.log("ReloadDataGrid: success");
-                
-                if (partialViewResult.length > 0)
-                    //$("#DataGridContent").html(partialViewResult);
-                    $("#" + DataGridBodyID).replaceWith(partialViewResult);
-                OnPageResize();
+                    if (partialViewResult.length > 0)
+                        $("#" + DataGridBodyID).replaceWith(partialViewResult);
+                    OnPageResize();
 
-                if (GetTableRowCount(DataGridBodyID) == 1)
-                {
-                    //console.log("Debugging");
-                    $('#' + DataGridBodyID).find('tr:first').addClass('SingleSelected');
-                    $('#ModalOk').removeAttr("disabled");
+                    if (GetTableRowCount(DataGridBodyID) == 1) {
+                        //console.log("Debugging");
+                        $('#' + DataGridBodyID).find('tr:first').addClass('SingleSelected');
+                        $('#ModalOk').removeAttr("disabled");
+                    }
+                    else 
+                        $('#ModalOk').attr("disabled", "");
+                },
+                error: function (result) {
+                    console.log("ReloadDataGrid: error");
+                    $('#loader_container').hide();
+                    $("#" + DataGridBodyID).replaceWith("<span>DataGridPartialView: Ajax failed...</span>");
                 }
-                else
-                    $('#ModalOk').attr("disabled", "");
-
-            },
-            error: function (result) {
-                console.log("ReloadDataGrid: error");
-                $("#" + DataGridBodyID).replaceWith("<span>DataGridPartialView: Ajax failed...</span>");
-            }
-        });
+            });
+        }
+        catch (err) {
+            console.log(err);
+            $('#loader_container').hide();
+        }
     };
 
     // Automaticke zvoleni radky v table po stisku Enter pokud je vyfiltrovana pouze jedina radka.
