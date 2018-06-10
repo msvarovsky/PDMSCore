@@ -50,11 +50,33 @@ namespace PDMSCore.DataManipulation
                 )
             {
                 con.Open();
+
+                //LoadTest(con);
+
                 Label = LoadPanelInfo(con, 1, "en");
                 Content = LoadPanelContent(con, 1, "en");
                 //  LoadMenu
             }
             return ret;
+        }
+        private void LoadTest(SqlConnection con)
+        {
+            List<Field> ret = new List<Field>();
+            SqlCommand sql = new SqlCommand("SELECT CompanyID FROM Panels", con);
+
+            try
+            {
+                using (SqlDataReader sdr = sql.ExecuteReader())
+                {
+                    while (sdr.Read())
+                    {
+                        //string aaa  = sdr["CompanyID"];
+                    }
+                }
+            }
+            catch (Exception)
+            {
+            }
         }
 
         private string LoadPanelInfo(SqlConnection con, int CompanyID, string LanguageID)
@@ -103,14 +125,17 @@ namespace PDMSCore.DataManipulation
                         string FieldType = sdr.GetString(1).Trim();
                         string Label = sdr.GetString(2).Trim();
 
+                        string test = sdr.GetString(3).Trim();
+
                         switch (FieldType)
                         {
                             case "tx":
-                                string StringValue = sdr.GetString(3).Trim();
+                                string StringValue = (sdr.IsDBNull(3) ? "" : sdr.GetString(3).Trim());
                                 f = new LabelTextBoxField(FieldID, Label, StringValue);
                                 break;
                             case "rb":
-                                int IntValue = sdr.GetInt32(4); // TODO: Muze taky byt NULL. Ocetrit
+                                int IntValue = (sdr.IsDBNull(4) ? -1 : sdr.GetInt32(3));
+
                                 //f = new LabelRadioButtonField LabelTextBoxField(FieldID, Label, StringValue);
                                 f = new LabelTextBoxField(FieldID, Label, "RadioBox:TODO");
                                 break;
