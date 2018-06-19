@@ -114,6 +114,7 @@ namespace PDMSCore.DataManipulation
             sql.Parameters.Add(new SqlParameter("CompanyID", CompanyID));
             sql.Parameters.Add(new SqlParameter("LanguageID", LanguageID));
 
+            //  FieldID	FieldType	Label	StringValue	IntValue	DateValue	FileValue	OtherRef	MultiSelectItemID	PredecessorFieldID
             try
             {
                 using (SqlDataReader sdr = sql.ExecuteReader())
@@ -121,23 +122,27 @@ namespace PDMSCore.DataManipulation
                     while (sdr.Read())
                     {
                         Field f = null;
-                        int FieldID = sdr.GetInt32(0);
+
+                        int?   FieldID = sdr.IsDBNull(0) ? (int?)null : sdr.GetInt32(0);
                         string FieldType = sdr.GetString(1).Trim();
                         string Label = sdr.GetString(2).Trim();
-
-                        string test = sdr.GetString(3).Trim();
+                        
 
                         switch (FieldType)
                         {
                             case "tx":
                                 string StringValue = (sdr.IsDBNull(3) ? "" : sdr.GetString(3).Trim());
-                                f = new LabelTextBoxField(FieldID, Label, StringValue);
+                                f = new LabelTextBoxField((int)FieldID, Label, StringValue);
                                 break;
                             case "rb":
                                 int IntValue = (sdr.IsDBNull(4) ? -1 : sdr.GetInt32(3));
 
+                                //TODO: Zde musim nejak dodat do mych radio buttonu (ci dropdown list boxu) tu jednotlive items.
+                                
+
+
                                 //f = new LabelRadioButtonField LabelTextBoxField(FieldID, Label, StringValue);
-                                f = new LabelTextBoxField(FieldID, Label, "RadioBox:TODO");
+                                f = new LabelTextBoxField((int)FieldID, Label, "RadioBox:TODO");
                                 break;
 
                             default:
