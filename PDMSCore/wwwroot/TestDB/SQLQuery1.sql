@@ -127,11 +127,14 @@ SELECT * from @temp
 ORDER BY [PredecessorFieldID]
 
 
-
+UPDATE	Projects
+SET		StringValue = '1,3'
+WHERE	StringValue = 'treti fields'
 
 
 -----------
 
+SELECT * from PagesPanels
 SELECT * from PanelsFields
 SELECT * from Projects
 SELECT * from Fields

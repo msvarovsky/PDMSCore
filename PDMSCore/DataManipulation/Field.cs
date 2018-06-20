@@ -839,12 +839,14 @@ namespace PDMSCore.DataManipulation
     }
     enum GroupControlType
     {
-        RadioBoxes,
+        RadioButtons,
         CheckBoxes
     };
     public class LabelRBCBControl<T> : Field
     {
         public LabelField Label { get; set; }
+        public int OtherRef { get; set; }
+        public string[] SelectedValues { get; set; }
         List<T> Options { get; set; }
         private GroupControlType GCType { get; set; }
 
@@ -852,12 +854,34 @@ namespace PDMSCore.DataManipulation
         {
             this.Label = new LabelField(label, true);
             Options = new List<T>();
-            GCType = (typeof(T) == typeof(LabelCheckBoxField)) ? GroupControlType.CheckBoxes : GroupControlType.RadioBoxes;
+            GCType = (typeof(T) == typeof(LabelCheckBoxField)) ? GroupControlType.CheckBoxes : GroupControlType.RadioButtons;
         }
 
         public void Add(T toBeAdded)
         {
             Options.Add(toBeAdded);
+        }
+
+        public void AddRelevantItems(List<TempMultiSelectItem> AllMultiSelectItem)
+        {
+            for (int i = 0; i < AllMultiSelectItem.Count; i++)
+            {
+                if (AllMultiSelectItem[i].OtherRef == OtherRef)
+                {
+                    bool bChecked = (ExistsInStringtArray(SelectedValues,AllMultiSelectItem[i].MultiSelectItemID.ToString()) ? true : false);
+
+                    T aa = (T)Activator.CreateInstance(typeof(T), "name-TODO", AllMultiSelectItem[i].StringValue, AllMultiSelectItem[i].MultiSelectItemID.ToString(), bChecked, false);
+                    Add(aa);
+                }
+            }
+        }
+
+        private bool ExistsInStringtArray(string[] a, string h)
+        {
+            for (int i = 0; i < a.Length; i++)
+                if (a[i] == h)
+                    return true;
+            return false;
         }
 
         public static Field GetRandom(string id, int count)
@@ -882,7 +906,7 @@ namespace PDMSCore.DataManipulation
 
             if (GCType == GroupControlType.CheckBoxes)
                 tbControl.AddCssClass("GroupOfCheckBoxes");
-            else if (GCType == GroupControlType.RadioBoxes)
+            else if (GCType == GroupControlType.RadioButtons)
                 tbControl.AddCssClass("GroupOfRadioButtons");
             else
                 return new TagBuilder("error");

@@ -16,6 +16,7 @@ namespace PDMSCore.DataManipulation
         public string Label { get; set; }
         public List<Field> Content { get; set; }
         public PanelMenu menu { get; set; }
+        
 
         public Panel(int id, string Label, int xSize)
         {
@@ -29,6 +30,8 @@ namespace PDMSCore.DataManipulation
             this.Content = new List<Field>();
             menu = new PanelMenu(id);
         }
+
+        
 
 
         public bool Load()
@@ -107,6 +110,7 @@ namespace PDMSCore.DataManipulation
 
         private List<Field> LoadPanelContent(SqlConnection con, int CompanyID, string LanguageID)
         {
+            List<TempMultiSelectItem> AllMultiSelectItem = new List<TempMultiSelectItem>();
             List<Field> ret = new List<Field>();
             SqlCommand sql = new SqlCommand("GetPanelFields", con);
             sql.CommandType = CommandType.StoredProcedure;
@@ -126,29 +130,40 @@ namespace PDMSCore.DataManipulation
                         int?   FieldID = sdr.IsDBNull(0) ? (int?)null : sdr.GetInt32(0);
                         string FieldType = sdr.GetString(1).Trim();
                         string Label = sdr.GetString(2).Trim();
-                        
+                        string StringValue = (sdr.IsDBNull(3) ? "" : sdr.GetString(3).Trim());
 
                         switch (FieldType)
                         {
                             case "tx":
-                                string StringValue = (sdr.IsDBNull(3) ? "" : sdr.GetString(3).Trim());
                                 f = new LabelTextBoxField((int)FieldID, Label, StringValue);
                                 break;
+
                             case "rb":
-                                int IntValue = (sdr.IsDBNull(4) ? -1 : sdr.GetInt32(3));
+                                f = new LabelRBCBControl<LabelRadioButtonField>(FieldID.ToString(), Label);
+                                ((LabelRBCBControl<LabelRadioButtonField>)f).OtherRef = (sdr.IsDBNull(7) ? -1 : sdr.GetInt32(7));
+                                ((LabelRBCBControl<LabelRadioButtonField>)f).SelectedValues = StringValue.Split(',');
+                                break;
 
-                                //TODO: Zde musim nejak dodat do mych radio buttonu (ci dropdown list boxu) tu jednotlive items.
-                                
+                            case "cb":
+                                f = new LabelRBCBControl<LabelCheckBoxField>(FieldID.ToString(), Label);
+                                ((LabelRBCBControl<LabelCheckBoxField>)f).OtherRef = (sdr.IsDBNull(7) ? -1 : sdr.GetInt32(7));
+                                ((LabelRBCBControl<LabelCheckBoxField>)f).SelectedValues = StringValue.Split(',');
+                                break;
 
-
-                                //f = new LabelRadioButtonField LabelTextBoxField(FieldID, Label, StringValue);
-                                f = new LabelTextBoxField((int)FieldID, Label, "RadioBox:TODO");
+                            case "rb-item":
+                            case "cb-item":
+                                TempMultiSelectItem tmsi = new TempMultiSelectItem();
+                                tmsi.StringValue = (sdr.IsDBNull(3) ? "" : sdr.GetString(3).Trim());
+                                tmsi.OtherRef = sdr.GetInt32(7);
+                                tmsi.MultiSelectItemID = sdr.GetInt32(8);
+                                AllMultiSelectItem.Add(tmsi);
                                 break;
 
                             default:
                                 break;
                         }
-                        ret.Add(f);
+                        if (f != null)
+                            ret.Add(f);
                     }
                 }
             }
@@ -156,6 +171,10 @@ namespace PDMSCore.DataManipulation
             {
                 ret.Add(new LabelTextAreaField(1,"Exception in LoadPanelContent(..)",eee.ToString()));
             }
+
+            AssignMultiSelectItemsToControls(ret, AllMultiSelectItem);
+
+
             return ret;
         }
 
@@ -187,6 +206,29 @@ namespace PDMSCore.DataManipulation
                 menu.items.Add(new PanelMenuItem(false, i.ToString(), "www" + i + ".cz", PanelID));
         }
 
+        private void AssignMultiSelectItemsToControls(List<Field> ret, List<TempMultiSelectItem> AllMultiSelectItem)
+        {
+            for (int i = 0; i < ret.Count; i++)
+            {
+                if (ret[i] == null)
+                    continue;
+                if (ret[i].GetType() == typeof(LabelRBCBControl<LabelRadioButtonField>)) 
+                    ((LabelRBCBControl<LabelRadioButtonField>)ret[i]).AddRelevantItems(AllMultiSelectItem);
+                else if (ret[i].GetType() == typeof(LabelRBCBControl<LabelCheckBoxField>))
+                    ((LabelRBCBControl<LabelCheckBoxField>)ret[i]).AddRelevantItems(AllMultiSelectItem);
+            }
+
+        }
+
+    }
+
+
+
+    public struct TempMultiSelectItem
+    {
+        public string StringValue;
+        public int OtherRef;
+        public int MultiSelectItemID;
     }
 
   

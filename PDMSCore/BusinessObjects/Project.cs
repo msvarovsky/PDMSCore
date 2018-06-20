@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.IO;
+using System.Data.SqlClient;
 
 namespace PDMSCore.BusinessObjects
 {
@@ -140,7 +142,6 @@ namespace PDMSCore.BusinessObjects
 
         //}
 
-
         public void GetRandom()
         {
             SideMenu.GetRandomMenu();
@@ -200,13 +201,45 @@ namespace PDMSCore.BusinessObjects
             PanelList.Add(panel2);
         }
 
-
         public TagBuilder AsyncPanelList()
         {
             AsyncPanel ap = new AsyncPanel();
 
             return ap.HtmlText();
 
+        }
+
+        public void LoadProjectFromDB()
+        {
+            bool ret = false;
+            string cd = Directory.GetCurrentDirectory();
+            string l = "PDMSCore";
+            int a = cd.IndexOf(l);
+            string AttachDbFilename = cd.Substring(0, a + l.Length);
+            AttachDbFilename = AttachDbFilename + "\\PDMSCore\\wwwroot\\TestDB\\System.mdf;";
+
+            using (SqlConnection con = new SqlConnection(
+                "Data Source=(LocalDB)\\MSSQLLocalDB;" +
+                "AttachDbFilename=" + AttachDbFilename +
+                "Connect Timeout=30;" +
+                "User Id=martin;" +
+                "Password=martin;")
+                )
+            {
+                con.Open();
+
+                //LoadProjectInfo(id);
+                //LoadMenu(id, page) ???
+                //LoadPage(id, page)
+
+
+
+
+                //Label = LoadPanelInfo(con, 1, "en");
+                Content = LoadPanelContent(con, 1, "en");
+                //  LoadMenu
+            }
+            return ret;
         }
 
     }
