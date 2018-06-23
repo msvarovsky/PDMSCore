@@ -9,6 +9,9 @@ namespace TestingConsoleApp
     {
         static void Main(string[] args)
         {
+            Project pr = new Project();
+            pr.LoadProjectFromDB();
+
             Panel p = new Panel(1,"ahoj", 2);
 
             p.Load();

@@ -99,49 +99,6 @@ namespace PDMSCore.BusinessObjects
             //GetRandom
         }
 
-        //private bool AuthUser()
-        //{
-
-        //}
-
-        //public static void GetProject(int ProjectID)
-        //{
-
-        //    bool ret = false;
-        //    using (SqlConnection con = new SqlConnection(
-        //                                   "user id=Martin;" +
-        //                                   "password=6835001;" +
-        //                                   "server=192.168.2.101;" +
-        //                                   "database=test; " +
-        //                                   "connection timeout=10"
-        //                                   ))
-        //    {
-        //        SqlCommand sql = new SqlCommand("AuthUser", con);
-        //        sql.CommandType = CommandType.StoredProcedure;
-        //        sql.Parameters.Add(new SqlParameter("@username", tbName.Text));
-        //        sql.Parameters.Add(new SqlParameter("@pass", tbPass.Text));
-        //        try
-        //        {
-        //            con.Open();
-        //            int r = (int)sql.ExecuteScalar();
-        //            if (r == 0)
-        //            {   //  Not OK
-        //                ret = false;
-        //            }
-        //            else
-        //            {   //  OK
-        //                ret = true;
-        //            }
-        //        }
-        //        catch (Exception eee)
-        //        {
-        //            eee = null;
-        //        }
-        //    }
-        //    return ret;
-
-        //}
-
         public void GetRandom()
         {
             SideMenu.GetRandomMenu();
@@ -209,7 +166,7 @@ namespace PDMSCore.BusinessObjects
 
         }
 
-        public void LoadProjectFromDB()
+        public bool LoadProjectFromDB()
         {
             bool ret = false;
             string cd = Directory.GetCurrentDirectory();
@@ -230,16 +187,22 @@ namespace PDMSCore.BusinessObjects
 
                 //LoadProjectInfo(id);
                 //LoadMenu(id, page) ???
-                //LoadPage(id, page)
+
+                LoadPage(id, page)
 
 
 
 
                 //Label = LoadPanelInfo(con, 1, "en");
-                Content = LoadPanelContent(con, 1, "en");
+                //Content = LoadPanelContent(con, 1, "en");
                 //  LoadMenu
             }
             return ret;
+        }
+
+        private bool LoadPage()
+        {
+
         }
 
     }
