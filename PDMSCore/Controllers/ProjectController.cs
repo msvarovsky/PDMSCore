@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using PDMSCore.DataManipulation;
+using System;
 
 namespace PDMSCore.Controllers
 {
@@ -54,8 +55,14 @@ namespace PDMSCore.Controllers
         public ActionResult ShowProject(IFormCollection fc)
         {
             //p = Project.GetProject(PanelID);
+
+            //  User, RetailerID, languageID
+            GeneralSessionInfo gsi = new GeneralSessionInfo(HttpContext);
+
+            //  ProjectID, PageID
             p = new Project();
-            p.GetRandom();
+            p.LoadProjectFromDB(gsi, 1, 123);
+            //p.GetRandom();
             p.SideMenu.Select(HttpContext.Session.GetString("OpenMenu"));
 
             return View(p);

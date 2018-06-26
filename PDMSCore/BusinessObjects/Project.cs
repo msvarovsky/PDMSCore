@@ -9,6 +9,28 @@ using System.Data.SqlClient;
 
 namespace PDMSCore.BusinessObjects
 {
+    public class GeneralSessionInfo
+    {
+        public int userID, retailerID, languageID;
+
+        public GeneralSessionInfo()
+        {
+
+        }
+        public GeneralSessionInfo(HttpContext s)
+        {
+            userID = Int32.Parse(s.Session.GetString("UserID"));
+            retailerID = Int32.Parse(s.Session.GetString("RetailerID"));
+            languageID = Int32.Parse(s.Session.GetString("LanguageID"));
+        }
+        public GeneralSessionInfo(int userID, int retailerID, int languageID)
+        {
+            this.userID = userID;
+            this.retailerID = retailerID;
+            this.languageID = languageID;
+        }
+    }
+
     public class Project
     {
         public int ID { get; set; }
@@ -166,14 +188,14 @@ namespace PDMSCore.BusinessObjects
 
         }
 
-        public bool LoadProjectFromDB()
+        //  User, RetailerID, languageID,     ProjectID, PageID
+        public bool LoadProjectFromDB(GeneralSessionInfo gsi, int ProjectID, int PageID)
         {
             bool ret = false;
             string cd = Directory.GetCurrentDirectory();
             string l = "PDMSCore";
             int a = cd.IndexOf(l);
-            string AttachDbFilename = cd.Substring(0, a + l.Length);
-            AttachDbFilename = AttachDbFilename + "\\PDMSCore\\wwwroot\\TestDB\\System.mdf;";
+            string AttachDbFilename = cd.Substring(0, a + l.Length) + "\\PDMSCore\\wwwroot\\TestDB\\System.mdf;";
 
             using (SqlConnection con = new SqlConnection(
                 "Data Source=(LocalDB)\\MSSQLLocalDB;" +
@@ -188,7 +210,8 @@ namespace PDMSCore.BusinessObjects
                 //LoadProjectInfo(id);
                 //LoadMenu(id, page) ???
 
-                LoadPage(id, page)
+                LoadPage(gsi, ProjectID, PageID);
+                //GeneralSessionInfo gsi = new GeneralSessionInfo() { userID = 1, retailerID = 1, languageID = 1 };
 
 
 
@@ -200,9 +223,12 @@ namespace PDMSCore.BusinessObjects
             return ret;
         }
 
-        private bool LoadPage()
+        private bool LoadPage(GeneralSessionInfo gsi, int ProjectID, int PageID)
         {
 
+
+
+            return false;
         }
 
     }
