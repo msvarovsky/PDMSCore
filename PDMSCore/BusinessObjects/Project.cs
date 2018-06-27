@@ -6,6 +6,7 @@ using Microsoft.Extensions.Primitives;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.IO;
 using System.Data.SqlClient;
+using System.Data;
 
 namespace PDMSCore.BusinessObjects
 {
@@ -30,6 +31,7 @@ namespace PDMSCore.BusinessObjects
             this.languageID = languageID;
         }
     }
+
 
     public class Project
     {
@@ -210,11 +212,9 @@ namespace PDMSCore.BusinessObjects
                 //LoadProjectInfo(id);
                 //LoadMenu(id, page) ???
 
-                LoadPage(gsi, ProjectID, PageID);
+                //LoadPageInfo - P Menu, navigation??
+                LoadPageContent(gsi, con, ProjectID, PageID);
                 //GeneralSessionInfo gsi = new GeneralSessionInfo() { userID = 1, retailerID = 1, languageID = 1 };
-
-
-
 
                 //Label = LoadPanelInfo(con, 1, "en");
                 //Content = LoadPanelContent(con, 1, "en");
@@ -223,12 +223,71 @@ namespace PDMSCore.BusinessObjects
             return ret;
         }
 
-        private bool LoadPage(GeneralSessionInfo gsi, int ProjectID, int PageID)
+        private bool LoadPageContent(GeneralSessionInfo gsi, SqlConnection con, int ProjectID, int PageID)
         {
 
+            /// exec GetPageFields 1,1,1,'en'
+            //List<Object> dbRow = new List<object>();
+            object[] dbRow;
+
+            List<TempMultiSelectItem> AllMultiSelectItem = new List<TempMultiSelectItem>();
+            List<Field> ret = new List<Field>();
+            SqlCommand sql = new SqlCommand("GetPageFields", con);
+            sql.CommandType = CommandType.StoredProcedure;
+            sql.Parameters.Add(new SqlParameter("RetailerID", gsi.retailerID));
+            sql.Parameters.Add(new SqlParameter("ProjectID", ProjectID));
+            sql.Parameters.Add(new SqlParameter("PageID", PageID));
+            sql.Parameters.Add(new SqlParameter("@LanguageID", gsi.languageID));
+
+            //  FieldID	FieldType	Label	StringValue	IntValue	DateValue	FileValue	OtherRef	MultiSelectItemID	PredecessorFieldID
+            try
+            {
+                using (SqlDataReader sdr = sql.ExecuteReader())
+                {
+                    while (sdr.Read())
+                    {
+                        int PanelID;
+                        dbRow = new Object[sdr.FieldCount];
+                        sdr.GetValues(dbRow);
+                        int? nPanelID = sdr.IsDBNull(0) ? (int?)null : sdr.GetInt32(0);
+                        if (nPanelID == null)
+                            continue;
+                        PanelID = (int)nPanelID;
+
+                        Panel p = PanelExists(PanelID);
+                        if (p == null)
+                        {
+                            p.LoadDBRow(dbRow);
+                        }
+                        else
+                        {
+                            p = new Panel(PanelID, "TODO:Panel label", 1);    //  TODO: Panel label + Panel xSize 
+                            p.LoadDBRow(dbRow);
+                            PanelList.Add(p);
+
+                        }
+                    }
+                }
+            }
+            catch (Exception eee)
+            {
+                ret.Add(new LabelTextAreaField(1, "Exception in LoadPanelContent(..)", eee.ToString()));
+            }
+
+            AssignMultiSelectItemsToControls(ret, AllMultiSelectItem);
 
 
-            return false;
+            return ret;
+        }
+
+        private Panel PanelExists(int PanelID)
+        {
+            for (int i = 0; i < PanelList.Count; i++)
+            {
+                if (PanelList[i].id == PanelID)
+                    return PanelList[i];
+            }
+            return null;
         }
 
     }

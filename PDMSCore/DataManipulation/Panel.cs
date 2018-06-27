@@ -34,53 +34,37 @@ namespace PDMSCore.DataManipulation
         
 
 
-        public bool Load()
+        //public bool Load()
+        //{
+        //    bool ret = false;
+        //    string cd = Directory.GetCurrentDirectory();
+        //    string l = "PDMSCore";
+        //    int a = cd.IndexOf(l);
+        //    string AttachDbFilename = cd.Substring(0, a + l.Length);
+        //    AttachDbFilename = AttachDbFilename + "\\PDMSCore\\wwwroot\\TestDB\\System.mdf;";
+
+        //    using (SqlConnection con = new SqlConnection(
+        //        "Data Source=(LocalDB)\\MSSQLLocalDB;" +
+        //        "AttachDbFilename=" + AttachDbFilename +
+        //        "Connect Timeout=30;" +
+        //        "User Id=martin;" +
+        //        "Password=martin;")
+        //        )
+        //    {
+        //        con.Open();
+        //        Label = LoadPanelInfo(con, 1, "en");
+        //        Content = LoadPanelContent(con, 1, "en");
+        //        //  LoadMenu
+        //    }
+        //    return ret;
+        //}
+
+        public void LoadDBRow(object[] row)
         {
-            bool ret = false;
-            string cd = Directory.GetCurrentDirectory();
-            string l = "PDMSCore";
-            int a = cd.IndexOf(l);
-            string AttachDbFilename = cd.Substring(0, a + l.Length);
-            AttachDbFilename = AttachDbFilename + "\\PDMSCore\\wwwroot\\TestDB\\System.mdf;";
-
-            using (SqlConnection con = new SqlConnection(
-                "Data Source=(LocalDB)\\MSSQLLocalDB;" +
-                //"AttachDbFilename=C:\\!Martin\\Osobni\\Programovani\\GitHubRepo\\PDMSCore\\PDMSCore\\wwwroot\\TestDB\\System.mdf;" + 
-                "AttachDbFilename=" + AttachDbFilename +
-                "Connect Timeout=30;" +
-                "User Id=martin;" +
-                "Password=martin;")
-                )
-            {
-                con.Open();
-
-                //LoadTest(con);
-
-                Label = LoadPanelInfo(con, 1, "en");
-                Content = LoadPanelContent(con, 1, "en");
-                //  LoadMenu
-            }
-            return ret;
+            
+            
         }
-        private void LoadTest(SqlConnection con)
-        {
-            List<Field> ret = new List<Field>();
-            SqlCommand sql = new SqlCommand("SELECT CompanyID FROM Panels", con);
 
-            try
-            {
-                using (SqlDataReader sdr = sql.ExecuteReader())
-                {
-                    while (sdr.Read())
-                    {
-                        //string aaa  = sdr["CompanyID"];
-                    }
-                }
-            }
-            catch (Exception)
-            {
-            }
-        }
 
         private string LoadPanelInfo(SqlConnection con, int CompanyID, string LanguageID)
         {
