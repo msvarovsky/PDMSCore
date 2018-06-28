@@ -38,12 +38,14 @@ namespace PDMSCore.BusinessObjects
         public int ID { get; set; }
         public string Name { get; set; }
         public List<Panel> PanelList { get; set; }
-        public Menu SideMenu { get; set; }
+        public Page page { get; set; }
+        //public Menu SideMenu { get; set; }
 
         public Project()
         {
             PanelList = new List<Panel>();
-            SideMenu = new Menu();
+            //SideMenu = new Menu();
+            page = new Page();
         }
         public bool Create()
         {
@@ -58,7 +60,7 @@ namespace PDMSCore.BusinessObjects
             //ID = DateTime.Now.Hour * 100000000 + DateTime.Now.Minute * 1000000 + DateTime.Now.Second * 10000 + DateTime.Now.Millisecond * 100;
             ID = DateTime.Now.Millisecond * 100;
 
-            SideMenu.GetRandomMenu();
+            page.SideMenu.GetRandomMenu();
             List<Field> fields = new List<Field>();
 
             fields.Add(new LabelTextBoxField(ID++, "Project name", "", "...", "Give your project a name."));
@@ -125,7 +127,7 @@ namespace PDMSCore.BusinessObjects
 
         public void GetRandom()
         {
-            SideMenu.GetRandomMenu();
+            page.SideMenu.GetRandomMenu();
 
             int id = 1;
             long randonName = DateTime.Now.Ticks;
@@ -229,6 +231,8 @@ namespace PDMSCore.BusinessObjects
             /// exec GetPageFields 1,1,1,'en'
             //List<Object> dbRow = new List<object>();
             object[] dbRow;
+            SqlDataAdapter sqlDataAdapter;
+            DataSet dataSet = new DataSet();
 
             List<TempMultiSelectItem> AllMultiSelectItem = new List<TempMultiSelectItem>();
             List<Field> ret = new List<Field>();
@@ -242,7 +246,25 @@ namespace PDMSCore.BusinessObjects
             //  FieldID	FieldType	Label	StringValue	IntValue	DateValue	FileValue	OtherRef	MultiSelectItemID	PredecessorFieldID
             try
             {
-                using (SqlDataReader sdr = sql.ExecuteReader())
+                //  http://www.dotnetfunda.com/articles/show/1716/multiple-resultsets-in-sql-server-and-handling-them-in-csharp-part-ii
+
+                sqlDataAdapter = new SqlDataAdapter(sql);
+                sqlDataAdapter.Fill(dataSet);
+                if (dataSet.Tables.Count > 0)
+                {
+                    if (dataSet.Tables[0].Rows.Count > 0)
+                        PageInfo(dataSet.Tables[0]);
+                        
+                    if (dataSet.Tables[1].Rows.Count > 0)
+                        PanelsInfo(dataSet.Tables[1]);
+
+                }
+                else
+                {
+                    Console.WriteLine("No matching records found.");
+                }
+
+                /*using (SqlDataReader sdr = sql.ExecuteReader())
                 {
                     while (sdr.Read())
                     {
@@ -267,17 +289,33 @@ namespace PDMSCore.BusinessObjects
 
                         }
                     }
-                }
+                }*/
             }
             catch (Exception eee)
             {
                 ret.Add(new LabelTextAreaField(1, "Exception in LoadPanelContent(..)", eee.ToString()));
             }
 
-            AssignMultiSelectItemsToControls(ret, AllMultiSelectItem);
+            //AssignMultiSelectItemsToControls(ret, AllMultiSelectItem);
 
 
             return ret;
+        }
+
+        private void PageInfo(DataTable dt)
+        {
+            Console.WriteLine("Result of executing first SQL statement");
+            
+            foreach (DataRow existingRow in dt.Rows)
+            {
+                //As we know there are 2 columns, best approach would be to ieterate through column collection
+                Console.WriteLine(existingRow.ItemArray[0].ToString() + " - " + existingRow.ItemArray[1].ToString());
+            }
+        }
+
+
+        private void PanelsInfo(DataTable dt)
+        {
         }
 
         private Panel PanelExists(int PanelID)
