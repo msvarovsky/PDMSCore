@@ -33,6 +33,7 @@ namespace PDMSCore.BusinessObjects
     }
 
 
+
     public class Project
     {
         public int ID { get; set; }
@@ -135,19 +136,19 @@ namespace PDMSCore.BusinessObjects
             List<Field> fields = new List<Field>();
 
             //TextBoxField tb = new TextBoxField((randonName++).ToString(), "Pocet projektu", "5");
-            
+
             fields.Add(new LabelField("Normalni text"));
             fields.Add(Field.NewLine());
-            fields.Add(new LabelField("Bold text",true));
+            fields.Add(new LabelField("Bold text", true));
             fields.Add(Field.NewLine());
 
             fields.Add(LabelTextBoxField.GetRandom(id++));
             fields.Add(LabelTextAreaField.GetRandom(id++));
             fields.Add(Field.NewLine());
 
-            fields.Add(LabelRBCBControl<LabelRadioButtonField>.GetRandom((id++).ToString(),3));
+            fields.Add(LabelRBCBControl<LabelRadioButtonField>.GetRandom((id++).ToString(), 3));
             fields.Add(LabelRBCBControl<LabelCheckBoxField>.GetRandom((id++).ToString(), 4));
-            fields.Add(LabelDropDownField.GetRandom(id++,4));
+            fields.Add(LabelDropDownField.GetRandom(id++, 4));
             fields.Add(LabelDatePickerField.GetRandom(id++));
 
             fields.Add(LabelFileUploadField.GetRandom());
@@ -163,7 +164,7 @@ namespace PDMSCore.BusinessObjects
             //fields.Add(new Field { Label = "Pocet projektu", tagName = 1, Type = FieldType.Indicator, Value = "5" });
             //fields.Add(new Field { Label = "Pocet otevrenych projektu", tagName = 2, Type = FieldType.Indicator, Value = "5" });
 
-            Panel panel = new Panel(1,"GetRandom",1);
+            Panel panel = new Panel(1, "GetRandom", 1);
             //panel.Content = fields;
             fields = new List<Field>();
             fields.Add(LabelTextBoxField.GetRandom(id++));
@@ -236,12 +237,12 @@ namespace PDMSCore.BusinessObjects
 
             List<TempMultiSelectItem> AllMultiSelectItem = new List<TempMultiSelectItem>();
             List<Field> ret = new List<Field>();
-            SqlCommand sql = new SqlCommand("GetPageFields", con);
+            SqlCommand sql = new SqlCommand("GetPage", con);
             sql.CommandType = CommandType.StoredProcedure;
             sql.Parameters.Add(new SqlParameter("RetailerID", gsi.retailerID));
             sql.Parameters.Add(new SqlParameter("ProjectID", ProjectID));
             sql.Parameters.Add(new SqlParameter("PageID", PageID));
-            sql.Parameters.Add(new SqlParameter("@LanguageID", gsi.languageID));
+            sql.Parameters.Add(new SqlParameter("LanguageID", gsi.languageID));
 
             //  FieldID	FieldType	Label	StringValue	IntValue	DateValue	FileValue	OtherRef	MultiSelectItemID	PredecessorFieldID
             try
@@ -253,10 +254,13 @@ namespace PDMSCore.BusinessObjects
                 if (dataSet.Tables.Count > 0)
                 {
                     if (dataSet.Tables[0].Rows.Count > 0)
-                        PageInfo(dataSet.Tables[0]);
-                        
+                        page.ProcessPageInfo(dataSet.Tables[0]);
+
                     if (dataSet.Tables[1].Rows.Count > 0)
-                        PanelsInfo(dataSet.Tables[1]);
+                        page.Panels.ProcessPanelsInfo(dataSet.Tables[1]);
+
+                    if (dataSet.Tables[2].Rows.Count > 0)
+                        ProcessFields(dataSet.Tables[2]);
 
                 }
                 else
@@ -298,35 +302,21 @@ namespace PDMSCore.BusinessObjects
 
             //AssignMultiSelectItemsToControls(ret, AllMultiSelectItem);
 
-
-            return ret;
+            return false;
         }
 
-        private void PageInfo(DataTable dt)
+        
+
+        
+
+        private void ProcessFields(DataTable dt)
         {
-            Console.WriteLine("Result of executing first SQL statement");
-            
-            foreach (DataRow existingRow in dt.Rows)
-            {
-                //As we know there are 2 columns, best approach would be to ieterate through column collection
-                Console.WriteLine(existingRow.ItemArray[0].ToString() + " - " + existingRow.ItemArray[1].ToString());
-            }
+
         }
 
-
-        private void PanelsInfo(DataTable dt)
-        {
-        }
-
-        private Panel PanelExists(int PanelID)
-        {
-            for (int i = 0; i < PanelList.Count; i++)
-            {
-                if (PanelList[i].id == PanelID)
-                    return PanelList[i];
-            }
-            return null;
-        }
+        
 
     }
+
+    
 }
