@@ -12,19 +12,25 @@ namespace PDMSCore.BusinessObjects
 {
     public class GeneralSessionInfo
     {
-        public int userID, retailerID, languageID;
+        //public int UserID { get; set; }
+        //public int RetailerID { get; set; }
+        //public int UserID { get; set; }
+
+        public int userID, retailerID;
+        public string languageID;
 
         public GeneralSessionInfo()
         {
+            languageID = "en";
 
         }
         public GeneralSessionInfo(HttpContext s)
         {
             userID = Int32.Parse(s.Session.GetString("UserID"));
             retailerID = Int32.Parse(s.Session.GetString("RetailerID"));
-            languageID = Int32.Parse(s.Session.GetString("LanguageID"));
+            languageID = s.Session.GetString("LanguageID");
         }
-        public GeneralSessionInfo(int userID, int retailerID, int languageID)
+        public GeneralSessionInfo(int userID, int retailerID, string languageID)
         {
             this.userID = userID;
             this.retailerID = retailerID;
@@ -32,21 +38,19 @@ namespace PDMSCore.BusinessObjects
         }
     }
 
-
-
     public class Project
     {
         public int ID { get; set; }
         public string Name { get; set; }
         public List<Panel> PanelList { get; set; }
-        public Page page { get; set; }
+        public Page Page { get; set; }
         //public Menu SideMenu { get; set; }
 
         public Project()
         {
             PanelList = new List<Panel>();
             //SideMenu = new Menu();
-            page = new Page();
+            Page = new Page();
         }
         public bool Create()
         {
@@ -61,7 +65,7 @@ namespace PDMSCore.BusinessObjects
             //ID = DateTime.Now.Hour * 100000000 + DateTime.Now.Minute * 1000000 + DateTime.Now.Second * 10000 + DateTime.Now.Millisecond * 100;
             ID = DateTime.Now.Millisecond * 100;
 
-            page.SideMenu.GetRandomMenu();
+            Page.SideMenu.GetRandomMenu();
             List<Field> fields = new List<Field>();
 
             fields.Add(new LabelTextBoxField(ID++, "Project name", "", "...", "Give your project a name."));
@@ -128,7 +132,7 @@ namespace PDMSCore.BusinessObjects
 
         public void GetRandom()
         {
-            page.SideMenu.GetRandomMenu();
+            Page.SideMenu.GetRandomMenu();
 
             int id = 1;
             long randonName = DateTime.Now.Ticks;
@@ -254,46 +258,21 @@ namespace PDMSCore.BusinessObjects
                 if (dataSet.Tables.Count > 0)
                 {
                     if (dataSet.Tables[0].Rows.Count > 0)
-                        page.ProcessPageInfo(dataSet.Tables[0]);
+                        Page.ProcessPageInfo(dataSet.Tables[0]);
 
                     if (dataSet.Tables[1].Rows.Count > 0)
-                        page.Panels.ProcessPanelsInfo(dataSet.Tables[1]);
+                        Page.ProcessPanelsInfo(dataSet.Tables[1]);
+                        //Page.Panels.ProcessPanelsInfo(dataSet.Tables[1]);
 
                     if (dataSet.Tables[2].Rows.Count > 0)
-                        ProcessFields(dataSet.Tables[2]);
+                        Page.Panels.ProcessFieldsInfo(dataSet.Tables[2]);
+                        //ProcessFields(dataSet.Tables[2]);
 
                 }
                 else
                 {
                     Console.WriteLine("No matching records found.");
                 }
-
-                /*using (SqlDataReader sdr = sql.ExecuteReader())
-                {
-                    while (sdr.Read())
-                    {
-                        int PanelID;
-                        dbRow = new Object[sdr.FieldCount];
-                        sdr.GetValues(dbRow);
-                        int? nPanelID = sdr.IsDBNull(0) ? (int?)null : sdr.GetInt32(0);
-                        if (nPanelID == null)
-                            continue;
-                        PanelID = (int)nPanelID;
-
-                        Panel p = PanelExists(PanelID);
-                        if (p == null)
-                        {
-                            p.LoadDBRow(dbRow);
-                        }
-                        else
-                        {
-                            p = new Panel(PanelID, "TODO:Panel label", 1);    //  TODO: Panel label + Panel xSize 
-                            p.LoadDBRow(dbRow);
-                            PanelList.Add(p);
-
-                        }
-                    }
-                }*/
             }
             catch (Exception eee)
             {
@@ -305,18 +284,8 @@ namespace PDMSCore.BusinessObjects
             return false;
         }
 
-        
-
-        
-
-        private void ProcessFields(DataTable dt)
-        {
-
-        }
-
-        
+      
 
     }
-
     
 }

@@ -23,5 +23,16 @@ namespace PDMSCore.BusinessObjects
                 //Console.WriteLine(existingRow.ItemArray[0].ToString() + " - " + existingRow.ItemArray[1].ToString());
             }
         }
+
+        public void ProcessPanelsInfo(DataTable dt)
+        {
+            Panels.ProcessPanelsInfo(dt);
+        }
+
+        public void ProcessFieldsInfo(DataTable dt)
+        {
+            Panels.ProcessFieldsInfo(dt);
+        }
+
     }
 }

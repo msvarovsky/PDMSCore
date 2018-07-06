@@ -14,6 +14,7 @@ namespace PDMSCore.DataManipulation
         public int id { get; set; }
         public string Size { get; set; }
         public string Label { get; set; }
+        public string Desc { get; set; }
         public List<Field> Content { get; set; }
         public PanelMenu menu { get; set; }
         
@@ -31,40 +32,27 @@ namespace PDMSCore.DataManipulation
             menu = new PanelMenu(id);
         }
 
-        
-
-
-        //public bool Load()
-        //{
-        //    bool ret = false;
-        //    string cd = Directory.GetCurrentDirectory();
-        //    string l = "PDMSCore";
-        //    int a = cd.IndexOf(l);
-        //    string AttachDbFilename = cd.Substring(0, a + l.Length);
-        //    AttachDbFilename = AttachDbFilename + "\\PDMSCore\\wwwroot\\TestDB\\System.mdf;";
-
-        //    using (SqlConnection con = new SqlConnection(
-        //        "Data Source=(LocalDB)\\MSSQLLocalDB;" +
-        //        "AttachDbFilename=" + AttachDbFilename +
-        //        "Connect Timeout=30;" +
-        //        "User Id=martin;" +
-        //        "Password=martin;")
-        //        )
-        //    {
-        //        con.Open();
-        //        Label = LoadPanelInfo(con, 1, "en");
-        //        Content = LoadPanelContent(con, 1, "en");
-        //        //  LoadMenu
-        //    }
-        //    return ret;
-        //}
-
-        public void LoadDBRow(object[] row)
+        public Panel(int PanelID)
         {
-            
-            
+            id = PanelID;
         }
 
+        public void AddParam(string FieldType, string value)
+        {
+            switch (FieldType)
+            {
+                case "Title":
+                    Label = value;
+                    break;
+
+                case "Desc":
+                    Desc = value;
+                    break;
+
+                default:
+                    break;
+            }
+        }
 
         private string LoadPanelInfo(SqlConnection con, int CompanyID, string LanguageID)
         {

@@ -63,7 +63,7 @@ namespace PDMSCore.Controllers
             p = new Project();
             p.LoadProjectFromDB(gsi, 1, 123);
             //p.GetRandom();
-            p.SideMenu.Select(HttpContext.Session.GetString("OpenMenu"));
+            p.Page.SideMenu.Select(HttpContext.Session.GetString("OpenMenu"));
 
             return View(p);
         }

@@ -1,41 +1,37 @@
-﻿using System;
+﻿using PDMSCore.DataManipulation;
+using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
+
 
 namespace PDMSCore.BusinessObjects
 {
-    public class PanelInfoRow
-    {
-        public int PanelID;
-        public string FieldType, Label;
-
-        public PanelInfoRow(int ID, string ft, string l)
-        {
-            PanelID = ID;
-            FieldType = ft;
-            Label = l;
-        }
-
-        public string Get(int ID, string ft)
-        {
-            return null;
-
-        }
-
-    }
     public class Panels
     {
+        public List<Panel> PanelList { get; set; }
 
+        public Panels()
+        {
+            PanelList = new List<Panel>();
+        }
+
+        private Panel GetPanel(int PanelID)
+        {
+            for (int i = 0; i < PanelList.Count; i++)
+            {
+                if (PanelList[i].id == PanelID)
+                    return PanelList[i];
+            }
+            Panel np = new Panel(PanelID);
+            PanelList.Add(np);
+            return np;
+        }
 
         public void ProcessPanelsInfo(DataTable dt)
         {
             object obj;
             int PanelID;
             string PanelFieldType, Label;
-
-            List<PanelInfoRow> l = new List<PanelInfoRow>();
 
             for (int i = 0; i < dt.Rows.Count; i++)
             {
@@ -54,29 +50,74 @@ namespace PDMSCore.BusinessObjects
                     continue;
                 Label = obj.ToString();
 
-                l.Add(new PanelInfoRow(PanelID, PanelFieldType, Label));
+                GetPanel(PanelID).AddParam(PanelFieldType, Label);
             }
-
-
-
-
-
-            //if (PanelExists(PanelID) == null)
-            //{
-            //    Panel p = new Panel(PanelID,)
-            //        PanelList.Add(new Panel())
-            //}
-
         }
 
-        private Panel PanelExists(int PanelID)
+        private string GetString(DataTable dt, int row, int column)
         {
-            for (int i = 0; i < PanelList.Count; i++)
+            if (dt.Rows[row].ItemArray[column] == null)
+                return "";
+            return dt.Rows[row].ItemArray[column].ToString().Trim();
+        }
+        private int GetInt(DataTable dt, int row, int column)
+        {
+            int? FieldID = dt.Rows[row].ItemArray[0] == null ? (int?)null : (int)dt.Rows[i].ItemArray[0];
+
+            if (dt.Rows[row].ItemArray[column] == null)
+                return -1;
+            return (int)dt.Rows[row].ItemArray[column];
+        }
+
+        public void ProcessFieldsInfo(DataTable dt)
+        {
+            for (int r = 0; r < dt.Rows.Count; r++)
             {
-                if (PanelList[i].id == PanelID)
-                    return PanelList[i];
+                Field f = null;
+
+                int PageID = GetInt(dt, r, 0);
+                int PanelID = GetInt(dt, r, 1);
+                int FieldID = GetInt(dt, r, 2);
+                string FieldType = GetString(dt, r, 3);
+                string Label = GetString(dt, r, 4);
+                string StringValue = GetString(dt, r, 5);
+
+                // ZDE JSEM SKONCIL
+
+                switch (FieldType)
+                {
+                    case "tx":
+                        f = new LabelTextBoxField((int)FieldID, Label, StringValue);
+                        break;
+
+                    case "rb":
+                        f = new LabelRBCBControl<LabelRadioButtonField>(FieldID.ToString(), Label);
+                        ((LabelRBCBControl<LabelRadioButtonField>)f).OtherRef = (sdr.IsDBNull(7) ? -1 : sdr.GetInt32(7));
+                        ((LabelRBCBControl<LabelRadioButtonField>)f).SelectedValues = StringValue.Split(',');
+                        break;
+
+                    case "cb":
+                        f = new LabelRBCBControl<LabelCheckBoxField>(FieldID.ToString(), Label);
+                        ((LabelRBCBControl<LabelCheckBoxField>)f).OtherRef = (sdr.IsDBNull(7) ? -1 : sdr.GetInt32(7));
+                        ((LabelRBCBControl<LabelCheckBoxField>)f).SelectedValues = StringValue.Split(',');
+                        break;
+
+                    case "rb-item":
+                    case "cb-item":
+                        TempMultiSelectItem tmsi = new TempMultiSelectItem();
+                        tmsi.StringValue = (sdr.IsDBNull(3) ? "" : sdr.GetString(3).Trim());
+                        tmsi.OtherRef = sdr.GetInt32(7);
+                        tmsi.MultiSelectItemID = sdr.GetInt32(8);
+                        AllMultiSelectItem.Add(tmsi);
+                        break;
+
+                    default:
+                        break;
+                }
+                if (f != null)
+                    ret.Add(f);
             }
-            return null;
+
         }
     }
 }
