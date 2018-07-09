@@ -38,7 +38,7 @@ namespace PDMSCore.Controllers
         public ActionResult CreateNewProject(IFormCollection fc)
         {
             Project p = new Project();
-            p.SaveFromHtml(fc);
+            //p.SaveFromHtml(fc);
 
 
             return View();

@@ -1,12 +1,8 @@
-﻿using Microsoft.AspNetCore.Hosting.Server;
-using Microsoft.AspNetCore.Html;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Web;
+using System.Collections;
 using System.Net;
-using PDMSCore.BusinessObjects;
 
 namespace PDMSCore.DataManipulation
 {
@@ -44,6 +40,7 @@ namespace PDMSCore.DataManipulation
     public abstract class Field
     {
         public string NameId { get; set; }
+        public int IntId { get; set; }
         //public FieldType Type { get; set; }
 
         public string Tag { get; set; }
@@ -56,6 +53,54 @@ namespace PDMSCore.DataManipulation
             return new NewLine();
         }
     }
+    public abstract class MultiOption<T>: Field
+    {
+        public int OtherRef { get; set; }
+        public string[] SelectedValues { get; set; }
+        public List<T> Options { get; set; }
+        public GroupControlType GCType { get; set; }
+
+        public MultiOption()
+        {
+            Options = new List<T>();
+        }
+
+        public void AddRelevantItems(List<TempMultiSelectItem> AllMultiSelectItem)
+        {
+            for (int i = 0; i < AllMultiSelectItem.Count; i++)
+            {
+                if (AllMultiSelectItem[i].OtherRef == IntId)
+                {
+                    bool bChecked = (ExistsInSelectedValuesArrays(AllMultiSelectItem[i].MultiSelectItemID.ToString()) ? true : false);
+
+                    if (GCType == GroupControlType.DropDownListBoxes)
+                    {   //DropDownOption
+                        T aa = (T)Activator.CreateInstance(typeof(T), AllMultiSelectItem[i].MultiSelectItemID.ToString(), AllMultiSelectItem[i].StringValue);
+                        Options.Add(aa);
+                    }
+                    else
+                    {
+                        T aa = (T)Activator.CreateInstance(typeof(T), "name-TODO", AllMultiSelectItem[i].StringValue, AllMultiSelectItem[i].MultiSelectItemID.ToString(), bChecked, false);
+                        Options.Add(aa);
+                        //Add(aa);
+                    }
+                }
+            }
+        }
+
+        private bool ExistsInSelectedValuesArrays(string h)
+        {
+            for (int i = 0; i < SelectedValues.Length; i++)
+                if (SelectedValues[i] == h)
+                    return true;
+            return false;
+        }
+        //public void Add(T toBeAdded)
+        //{
+        //    Options.Add(toBeAdded);
+        //}
+    }
+
     public class NewLine : Field
     {
         public static Field GetRandom()
@@ -570,6 +615,13 @@ namespace PDMSCore.DataManipulation
             this.Enabled = Enabled;
         }
 
+        public DropDownOption(string Name, string Label)
+        {
+            NameId = Name;
+            this.Label = Label;
+            this.Enabled = true;
+        }
+
         public override TagBuilder HtmlText()
         {   //  <option label="England" value="England"></option> 
             TagBuilder tb = new TagBuilder("option");
@@ -650,13 +702,15 @@ namespace PDMSCore.DataManipulation
             return "DropDownField,GetValue: TODO";
         }
     }
-    public class LabelDropDownField : Field
+    public class LabelDropDownField : MultiOption<DropDownOption>
     {
         public LabelField Label { get; set; }
         public DropDownField Dropdown { get; set; }
-
+        
         public LabelDropDownField(int Id, string label, int VisibleRows = 1)
         {
+            GCType = GroupControlType.DropDownListBoxes;
+            IntId = Id;
             Label = new LabelField(label, true);
             Dropdown = new DropDownField(Id.ToString(), VisibleRows);
         }
@@ -837,18 +891,19 @@ namespace PDMSCore.DataManipulation
             return Value;
         }
     }
-    enum GroupControlType
+    public enum GroupControlType
     {
         RadioButtons,
-        CheckBoxes
+        CheckBoxes,
+        DropDownListBoxes
     };
-    public class LabelRBCBControl<T> : Field
+    public class LabelRBCBControl<T> : MultiOption<T>
     {
         public LabelField Label { get; set; }
-        public int OtherRef { get; set; }
-        public string[] SelectedValues { get; set; }
-        List<T> Options { get; set; }
-        private GroupControlType GCType { get; set; }
+        //public int OtherRef { get; set; }
+        //public string[] SelectedValues { get; set; }
+        //List<T> Options { get; set; }
+        //private GroupControlType GCType { get; set; }
 
         public LabelRBCBControl(string id, string label)
         {
@@ -857,32 +912,32 @@ namespace PDMSCore.DataManipulation
             GCType = (typeof(T) == typeof(LabelCheckBoxField)) ? GroupControlType.CheckBoxes : GroupControlType.RadioButtons;
         }
 
-        public void Add(T toBeAdded)
-        {
-            Options.Add(toBeAdded);
-        }
+        //public void Add(T toBeAdded)
+        //{
+        //    Options.Add(toBeAdded);
+        //}
 
-        public void AddRelevantItems(List<TempMultiSelectItem> AllMultiSelectItem)
-        {
-            for (int i = 0; i < AllMultiSelectItem.Count; i++)
-            {
-                if (AllMultiSelectItem[i].OtherRef == OtherRef)
-                {
-                    bool bChecked = (ExistsInStringtArray(SelectedValues,AllMultiSelectItem[i].MultiSelectItemID.ToString()) ? true : false);
+        //public void AddRelevantItems(List<TempMultiSelectItem> AllMultiSelectItem)
+        //{
+        //    for (int i = 0; i < AllMultiSelectItem.Count; i++)
+        //    {
+        //        if (AllMultiSelectItem[i].OtherRef == OtherRef)
+        //        {
+        //            bool bChecked = (ExistsInStringArray(SelectedValues,AllMultiSelectItem[i].MultiSelectItemID.ToString()) ? true : false);
 
-                    T aa = (T)Activator.CreateInstance(typeof(T), "name-TODO", AllMultiSelectItem[i].StringValue, AllMultiSelectItem[i].MultiSelectItemID.ToString(), bChecked, false);
-                    Add(aa);
-                }
-            }
-        }
+        //            T aa = (T)Activator.CreateInstance(typeof(T), "name-TODO", AllMultiSelectItem[i].StringValue, AllMultiSelectItem[i].MultiSelectItemID.ToString(), bChecked, false);
+        //            Add(aa);
+        //        }
+        //    }
+        //}
 
-        private bool ExistsInStringtArray(string[] a, string h)
-        {
-            for (int i = 0; i < a.Length; i++)
-                if (a[i] == h)
-                    return true;
-            return false;
-        }
+        //private bool ExistsInStringArray(string[] a, string h)
+        //{
+        //    for (int i = 0; i < a.Length; i++)
+        //        if (a[i] == h)
+        //            return true;
+        //    return false;
+        //}
 
         public static Field GetRandom(string id, int count)
         {
@@ -933,7 +988,9 @@ namespace PDMSCore.DataManipulation
         {
             return "";
         }
+
     }
 
+    
 
 }

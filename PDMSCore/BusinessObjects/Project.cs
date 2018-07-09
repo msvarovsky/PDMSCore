@@ -42,15 +42,16 @@ namespace PDMSCore.BusinessObjects
     {
         public int ID { get; set; }
         public string Name { get; set; }
-        public List<Panel> PanelList { get; set; }
+        //public List<Panel> PanelList { get; set; }
         public Page Page { get; set; }
         //public Menu SideMenu { get; set; }
 
         public Project()
         {
-            PanelList = new List<Panel>();
+            //PanelList = new List<Panel>();
             //SideMenu = new Menu();
             Page = new Page();
+
         }
         public bool Create()
         {
@@ -92,38 +93,35 @@ namespace PDMSCore.BusinessObjects
             Panel panel = new Panel(1, "New project:", 2);
             panel.GenerateRandomPanelMenuItems(5);
             panel.Content = fields;
-            PanelList.Add(panel);
+
+            Page.Panels.PanelList.Add(panel);
+            //PanelList.Add(panel);
         }
 
-        public bool SaveFromHtml(IFormCollection fc)
-        {
-            StringValues sv = new StringValues();
+        //public bool SaveFromHtml(IFormCollection fc)
+        //{
+        //    StringValues sv = new StringValues();
 
-            if (!fc.TryGetValue("PanelId", out sv))
-                return false;
+        //    if (!fc.TryGetValue("PanelId", out sv))
+        //        return false;
 
-            Panel p = GetPanel(sv.ToString());
-            return p.Save(fc);
-        }
+        //    Panel p = GetPanel(sv.ToString());
+        //    return p.Save(fc);
+        //}
+        //private Panel GetPanel(string id)
+        //{
+        //    int iId;
+        //    if (Int32.TryParse(id, out iId))
+        //    {
+        //        for (int i = 0; i < PanelList.Count; i++)
+        //        {
+        //            if (PanelList[i].id == iId)
+        //                return PanelList[i];
+        //        }
+        //    }
+        //    return null;
+        //}
 
-        private Panel GetPanel(string id)
-        {
-            int iId;
-            if (Int32.TryParse(id, out iId))
-            {
-                for (int i = 0; i < PanelList.Count; i++)
-                {
-                    if (PanelList[i].id == iId)
-                        return PanelList[i];
-                }
-            }
-            return null;
-        }
-
-        public void AddPanel(Panel newPanel)
-        {
-            PanelList.Add(newPanel);
-        }
 
         public void GetFieldTemplate()
         {
@@ -185,8 +183,8 @@ namespace PDMSCore.BusinessObjects
             panel2.GenerateRandomPanelMenuItems(2);
 
 
-            PanelList.Add(panel);
-            PanelList.Add(panel2);
+            //PanelList.Add(panel);
+            //PanelList.Add(panel2);
         }
 
         public TagBuilder AsyncPanelList()
@@ -232,10 +230,6 @@ namespace PDMSCore.BusinessObjects
 
         private bool LoadPageContent(GeneralSessionInfo gsi, SqlConnection con, int ProjectID, int PageID)
         {
-
-            /// exec GetPageFields 1,1,1,'en'
-            //List<Object> dbRow = new List<object>();
-            object[] dbRow;
             SqlDataAdapter sqlDataAdapter;
             DataSet dataSet = new DataSet();
 
@@ -248,7 +242,6 @@ namespace PDMSCore.BusinessObjects
             sql.Parameters.Add(new SqlParameter("PageID", PageID));
             sql.Parameters.Add(new SqlParameter("LanguageID", gsi.languageID));
 
-            //  FieldID	FieldType	Label	StringValue	IntValue	DateValue	FileValue	OtherRef	MultiSelectItemID	PredecessorFieldID
             try
             {
                 //  http://www.dotnetfunda.com/articles/show/1716/multiple-resultsets-in-sql-server-and-handling-them-in-csharp-part-ii
@@ -262,12 +255,9 @@ namespace PDMSCore.BusinessObjects
 
                     if (dataSet.Tables[1].Rows.Count > 0)
                         Page.ProcessPanelsInfo(dataSet.Tables[1]);
-                        //Page.Panels.ProcessPanelsInfo(dataSet.Tables[1]);
 
                     if (dataSet.Tables[2].Rows.Count > 0)
                         Page.Panels.ProcessFieldsInfo(dataSet.Tables[2]);
-                        //ProcessFields(dataSet.Tables[2]);
-
                 }
                 else
                 {
@@ -279,11 +269,8 @@ namespace PDMSCore.BusinessObjects
                 ret.Add(new LabelTextAreaField(1, "Exception in LoadPanelContent(..)", eee.ToString()));
             }
 
-            //AssignMultiSelectItemsToControls(ret, AllMultiSelectItem);
-
             return false;
         }
-
       
 
     }

@@ -7,6 +7,7 @@ namespace PDMSCore.BusinessObjects
     {
         public Menu SideMenu { get; set; }
         public Panels Panels { get; set; }
+        public string Title { get; set; }
 
         public Page()
         {
@@ -14,13 +15,11 @@ namespace PDMSCore.BusinessObjects
             Panels = new Panels();
         }
 
-
         public void ProcessPageInfo(DataTable dt)
         {
-
-            foreach (DataRow existingRow in dt.Rows)
+            for (int r = 0; r < dt.Rows.Count; r++)
             {
-                //Console.WriteLine(existingRow.ItemArray[0].ToString() + " - " + existingRow.ItemArray[1].ToString());
+                Title = DBUtil.GetString(dt.Rows[r], 1);
             }
         }
 
