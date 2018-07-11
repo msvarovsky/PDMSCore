@@ -30,7 +30,6 @@ namespace PDMSCore.Controllers
         {
             p = new Project();
             p.CreateNew();
-            
             ViewData["panelOwnerID"] = "ID projektu";
             return View("ShowProject",p);
         }
@@ -70,14 +69,15 @@ namespace PDMSCore.Controllers
         [HttpGet]
         public ActionResult ShowProject()
         {
-            //int PanelID = 1;
-
-            //p = Project.GetProject(PanelID);
-            p = new Project();
             ViewData["panelOwnerID"] = "ID projektu";
 
-            p.GetRandom();
-            return View(p);
+            Project pr = new Project();
+            pr.LoadProjectFromDB(new GeneralSessionInfo(1, 1, "en"), 1, 1);
+            return View(pr);
+
+            //p = new Project();
+            //p.GetRandom();
+            //return View(p);
         }
 
         /// <summary>

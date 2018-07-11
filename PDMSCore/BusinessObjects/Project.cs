@@ -195,7 +195,6 @@ namespace PDMSCore.BusinessObjects
 
         }
 
-        //  User, RetailerID, languageID,     ProjectID, PageID
         public bool LoadProjectFromDB(GeneralSessionInfo gsi, int ProjectID, int PageID)
         {
             bool ret = false;

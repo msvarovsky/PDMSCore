@@ -82,7 +82,6 @@ namespace PDMSCore.DataManipulation
                     {
                         T aa = (T)Activator.CreateInstance(typeof(T), "name-TODO", AllMultiSelectItem[i].StringValue, AllMultiSelectItem[i].MultiSelectItemID.ToString(), bChecked, false);
                         Options.Add(aa);
-                        //Add(aa);
                     }
                 }
             }
@@ -95,10 +94,6 @@ namespace PDMSCore.DataManipulation
                     return true;
             return false;
         }
-        //public void Add(T toBeAdded)
-        //{
-        //    Options.Add(toBeAdded);
-        //}
     }
 
     public class NewLine : Field
@@ -638,16 +633,16 @@ namespace PDMSCore.DataManipulation
             return Label;
         }
     }
-    public class DropDownField : Field
+    public class DropDownField : MultiOption<DropDownOption>
     {
-        List<DropDownOption> Options { get; set; }
+        //List<DropDownOption> Options { get; set; }
         public int Size { get; set; }
         private List<string> Classes { get; set; }
         public string jsOnInputFunction { get; set; }
 
         public DropDownField(string Id, int VisibleRows = 1)
         {
-            Options = new List<DropDownOption>();
+            //Options = new List<DropDownOption>();
             this.NameId = Id;
             this.Size = VisibleRows;
             Classes = new List<string>();
@@ -702,14 +697,15 @@ namespace PDMSCore.DataManipulation
             return "DropDownField,GetValue: TODO";
         }
     }
-    public class LabelDropDownField : MultiOption<DropDownOption>
+    //public class LabelDropDownField : MultiOption<DropDownOption>
+    public class LabelDropDownField : Field
     {
         public LabelField Label { get; set; }
         public DropDownField Dropdown { get; set; }
         
         public LabelDropDownField(int Id, string label, int VisibleRows = 1)
         {
-            GCType = GroupControlType.DropDownListBoxes;
+            //GCType = GroupControlType.DropDownListBoxes;
             IntId = Id;
             Label = new LabelField(label, true);
             Dropdown = new DropDownField(Id.ToString(), VisibleRows);
@@ -900,10 +896,6 @@ namespace PDMSCore.DataManipulation
     public class LabelRBCBControl<T> : MultiOption<T>
     {
         public LabelField Label { get; set; }
-        //public int OtherRef { get; set; }
-        //public string[] SelectedValues { get; set; }
-        //List<T> Options { get; set; }
-        //private GroupControlType GCType { get; set; }
 
         public LabelRBCBControl(string id, string label)
         {
@@ -911,33 +903,6 @@ namespace PDMSCore.DataManipulation
             Options = new List<T>();
             GCType = (typeof(T) == typeof(LabelCheckBoxField)) ? GroupControlType.CheckBoxes : GroupControlType.RadioButtons;
         }
-
-        //public void Add(T toBeAdded)
-        //{
-        //    Options.Add(toBeAdded);
-        //}
-
-        //public void AddRelevantItems(List<TempMultiSelectItem> AllMultiSelectItem)
-        //{
-        //    for (int i = 0; i < AllMultiSelectItem.Count; i++)
-        //    {
-        //        if (AllMultiSelectItem[i].OtherRef == OtherRef)
-        //        {
-        //            bool bChecked = (ExistsInStringArray(SelectedValues,AllMultiSelectItem[i].MultiSelectItemID.ToString()) ? true : false);
-
-        //            T aa = (T)Activator.CreateInstance(typeof(T), "name-TODO", AllMultiSelectItem[i].StringValue, AllMultiSelectItem[i].MultiSelectItemID.ToString(), bChecked, false);
-        //            Add(aa);
-        //        }
-        //    }
-        //}
-
-        //private bool ExistsInStringArray(string[] a, string h)
-        //{
-        //    for (int i = 0; i < a.Length; i++)
-        //        if (a[i] == h)
-        //            return true;
-        //    return false;
-        //}
 
         public static Field GetRandom(string id, int count)
         {
@@ -988,7 +953,6 @@ namespace PDMSCore.DataManipulation
         {
             return "";
         }
-
     }
 
     

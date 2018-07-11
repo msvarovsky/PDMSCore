@@ -85,8 +85,8 @@ namespace PDMSCore.DataManipulation
                     break;
                 case "ddlb":
                     f = new LabelDropDownField(FieldID, Label);
-                    ((LabelDropDownField)f).OtherRef = DBUtil.GetInt(dr, col + 8);
-                    ((LabelDropDownField)f).SelectedValues = StringValue.Split(',');
+                    ((LabelDropDownField)f).Dropdown.OtherRef = DBUtil.GetInt(dr, col + 8);
+                    ((LabelDropDownField)f).Dropdown.SelectedValues = StringValue.Split(',');
                     break;
 
                 case "rb-item":
@@ -245,23 +245,10 @@ namespace PDMSCore.DataManipulation
                 else if (Content[i].GetType() == typeof(LabelRBCBControl<LabelCheckBoxField>))
                     ((LabelRBCBControl<LabelCheckBoxField>)Content[i]).AddRelevantItems(AllMultiSelectItem);
                 else if (Content[i].GetType() == typeof(LabelDropDownField))
-                    ((LabelDropDownField)Content[i]).AddRelevantItems(AllMultiSelectItem);
+                    ((LabelDropDownField)Content[i]).Dropdown.AddRelevantItems(AllMultiSelectItem);
 
             }
         }
-        //private void AssignMultiSelectItemsToControls(List<Field> ret, List<TempMultiSelectItem> AllMultiSelectItem)
-        //{
-        //    for (int i = 0; i < ret.Count; i++)
-        //    {
-        //        if (ret[i] == null)
-        //            continue;
-        //        if (ret[i].GetType() == typeof(LabelRBCBControl<LabelRadioButtonField>)) 
-        //            ((LabelRBCBControl<LabelRadioButtonField>)ret[i]).AddRelevantItems(AllMultiSelectItem);
-        //        else if (ret[i].GetType() == typeof(LabelRBCBControl<LabelCheckBoxField>))
-        //            ((LabelRBCBControl<LabelCheckBoxField>)ret[i]).AddRelevantItems(AllMultiSelectItem);
-        //    }
-
-        //}
     }
 
     public struct TempMultiSelectItem
