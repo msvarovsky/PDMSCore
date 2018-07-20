@@ -49,7 +49,11 @@ namespace PDMSCore.HtmlHelpers
         public static IHtmlContent Field(Field f)
         {
             //return f.HtmlText().ToString();
-            return f.HtmlText();
+
+            if (f is IHtmlElement)
+                return ((IHtmlElement)f).BuildHtmlTag();
+            else
+                throw new System.Exception("MS: Control does not implements IHtmlElement.");
         }
 
 

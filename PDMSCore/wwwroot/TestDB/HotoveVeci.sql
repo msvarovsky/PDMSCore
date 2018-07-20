@@ -79,12 +79,13 @@ BEGIN
 		MultiValue  VARCHAR(100),
 		OtherRef	int,
 		MultiSelectItemID	int,
-		PredecessorFieldID	int
+		PredecessorFieldID	int,
+		ParentFieldID	int
 	)
 	INSERT INTO @temp
 	SELECT	pf.PageID, pf.PanelID, pf.FieldID, 'label-tbd1' as 'Label', pf.FieldType
 			,pf.StringValue, pf.IntValue, pf.DateValue, pf.FileValue, pf.MultiValue
-			,pf.OtherRef ,null, null
+			,pf.OtherRef ,null, pf.PredecessorFieldID, pf.ParentFieldID 
 	FROM	ProjectFields pf
 	WHERE	pf.ProjectID = @ProjectID
 	AND		pf.RetailerID = @RetailerID
@@ -93,9 +94,9 @@ BEGIN
 	INSERT INTO @temp
 	SELECT	t.PageID, t.PanelID, ms.LabelID as 'FieldID', 'fieldlabel-tbd' as 'FieldLabel', (RTRIM(LTRIM(t.FieldType)) + '-item') as 'FieldType'
 			,NULL as 'StringValue',NULL as 'IntValue',NULL as 'DateValue',NULL as 'FileValue',NULL as 'MultiValue'
-			,t.FieldID as 'OtherRef', ms.ItemID as 'MultiSelectItemID', NULL as 'PredecessorFieldID'
+			,t.FieldID as 'OtherRef', ms.ItemID as 'MultiSelectItemID', NULL as 'PredecessorFieldID', ms.ParentFieldID
 	FROM	MultiSelection ms, @temp t
-	WHERE	ms.ReferenceID = t.OtherRef
+	WHERE	ms.ParentFieldID = t.FieldID
 
 
 	SELECT	DISTINCT(t.PageID), l.Label
@@ -116,7 +117,14 @@ BEGIN
 	LEFT OUTER JOIN	Labels l	ON p.LabelID = l.LabelID
 	WHERE	l.LanguageID = @LanguageID
 
-	select * from @temp
+	select t.PageID, t.PanelID, t.FieldID, l.Label as 'FieldLabel', t.FieldType, 
+			t.StringValue, t.IntValue, t.DateValue, t.FileValue, t.MultiValue, 
+			t.OtherRef, t.MultiSelectItemID, t.PredecessorFieldID, t.ParentFieldID
+	FROM	@temp t
+	LEFT OUTER JOIN	Panels p	ON t.PanelID = p.PanelID
+	LEFT OUTER JOIN	Labels l	ON t.FieldID = l.LabelID
+	WHERE	l.LanguageID = @LanguageID
+	ORDER BY t.PredecessorFieldID
 END;
 
 --------------
@@ -136,24 +144,28 @@ DECLARE @temp TABLE
 	MultiValue  VARCHAR(100),
 	OtherRef	int,
 	MultiSelectItemID	int,
-	PredecessorFieldID	int
+	PredecessorFieldID	int,
+	ParentFieldID	int
 )
 INSERT INTO @temp
 SELECT	pf.PageID, pf.PanelID, pf.FieldID, 'label-tbd1' as 'Label', pf.FieldType
 		,pf.StringValue, pf.IntValue, pf.DateValue, pf.FileValue, pf.MultiValue
-		,pf.OtherRef ,null, null
+		,pf.OtherRef, null, pf.PredecessorFieldID, pf.ParentFieldID 
 FROM	ProjectFields pf
 WHERE	pf.ProjectID = 1
 AND		pf.RetailerID = 1
 AND		pf.PageID = 1
 
+
+
 INSERT INTO @temp
 SELECT	t.PageID, t.PanelID, ms.LabelID as 'FieldID', 'fieldlabel-tbd' as 'FieldLabel', (RTRIM(LTRIM(t.FieldType)) + '-item') as 'FieldType'
 		,NULL as 'StringValue',NULL as 'IntValue',NULL as 'DateValue',NULL as 'FileValue',NULL as 'MultiValue'
-		,t.FieldID as 'OtherRef', ms.ItemID as 'MultiSelectItemID', NULL as 'PredecessorFieldID'
+		,t.FieldID as 'OtherRef', ms.ItemID as 'MultiSelectItemID', NULL as 'PredecessorFieldID', ms.ParentFieldID 
 FROM	MultiSelection ms, @temp t
-WHERE	ms.ReferenceID = t.OtherRef
+WHERE	ms.ParentFieldID = t.FieldID
 
+SELECT	* from @temp
 
 SELECT	DISTINCT(t.PageID), l.Label
 FROM	@temp t
@@ -173,8 +185,14 @@ LEFT OUTER JOIN	Panels p	ON t.PanelID = p.PanelID
 LEFT OUTER JOIN	Labels l	ON p.LabelID = l.LabelID
 WHERE	l.LanguageID = 'cs'
 
-select * from @temp
-
+select t.PageID, t.PanelID, t.FieldID, l.Label, t.FieldType, 
+		t.StringValue, t.IntValue, t.DateValue, t.FileValue, t.MultiValue, 
+		t.OtherRef, t.MultiSelectItemID, t.PredecessorFieldID, t.ParentFieldID
+FROM	@temp t
+LEFT OUTER JOIN	Panels p	ON t.PanelID = p.PanelID
+LEFT OUTER JOIN	Labels l	ON t.FieldID = l.LabelID
+WHERE	l.LanguageID = 'cs'
+ORDER BY t.PredecessorFieldID
 ---------------
 
 SELECT * FROM PagePanels

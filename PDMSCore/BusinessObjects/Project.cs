@@ -71,7 +71,8 @@ namespace PDMSCore.BusinessObjects
 
             fields.Add(new LabelTextBoxField(ID++, "Project name", "", "...", "Give your project a name."));
             fields.Add(new LabelTextAreaField(ID++, "Project description:"));
-            fields.Add(Field.NewLine());
+            //fields.Add(Field.NewLine());
+            fields.Add(new NewLine());
 
             LabelDropDownField dd = new LabelDropDownField(ID++, "Project type:");
             dd.Dropdown.Add(new DropDownOption(1.ToString(), "Novy"));
@@ -92,7 +93,7 @@ namespace PDMSCore.BusinessObjects
 
             Panel panel = new Panel(1, "New project:", 2);
             panel.GenerateRandomPanelMenuItems(5);
-            panel.Content = fields;
+            panel.Fields = fields;
 
             Page.Panels.PanelList.Add(panel);
             //PanelList.Add(panel);
@@ -140,13 +141,13 @@ namespace PDMSCore.BusinessObjects
             //TextBoxField tb = new TextBoxField((randonName++).ToString(), "Pocet projektu", "5");
 
             fields.Add(new LabelField("Normalni text"));
-            fields.Add(Field.NewLine());
+            fields.Add(new NewLine());
             fields.Add(new LabelField("Bold text", true));
-            fields.Add(Field.NewLine());
+            fields.Add(new NewLine());
 
             fields.Add(LabelTextBoxField.GetRandom(id++));
             fields.Add(LabelTextAreaField.GetRandom(id++));
-            fields.Add(Field.NewLine());
+            fields.Add(new NewLine());
 
             fields.Add(LabelRBCBControl<LabelRadioButtonField>.GetRandom((id++).ToString(), 3));
             fields.Add(LabelRBCBControl<LabelCheckBoxField>.GetRandom((id++).ToString(), 4));
@@ -171,7 +172,7 @@ namespace PDMSCore.BusinessObjects
             fields = new List<Field>();
             fields.Add(LabelTextBoxField.GetRandom(id++));
             panel.GenerateRandomPanelMenuItems(5);
-            panel.Content = fields;
+            panel.Fields = fields;
             //ToShow.Add(panel);
 
             Panel panel2 = new Panel(2, "Grid", 1);
@@ -179,7 +180,7 @@ namespace PDMSCore.BusinessObjects
             fields2.Add(LabelTextBoxField.GetRandom(id++));
             fields2.Add(LabelDataGridField.GetRandom("Grid"));
 
-            panel2.Content = fields2;
+            panel2.Fields = fields2;
             panel2.GenerateRandomPanelMenuItems(2);
 
 

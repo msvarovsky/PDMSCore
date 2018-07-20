@@ -27,9 +27,9 @@
     <div class="Panel-Body">
         <form id="Form-@Model.id" method="post">
             <input name="PanelId" hidden type="text" value="@Model.id" />
-            @for (int f = 0; f < Model.Content.Count; f++)
+            @for (int f = 0; f < Model.Fields.Count; f++)
             {
-                @MSHelpers.Field(Model.Content[f]);
+                @MSHelpers.Field(Model.Fields[f]);
             }
         </form>
     </div>

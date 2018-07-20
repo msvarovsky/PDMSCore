@@ -19,14 +19,14 @@ namespace PDMSCore.DataManipulation
 
     public class DataGridField2 : Field
     {
-        public int ID { get; set; }
+        //public int ID { get; set; }
         public int nVisibleRows { get; set; }
         public string FocusControlID { get; set; }
         private List<TableRow2> Data;
         private string[] HeaderLabels;
         private int[] MinColumnWidtg;
 
-        public DataGridField2()
+        public DataGridField2():base("GridTable","table", null)
         {
             HeaderLabels = null;
             Data = new List<TableRow2>();
@@ -36,7 +36,7 @@ namespace PDMSCore.DataManipulation
         public static DataGridField2 GetTestData(int ID)
         {
             DataGridField2 d = new DataGridField2();
-            d.ID = ID;
+            //d.ID = ID;
             d.SetHeaderLabels("Jmeno", "Prijmeni", "Aktivni");
 
             TableRow2 tr = new TableRow2();
@@ -192,7 +192,7 @@ namespace PDMSCore.DataManipulation
                     ddf.Add(new DropDownOption("-1", "No"));
                     ddf.AddClass("filter");
 
-                    tbHs.InnerHtml.AppendHtml(ddf.HtmlText());
+                    tbHs.InnerHtml.AppendHtml(ddf.BuildHtmlTag());
                 }
                 else
                 {
@@ -226,9 +226,9 @@ namespace PDMSCore.DataManipulation
             return tbTableBody;
         }
 
-        public override TagBuilder HtmlText()
+        public TagBuilder BuildHtmlTag()
         {
-            TagBuilder tb = new TagBuilder("table");
+            TagBuilder tb = base.BuildBaseHtmlTag();
             tb.Attributes.Add("id", "GridTable");
             tb.AddCssClass("GridTable");
 
@@ -245,10 +245,10 @@ namespace PDMSCore.DataManipulation
             return tb;
         }
 
-        public override string GetValue()
-        {
-            return "";
-        }
+        //public override string GetValue()
+        //{
+        //    return "";
+        //}
 
         public string GetPresentableStringFromID(string id)
         {
@@ -319,22 +319,34 @@ namespace PDMSCore.DataManipulation
                 TagBuilder tbDiv = new TagBuilder("div");
                 tbDiv.AddCssClass("Cell");
 
-                tbDiv.InnerHtml.AppendHtml(Cells[i].HtmlText());
+                tbDiv.InnerHtml.AppendHtml(((IHtmlElement)Cells[i]).BuildHtmlTag());
                 tbTd.InnerHtml.AppendHtml(tbDiv);
                 tbTr.InnerHtml.AppendHtml(tbTd);
             }
             return tbTr;
         }
 
+        //public TableRow2 MakeCopy()
+        //{
+        //    TableRow2 n = new TableRow2();
+        //    n.ID = this.ID;
+        //    Field[] fs = this.Cells.ToArray();
+
+        //    n.Cells = new List<IHtmlElement>();
+        //    for (int i = 0; i < fs.Length; i++)
+        //        n.Cells.Add(fs[i]);
+
+        //    return n;
+        //}
+
         public TableRow2 MakeCopy()
         {
             TableRow2 n = new TableRow2();
             n.ID = this.ID;
-            Field[] fs = this.Cells.ToArray();
-
             n.Cells = new List<Field>();
-            for (int i = 0; i < fs.Length; i++)
-                n.Cells.Add(fs[i]);
+
+            for (int i = 0; i < this.Cells.Count; i++)
+                n.Cells.Add(this.Cells[i]);
 
             return n;
         }
@@ -371,12 +383,12 @@ namespace PDMSCore.DataManipulation
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public class DataGridField : Field
+    public class DataGridField : Field, IHtmlElement
     {
         private TableRow HeaderRow;
         private List<TableRow> DataRow;
 
-        public DataGridField()
+        public DataGridField():base("GridTable","table", null)
         {
             DataRow = new List<TableRow>();
         }
@@ -412,9 +424,9 @@ namespace PDMSCore.DataManipulation
             return n;
         }
 
-        public override TagBuilder HtmlText()
+        public TagBuilder BuildHtmlTag()
         {
-            TagBuilder tb = new TagBuilder("table");
+            TagBuilder tb = base.BuildBaseHtmlTag();
             tb.Attributes.Add("id", "GridTable");
             tb.AddCssClass("GridTable");
             tb.InnerHtml.AppendHtml(HeaderRow.HtmlText());
@@ -425,10 +437,6 @@ namespace PDMSCore.DataManipulation
             return tb;
         }
 
-        public override string GetValue()
-        {
-            return "";
-        }
     }
 
     public class TableRow : IHtmlTag
@@ -532,7 +540,7 @@ namespace PDMSCore.DataManipulation
                 TagBuilder tbHeaderSearch = new TagBuilder("HeaderSearch");
                 TextBoxField t = new TextBoxField("TODO-NameId", "TableTextBoxHeader AutoComplete", "", "...");
                 tbHeaderSearch.AddCssClass("HeaderSrchCl");
-                tbHeaderSearch.InnerHtml.AppendHtml(t.HtmlText());
+                tbHeaderSearch.InnerHtml.AppendHtml(t.BuildHtmlTag());
 
                 tb.InnerHtml.AppendHtml(tbHeaderLabel);
                 tb.InnerHtml.AppendHtml(tbHeaderSearch);
@@ -540,7 +548,7 @@ namespace PDMSCore.DataManipulation
             else if (type == RowType.Data)
             {
                 tb.AddCssClass("Cell");
-                tb.InnerHtml.AppendHtml(CellField.HtmlText());
+                tb.InnerHtml.AppendHtml(CellField.BuildBaseHtmlTag());
             }
             else
                 throw new NotImplementedException();

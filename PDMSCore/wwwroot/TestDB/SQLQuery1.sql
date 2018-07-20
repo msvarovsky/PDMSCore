@@ -148,7 +148,7 @@ LEFT OUTER JOIN	Labels l ON pg.LabelID = l.LabelID
 WHERE	l.LanguageID = 'cs'
 
 SELECT * from PagesPanels
-SELECT * from PanelsFields
+SELECT * from PanelFields
 SELECT * from Projects
 SELECT * from Fields
 SELECT * from Labels
@@ -189,3 +189,39 @@ WHERE	l.LanguageID = 'cs'
 SELECT	pp.PanelID 
 FROM	PagePanels pp
 LEFT OUTER JOIN	Labels ON	pp.PanelID
+
+
+
+
+SELECT	* 
+FROM	ProjectFields
+
+
+SELECT	* 
+FROM	MultiSelection
+
+
+SELECT	* 
+FROM	PanelFields rp  
+
+
+
+sp_helptext ProjectFields
+
+CREATE VIEW ProjectFields AS    
+  
+SELECT rp.RetailerID, pp.PageID, pf.PanelID,     
+  fv.FieldID, pf.FieldType, fv.ProjectID, fv.StringValue, fv.IntValue, fv.DateValue, fv.FileValue, fv.MultiValue,  
+  fv.OtherRef, fv.ParentFieldID, fv.Effdt, fv.[Version]    
+  ,pp.PredecessorPanelID, pf.PredecessorFieldID    
+FROM RetailerPages rp    
+LEFT OUTER JOIN PagePanels pp ON rp.PageID = pp.PageID    
+LEFT OUTER JOIN PanelFields pf ON pp.PanelID = pf.PanelID    
+LEFT OUTER JOIN FieldsValues fv ON pf.FieldID = fv.FieldID     
+        AND fv.RetailerID = rp.RetailerID
+
+
+
+SELECT	*
+FROM	FieldsValues fv
+LEFT OUTER JOIN PanelFields pf ON pf.FieldID = fv.FieldID     
