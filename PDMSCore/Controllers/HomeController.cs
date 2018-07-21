@@ -8,7 +8,8 @@ namespace PDMSCore.Controllers
     {
         public IActionResult Index()
         {
-            return this.RedirectToAction("CreateNewProject", "Project");
+            //return this.RedirectToAction("CreateNewProject", "Project");
+            return this.RedirectToAction("ShowProject", "Project");
             //return View();
         }
 

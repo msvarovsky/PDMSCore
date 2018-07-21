@@ -987,7 +987,7 @@ namespace PDMSCore.DataManipulation
         CheckBoxes,
         DropDownListBoxes
     };
-    public class LabelRBCBControl<T> : MultiOption<T>
+    public class LabelRBCBControl<T> : MultiOption<T>, IHtmlElement
     {
         public LabelField Label { get; set; }
 
@@ -1036,7 +1036,7 @@ namespace PDMSCore.DataManipulation
 
             for (int i = 0; i < Options.Count; i++)
             {
-                TagBuilder t = (TagBuilder) Options[i].GetType().GetMethod("HtmlText").Invoke(Options[i], null);
+                TagBuilder t = (TagBuilder) Options[i].GetType().GetMethod("BuildHtmlTag").Invoke(Options[i], null);
                 //tbForm.InnerHtml.AppendHtml(t);
                 tbControl.InnerHtml.AppendHtml(t);
             }
