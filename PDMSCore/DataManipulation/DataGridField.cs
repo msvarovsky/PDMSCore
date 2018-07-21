@@ -42,61 +42,61 @@ namespace PDMSCore.DataManipulation
             TableRow2 tr = new TableRow2();
             tr.AddColumnCell(new LabelField("Martin-" + DateTime.Now.Second));
             tr.AddColumnCell(new LabelField("Svarovsky"));
-            tr.AddColumnCell(new CheckBoxField("", "", true, new WebTagAttributes(true, "")));
+            tr.AddColumnCell(new CheckBoxField("", "", "", false, false));
             d.AddDataRow(tr, 1);
 
             tr = new TableRow2();
             tr.AddColumnCell(new LabelField("Martin-" + DateTime.Now.Second));
             tr.AddColumnCell(new LabelField("SpatnePrijmeni"));
-            tr.AddColumnCell(new CheckBoxField("", "", false, new WebTagAttributes(true, "")));
+            tr.AddColumnCell(new CheckBoxField("", "", "", false, false));
             d.AddDataRow(tr);
 
             tr = new TableRow2();
             tr.AddColumnCell(new LabelField("Cecile-" + DateTime.Now.Second));
             tr.AddColumnCell(new LabelField("Svarovska"));
-            tr.AddColumnCell(new CheckBoxField("", "", true, new WebTagAttributes(true, "")));
+            tr.AddColumnCell(new CheckBoxField("", "", "", false, false));
             d.AddDataRow(tr);
 
             tr = new TableRow2();
             tr.AddColumnCell(new LabelField("Jitka-" + DateTime.Now.Second));
             tr.AddColumnCell(new LabelField("Svarovska"));
-            tr.AddColumnCell(new CheckBoxField("", "", true, new WebTagAttributes(true, "")));
+            tr.AddColumnCell(new CheckBoxField("", "", "", false, false));
             d.AddDataRow(tr);
 
             tr = new TableRow2();
             tr.AddColumnCell(new LabelField("Astrid-" + DateTime.Now.Second));
             tr.AddColumnCell(new LabelField("Svarovska"));
-            tr.AddColumnCell(new CheckBoxField("", "", true, new WebTagAttributes(true, "")));
+            tr.AddColumnCell(new CheckBoxField("", "", "", false, false));
             d.AddDataRow(tr);
 
             tr = new TableRow2();
             tr.AddColumnCell(new LabelField("Lubos-" + DateTime.Now.Second));
             tr.AddColumnCell(new LabelField("Svarovsky"));
-            tr.AddColumnCell(new CheckBoxField("", "", true, new WebTagAttributes(true, "")));
+            tr.AddColumnCell(new CheckBoxField("", "", "", false, false));
             d.AddDataRow(tr);
 
             tr = new TableRow2();
             tr.AddColumnCell(new LabelField("Dominique-" + DateTime.Now.Second));
             tr.AddColumnCell(new LabelField("Champagne"));
-            tr.AddColumnCell(new CheckBoxField("", "", true, new WebTagAttributes(true, "")));
+            tr.AddColumnCell(new CheckBoxField("", "", "", false, false));
             d.AddDataRow(tr);
 
             tr = new TableRow2();
             tr.AddColumnCell(new LabelField("Nadine-" + DateTime.Now.Second));
             tr.AddColumnCell(new LabelField("Champagne"));
-            tr.AddColumnCell(new CheckBoxField("", "", true, new WebTagAttributes(true, "")));
+            tr.AddColumnCell(new CheckBoxField("", "", "", false, false));
             d.AddDataRow(tr);
 
             tr = new TableRow2();
             tr.AddColumnCell(new LabelField("Thomas-" + DateTime.Now.Second));
             tr.AddColumnCell(new LabelField("Champagne"));
-            tr.AddColumnCell(new CheckBoxField("", "", true, new WebTagAttributes(true, "")));
+            tr.AddColumnCell(new CheckBoxField("", "", "", false, false));
             d.AddDataRow(tr);
 
             tr = new TableRow2();
             tr.AddColumnCell(new LabelField("Noemie-" + DateTime.Now.Second));
             tr.AddColumnCell(new LabelField("JeNeSaisPas"));
-            tr.AddColumnCell(new CheckBoxField("", "", true, new WebTagAttributes(true, "")));
+            tr.AddColumnCell(new CheckBoxField("", "", "", false, false));
             d.AddDataRow(tr);
 
             /*d.AddDataRow(tr.MakeCopy());

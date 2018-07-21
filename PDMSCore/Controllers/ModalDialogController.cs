@@ -58,7 +58,8 @@ namespace PDMSCore.Controllers
                 TableRow2 tr = new TableRow2();
                 tr.AddColumnCell(new LabelField("Jmeno"));
                 tr.AddColumnCell(new LabelField("Prijmeni"));
-                tr.AddColumnCell(new CheckBoxField("", "", true, new WebTagAttributes(true, "")));
+                //tr.AddColumnCell(new CheckBoxField("", "", true, new WebTagAttributes(true, "")));
+                tr.AddColumnCell(new CheckBoxField("", "", "", false, false));
 
                 d.AddDataRow(tr, 1);
                 d.AddDataRow(tr.MakeCopy());
