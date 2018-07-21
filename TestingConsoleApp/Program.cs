@@ -10,11 +10,12 @@ namespace TestingConsoleApp
         static void Main(string[] args)
         {
             Project pr = new Project();
-            pr.LoadProjectFromDB();
+
+            pr.LoadProjectFromDB(new GeneralSessionInfo(1,1,"en"),1,1);
 
             Panel p = new Panel(1,"ahoj", 2);
 
-            p.Load();
+            //p.Load();
 
 
         }

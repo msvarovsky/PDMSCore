@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using PDMSCore.DataManipulation;
+using System;
 
 namespace PDMSCore.Controllers
 {
@@ -29,7 +30,6 @@ namespace PDMSCore.Controllers
         {
             p = new Project();
             p.CreateNew();
-            
             ViewData["panelOwnerID"] = "ID projektu";
             return View("ShowProject",p);
         }
@@ -37,7 +37,7 @@ namespace PDMSCore.Controllers
         public ActionResult CreateNewProject(IFormCollection fc)
         {
             Project p = new Project();
-            p.SaveFromHtml(fc);
+            //p.SaveFromHtml(fc);
 
 
             return View();
@@ -54,23 +54,30 @@ namespace PDMSCore.Controllers
         public ActionResult ShowProject(IFormCollection fc)
         {
             //p = Project.GetProject(PanelID);
+
+            //  User, RetailerID, languageID
+            GeneralSessionInfo gsi = new GeneralSessionInfo(HttpContext);
+            
+            //  ProjectID, PageID
             p = new Project();
-            p.GetRandom();
-            p.SideMenu.Select(HttpContext.Session.GetString("OpenMenu"));
+            p.LoadProjectFromDB(gsi, 1, 123);
+            //p.GetRandom();
+            p.Page.SideMenu.Select(HttpContext.Session.GetString("OpenMenu"));
 
             return View(p);
         }
         [HttpGet]
         public ActionResult ShowProject()
         {
-            //int PanelID = 1;
-
-            //p = Project.GetProject(PanelID);
-            p = new Project();
             ViewData["panelOwnerID"] = "ID projektu";
 
-            p.GetRandom();
-            return View(p);
+            Project pr = new Project();
+            pr.LoadProjectFromDB(new GeneralSessionInfo(1, 1, "en"), 1, 1);
+            return View(pr);
+
+            //p = new Project();
+            //p.GetRandom();
+            //return View(p);
         }
 
         /// <summary>
