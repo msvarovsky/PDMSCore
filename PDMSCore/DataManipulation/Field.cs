@@ -54,21 +54,21 @@ namespace PDMSCore.DataManipulation
             }
         }
         private string HtmlTag { get; set; }
-        private string FieldValue { get; set; }
+        private string VisibleText { get; set; }
 
         public Field(string NameID, string HtmlTag, string FieldValue)
         {
             this.Name = NameID;
             this.id = NameID;
             this.HtmlTag = HtmlTag;
-            this.FieldValue = FieldValue;
+            this.VisibleText = FieldValue;
         }
-        public Field(string ID, string Name, string HtmlTag, string FieldValue)
+        public Field(string ID, string Name, string HtmlTag, string VisibleText)
         {
             this.id = ID;
             this.Name = Name;
             this.HtmlTag = HtmlTag;
-            this.FieldValue = FieldValue;
+            this.VisibleText = VisibleText;
         }
 
         public TagBuilder BuildBaseHtmlTag()
@@ -78,15 +78,19 @@ namespace PDMSCore.DataManipulation
                 tb.Attributes.Add("name", Name);
             if (ID != null)
                 tb.Attributes.Add("id", id);
+            if (this.VisibleText != null)
+                tb.InnerHtml.AppendHtml(VisibleText);
             return tb;
         }
 
         public string GetValue()
         {
-            return FieldValue;
+            return VisibleText;
         }
 
     }
+
+    
 
     public class MultiOption : Field
     {
@@ -1071,32 +1075,148 @@ namespace PDMSCore.DataManipulation
         DropDownListBoxes
     };
 
-    public class RBCBControl : Field,  IHtmlElement
+    public class ItemOfMultiItem : Field, IHtmlElement
     {
-        public MultiOption items{ get; set; }
+        public string Value { get; set; }
+        public string Name { get; set; }
 
-        public RBCBControl(string id, string GroupName) : base(id, "div", null)
+        public GroupControlType gct { get; set; }
+
+        public ItemOfMultiItem(GroupControlType ItemType, string GroupID, string ValueID, string VisibleText, string HtmlTag) :
+            base(null, null, HtmlTag, VisibleText)
         {
-            items.Options = new List<T>();
-
+            Value = ValueID;
+            gct = ItemType;
+            Name = GroupID;
         }
 
         public TagBuilder BuildHtmlTag()
         {
-            throw new NotImplementedException();
+            TagBuilder tb = base.BuildBaseHtmlTag();
+            tb.AddCssClass("");
+
+            tb.Attributes.Add("value", Value);
+
+            if (gct == GroupControlType.CheckBoxes)
+            {
+                tb.Attributes.Add("type", "checkbox");
+                tb.Attributes.Add("name", Name);
+            }
+            else if (gct == GroupControlType.RadioButtons)
+            {
+                tb.Attributes.Add("type", "radio");
+                tb.Attributes.Add("name", Name);
+            }
+            return tb;
         }
     }
 
-    public class LabelRBCBControl<T> :Field, IHtmlElement
+    public class MultiItems : IHtmlElement
+    {
+        public List<ItemOfMultiItem> items { get; set; }
+        public GroupControlType gct { get; set; }
+        public string GroupID { get; set; }
+
+        public MultiItems(GroupControlType FieldType, string GroupID)
+        {
+            items = new List<ItemOfMultiItem>();
+            gct = FieldType;
+            this.GroupID = GroupID;
+        }
+
+        public void Add(string ValueID, string VisibleText)
+        {
+            string tag = null;
+
+            if (gct == GroupControlType.CheckBoxes || gct == GroupControlType.RadioButtons)
+                tag = "input";
+            else if (gct == GroupControlType.DropDownListBoxes)
+                tag = "option";
+            else
+                throw new Exception("MS: Adding non-existing item to MultiItems.");
+
+            items.Add(new ItemOfMultiItem(gct, GroupID, ValueID, VisibleText, tag));
+        }
+
+        public void AddRelevantItems(List<TempMultiSelectItem> AllMultiSelectItem)
+        {
+            for (int i = 0; i < AllMultiSelectItem.Count; i++)
+            {
+                if (AllMultiSelectItem[i].ParentFieldID == base.ID)
+                {
+                    bool bChecked = (ExistsInSelectedValuesArrays(AllMultiSelectItem[i].MultiSelectItemID.ToString()) ? true : false);
+
+                    if (GCType == GroupControlType.None)
+                    {
+                        throw new Exception("MS: Undefined GroupControlType in AddRelevantItems.");
+                    }
+                    else if (GCType == GroupControlType.DropDownListBoxes)
+                    {   //DropDownOption
+                        T aa = (T)Activator.CreateInstance(typeof(T), AllMultiSelectItem[i].MultiSelectItemID.ToString(), AllMultiSelectItem[i].StringValue);
+                        Options.Add(aa);
+                    }
+                    else if (GCType == GroupControlType.RadioButtons || GCType == GroupControlType.CheckBoxes)
+                    {
+                        T aa = (T)Activator.CreateInstance(typeof(T), "input", AllMultiSelectItem[i].StringValue, AllMultiSelectItem[i].MultiSelectItemID.ToString(), bChecked, false);
+                        Options.Add(aa);
+                    }
+                }
+            }
+        }
+        private bool ExistsInSelectedValuesArrays(string h)
+        {
+            for (int i = 0; i < SelectedValues.Length; i++)
+                if (SelectedValues[i] == h)
+                    return true;
+            return false;
+        }
+
+        public TagBuilder BuildHtmlTag(TagBuilder tb)
+        {
+            for (int i = 0; i < items.Count; i++)
+            {
+                tb.InnerHtml.AppendHtml(items[i].BuildHtmlTag());
+            }
+            return tb;
+        }
+        public TagBuilder BuildHtmlTag()
+        {
+            throw new Exception("MS: BuildHtmlTag() shouldn't be used.");
+        }
+    }
+
+    public class RBCBControl : Field,  IHtmlElement
+    {
+        public MultiItems items{ get; set; }
+
+        public RBCBControl(GroupControlType FieldType, string id, string GroupID) : base(id, "div", null)
+        {
+            items = new MultiItems(FieldType, GroupID);
+        }
+
+        public void Add(string ValueID, string VisibleText)
+        {
+            items.Add(ValueID, VisibleText);
+        }
+
+        public TagBuilder BuildHtmlTag()
+        {
+            TagBuilder tb = base.BuildBaseHtmlTag();
+            tb = items.BuildHtmlTag(tb);
+            return tb;
+        }
+    }
+
+    public class LabelRBCBControl :Field, IHtmlElement
     {
         public LabelField Label { get; set; }
-        public RBCBControl<T> RBCBControl { get; set; }
+        public RBCBControl RBCBControl { get; set; }
         private GroupControlType GCType { get; set; }
 
-        public LabelRBCBControl(string id, string label) : base(id, "div", null)
+        public LabelRBCBControl(GroupControlType FieldType, string id, string label) : base(id, "div", null)
         {
             this.Label = new LabelField(label, true);
-            RBCBControl = new RBCBControl<T>(id, id);
+            RBCBControl = new RBCBControl(FieldType,id,id);
 
             //Options = new List<T>();
 
