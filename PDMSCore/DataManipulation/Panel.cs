@@ -89,6 +89,9 @@ namespace PDMSCore.DataManipulation
                         //((LabelRBCBControl<LabelCheckBoxField>)f).OtherRef = DBUtil.GetInt(dr, col + 8);
                         //((LabelRBCBControl<LabelCheckBoxField>)f).SelectedValues = StringValue.Split(',');
 
+                        f = new LabelRBCBControl(GroupControlType.CheckBoxes, FieldID.ToString(), Label);
+                        ((LabelRBCBControl)f).RBCBControl.
+
                         f = new LabelRBCBControl<CheckBoxField>(FieldID.ToString(), Label);
                         ((LabelRBCBControl<CheckBoxField>)f).RBCBControl.items.OtherRef = DBUtil.GetInt(dr, col + 8);
                         ((LabelRBCBControl<CheckBoxField>)f).RBCBControl.items.SelectedValues = StringValue.Split(',');
@@ -108,7 +111,7 @@ namespace PDMSCore.DataManipulation
                         tmsi.StringValue = Label;
                         //tmsi.OtherRef = DBUtil.GetInt(dr, col + 8);
                         tmsi.ParentFieldID = DBUtil.GetString(dr, col + 11);
-                        tmsi.MultiSelectItemID = DBUtil.GetInt(dr, col + 9);
+                        tmsi.MultiSelectItemID = DBUtil.GetString(dr, col + 9);
 
                         AllMultiSelectItem.Add(tmsi);
                         break;
@@ -285,7 +288,7 @@ namespace PDMSCore.DataManipulation
         public string StringValue;
         //public int OtherRef;
         public string ParentFieldID;
-        public int MultiSelectItemID;
+        public string MultiSelectItemID;
     }
 
     public class PanelMenuItem
