@@ -44,7 +44,7 @@ namespace PDMSCore.DataManipulation
 
     public class Field
     {
-        private string Name { get; set; }
+        public string Name { get; set; }
         private string id{ get; set; }
         public string ID
         {
@@ -1087,7 +1087,7 @@ namespace PDMSCore.DataManipulation
         public GroupControlType gct { get; set; }
 
         public ItemOfMultiItem(GroupControlType ItemType, string GroupID, string ValueID, string VisibleText, bool SelectedOrChecked = false) :
-            base(null, null, HtmlTag, VisibleText)
+            base(null, null, null, VisibleText)
         {
             Value = ValueID;
             gct = ItemType;
@@ -1097,7 +1097,10 @@ namespace PDMSCore.DataManipulation
             //  This should be happenning after the base(..) call. That's why I write the correct Tag here.
             //  Although it could be more efficient as the if(gct == ..) is called twice. Here and later in BuildHtmlTag.
             if (gct == GroupControlType.CheckBoxes || gct == GroupControlType.RadioButtons)
+            {
                 base.HtmlTag = "input";
+                base.Name = this.Name;
+            }
             else if (gct == GroupControlType.DropDownListBoxes)
                 base.HtmlTag = "option";
             else
@@ -1114,18 +1117,19 @@ namespace PDMSCore.DataManipulation
             if (gct == GroupControlType.CheckBoxes)
             {
                 tb.Attributes.Add("type", "checkbox");
-                tb.Attributes.Add("name", Name);
-                tb.Attributes.Add("checked", "");   //  TODO: Overit jestli ten 2. parametr muze byt prazdny.
+                if (this.SelectedOrChecked)
+                    tb.Attributes.Add("checked", "");   //  TODO: Overit jestli ten 2. parametr muze byt prazdny.
             }
             else if (gct == GroupControlType.RadioButtons)
             {
                 tb.Attributes.Add("type", "radio");
-                tb.Attributes.Add("name", Name);
-                tb.Attributes.Add("checked", "");   //  TODO: Overit jestli ten 2. parametr muze byt prazdny.
+                if (this.SelectedOrChecked)
+                    tb.Attributes.Add("checked", "");   //  TODO: Overit jestli ten 2. parametr muze byt prazdny.
             }
             else if (gct == GroupControlType.DropDownListBoxes)
             {
-
+                if (this.SelectedOrChecked)
+                    tb.Attributes.Add("selected", "");   //  TODO: Overit jestli ten 2. parametr muze byt prazdny.
             }
             else
                 throw new Exception("MS: Unknown control type in ItemOfMultiItem");
@@ -1328,7 +1332,7 @@ namespace PDMSCore.DataManipulation
         public LabelMultiSelectionControl(GroupControlType FieldType, string id, string label) : base(id, "div", null)
         {
             this.Label = new LabelField(label, true);
-            RBCBControl = new RBCBControl(FieldType, id, id);
+            MultiSelectionControl = new MultiSelectionControl(FieldType, id, id);
         }
 
         public void AddRelevantItems(List<TempMultiSelectItem> AllMultiSelectItem)
