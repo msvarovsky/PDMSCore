@@ -149,8 +149,9 @@ namespace PDMSCore.BusinessObjects
             fields.Add(LabelTextAreaField.GetRandom(id++));
             fields.Add(new NewLine());
 
-            fields.Add(LabelRBCBControl<LabelRadioButtonField>.GetRandom((id++).ToString(), 3));
-            fields.Add(LabelRBCBControl<LabelCheckBoxField>.GetRandom((id++).ToString(), 4));
+            fields.Add(LabelRadioButtonFields.GetRandom((id++).ToString(), 3));
+            fields.Add(LabelRadioButtonFields.GetRandom((id++).ToString(), 4));
+
             fields.Add(LabelDropDownField.GetRandom(id++, 4));
             fields.Add(LabelDatePickerField.GetRandom(id++));
 
