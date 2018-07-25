@@ -74,17 +74,18 @@ namespace PDMSCore.BusinessObjects
             //fields.Add(Field.NewLine());
             fields.Add(new NewLine());
 
-            LabelDropDownField dd = new LabelDropDownField(ID++, "Project type:");
-            dd.Dropdown.Add(new DropDownOption(1.ToString(), "Novy"));
-            dd.Dropdown.Add(new DropDownOption(2.ToString(), "Stary"));
-            dd.Dropdown.Add(new DropDownOption(3.ToString(), "Refresh"));
+            LabelDropDownListBox dd = new LabelDropDownListBox(ID++.ToString(), "Project type:");
+            dd.DropDown.Add("1", "Novy");
+            dd.DropDown.Add("2", "Stary",true);
+            dd.DropDown.Add("3", "Refresh");
             fields.Add(dd);
 
-            LabelDropDownField dd2 = new LabelDropDownField(ID++, "pt:");
-            dd2.Dropdown.Add(new DropDownOption(1.ToString(), "Novy"));
-            dd2.Dropdown.Add(new DropDownOption(2.ToString(), "Stary"));
-            dd2.Dropdown.Add(new DropDownOption(3.ToString(), "Refresh"));
+            LabelDropDownListBox dd2 = new LabelDropDownListBox(ID++.ToString(), "pt:");
+            dd2.DropDown.Add("1", "Novy");
+            dd2.DropDown.Add("2", "Stary", true);
+            dd2.DropDown.Add("3", "Refresh");
             fields.Add(dd2);
+
 
             fields.Add(new LabelDatePickerField(ID++, "Creation date:", DateTime.Now));
 
@@ -152,7 +153,7 @@ namespace PDMSCore.BusinessObjects
             fields.Add(LabelRadioButtonFields.GetRandom((id++).ToString(), 3));
             fields.Add(LabelRadioButtonFields.GetRandom((id++).ToString(), 4));
 
-            fields.Add(LabelDropDownField.GetRandom(id++, 4));
+            fields.Add(LabelDropDownListBox.GetRandom(id++.ToString(), 4));
             fields.Add(LabelDatePickerField.GetRandom(id++));
 
             fields.Add(LabelFileUploadField.GetRandom());

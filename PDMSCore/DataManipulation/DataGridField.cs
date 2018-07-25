@@ -185,12 +185,12 @@ namespace PDMSCore.DataManipulation
 
                 if (tr.Cells[i].GetType() == typeof(CheckBoxField))
                 {
-                    DropDownField ddf = new DropDownField("filter-ddf-1", 1);
+                    DropDownListBox ddf = new DropDownListBox("filter-ddf-1", 1);
                     ddf.jsOnInputFunction = "OnDataGridFilterChange()";
-                    ddf.Add(new DropDownOption("", "(All)"));
-                    ddf.Add(new DropDownOption("1", "Yes"));
-                    ddf.Add(new DropDownOption("-1", "No"));
-                    ddf.AddClass("filter");
+                    ddf.Add("", "(All)");
+                    ddf.Add("1", "Yes");
+                    ddf.Add("-1", "No");
+                    ddf.Classes.Add("filter");
 
                     tbHs.InnerHtml.AppendHtml(ddf.BuildHtmlTag());
                 }

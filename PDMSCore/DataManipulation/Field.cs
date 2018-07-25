@@ -964,11 +964,6 @@ namespace PDMSCore.DataManipulation
         {
             throw new NotImplementedException();
         }
-
-        //public override string GetValue()
-        //{
-        //    return Value;
-        //}
     }
     public class LabelRadioButtonField : Field, IHtmlElement
     {
@@ -1029,7 +1024,7 @@ namespace PDMSCore.DataManipulation
         DropDownListBoxes
     };
 
-    public class ItemOfMultiItem : Field, IHtmlElement
+    public class MultiSelectionItem : Field, IHtmlElement
     {
         public string Value { get; set; }
         public bool SelectedOrChecked { get; set; }
@@ -1037,7 +1032,7 @@ namespace PDMSCore.DataManipulation
 
         public GroupControlType gct { get; set; }
 
-        public ItemOfMultiItem(GroupControlType ItemType, string GroupID, string ValueID, string VisibleText, bool SelectedOrChecked = false, bool Disabled = false) :
+        public MultiSelectionItem(GroupControlType ItemType, string GroupID, string ValueID, string VisibleText, bool SelectedOrChecked = false, bool Disabled = false) :
             base(null, null, null, VisibleText)
         {
             Value = ValueID;
@@ -1083,8 +1078,8 @@ namespace PDMSCore.DataManipulation
 
     public class MultiSelectionControl : Field, IHtmlElement
     {
-        public List<ItemOfMultiItem> items { get; set; }
-        public List<int> SelectedItems { get; set; }
+        private List<MultiSelectionItem> items { get; set; }
+        private List<string> SelectedItems { get; set; }
         public GroupControlType gct { get; set; }
         public string GroupID { get; set; }
         public int Count
@@ -1094,11 +1089,12 @@ namespace PDMSCore.DataManipulation
                 return items.Count;
             }
         }
-
+        
         public MultiSelectionControl(GroupControlType FieldType, string id, string GroupID) : base(id, null, null)
         {
             this.GroupID = GroupID;
-            items = new List<ItemOfMultiItem>();
+            items = new List<MultiSelectionItem>();
+            SelectedItems = new List<string>();
             gct = FieldType;
 
             if (gct == GroupControlType.DropDownListBoxes)
@@ -1109,6 +1105,29 @@ namespace PDMSCore.DataManipulation
                 throw new Exception("MS: Unknown control in MultiSelectionControl");
         }
 
+        public bool AddItem(MultiSelectionItem item)
+        {
+            if (ExistsInExistingItems(item.Value))
+                return false;
+            else
+            {
+                items.Add(item);
+                if (item.SelectedOrChecked && !ExistsInSelectedValuesArrays(item.ID))
+                    SelectedItems.Add(item.ID);
+                return true;
+            }
+        }
+
+        /// <summary>
+        /// Defines the list of selected/checked items. These items don't even have to have been added to the control yet.
+        /// </summary>
+        /// <param name="Selected">String of comma separeated values</param>
+        public void SetSelectedItems(string Selected)
+        {
+            string []a = Selected.Split(',');
+            SelectedItems = new List<string>(a);
+        }
+
         public void AddRelevantItems(List<TempMultiSelectItem> AllMultiSelectItem)
         {
             for (int i = 0; i < AllMultiSelectItem.Count; i++)
@@ -1116,14 +1135,22 @@ namespace PDMSCore.DataManipulation
                 if (AllMultiSelectItem[i].ParentFieldID == base.ID)
                 {
                     bool bCheckedOrSelected = (ExistsInSelectedValuesArrays(AllMultiSelectItem[i].MultiSelectItemID.ToString()) ? true : false);
-                    items.Add(new ItemOfMultiItem(gct, GroupID, AllMultiSelectItem[i].MultiSelectItemID, AllMultiSelectItem[i].StringValue, bCheckedOrSelected));
+                    items.Add(new MultiSelectionItem(gct, GroupID, AllMultiSelectItem[i].MultiSelectItemID, AllMultiSelectItem[i].StringValue, bCheckedOrSelected));
                 }
             }
         }
+
         private bool ExistsInSelectedValuesArrays(string id)
         {
+            for (int i = 0; i < SelectedItems.Count; i++)
+                if (SelectedItems[i] == id)       //  Cannot compare with items[i].ID !!
+                    return true;
+            return false;
+        }
+        private bool ExistsInExistingItems(string id)
+        {
             for (int i = 0; i < items.Count; i++)
-                if (items[i].Value == id)       //  Cannot compare with items[i].ID !!
+                if (items[i].Value == id)       
                     return true;
             return false;
         }
@@ -1149,14 +1176,12 @@ namespace PDMSCore.DataManipulation
 
         public void Add(string ItemID, string VisibleText, bool SelectedOrChecked = false, bool Disabled = false)
         {
-            items.Add(new ItemOfMultiItem(GroupControlType.RadioButtons, this.ID, ItemID, VisibleText, SelectedOrChecked, Disabled ));
+            AddItem(new MultiSelectionItem(GroupControlType.RadioButtons, this.ID, ItemID, VisibleText, SelectedOrChecked, Disabled ));
         }
 
         public new TagBuilder BuildHtmlTag()
         {
-            TagBuilder tbDropDown = base.BuildHtmlTag();
-
-            return tbDropDown;
+            return base.BuildHtmlTag();
         }
     }
     public class LabelRadioButtonFields : Field, IHtmlElement
@@ -1172,7 +1197,7 @@ namespace PDMSCore.DataManipulation
 
         public static Field GetRandom(string id, int count)
         {
-            return new LabelRadioButtonFields(id, "Label" + id.ToString());
+            return new LabelRadioButtonFields(id, "Label-" + id.ToString());
         }
 
         public TagBuilder BuildHtmlTag()
@@ -1193,15 +1218,12 @@ namespace PDMSCore.DataManipulation
 
         public void Add(string ItemID, string VisibleText, bool SelectedOrChecked = false, bool Disabled = false)
         {
-            items.Add(new ItemOfMultiItem(GroupControlType.CheckBoxes, this.ID, ItemID, VisibleText, SelectedOrChecked, Disabled));
+            AddItem(new MultiSelectionItem(GroupControlType.CheckBoxes, this.ID, ItemID, VisibleText, SelectedOrChecked, Disabled));
         }
 
         public new TagBuilder BuildHtmlTag()
-        {
-            // Zadny base.BuildBaseHtmlTag();
-            TagBuilder tbDropDown = base.BuildHtmlTag();
-
-            return tbDropDown;
+        {   // Zadny base.BuildBaseHtmlTag();
+            return base.BuildHtmlTag();
         }
     }
     public class LabelCheckBoxFields : Field, IHtmlElement
@@ -1217,7 +1239,7 @@ namespace PDMSCore.DataManipulation
 
         public static Field GetRandom(string id, int count)
         {
-            return new LabelCheckBoxFields(id, "Label" + id.ToString());
+            return new LabelCheckBoxFields(id, "Label-" + id.ToString());
         }
 
         public TagBuilder BuildHtmlTag()
@@ -1248,7 +1270,7 @@ namespace PDMSCore.DataManipulation
 
         public void Add(string ItemID, string VisibleText, bool SelectedOrChecked = false, bool Disabled = false)
         {
-            items.Add(new ItemOfMultiItem(GroupControlType.DropDownListBoxes, this.ID, ItemID, VisibleText, SelectedOrChecked, Disabled ));
+            AddItem(new MultiSelectionItem(GroupControlType.DropDownListBoxes, this.ID, ItemID, VisibleText, SelectedOrChecked, Disabled ));
         }
 
         public new TagBuilder BuildHtmlTag()
@@ -1279,7 +1301,7 @@ namespace PDMSCore.DataManipulation
 
         public static Field GetRandom(string id, int count)
         {
-            return new LabelDropDownListBox(id, "Label" + id.ToString());
+            return new LabelDropDownListBox(id, "Label-" + id.ToString());
         }
 
         public TagBuilder BuildHtmlTag()
