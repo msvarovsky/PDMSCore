@@ -200,3 +200,94 @@ SELECT * FROM Panels
 SELECT * FROM Labels
 
 
+------------------------------------------------------------------------------
+
+SELECT * from Labels
+exec AddLabel 16, 'cs', 'Nazdar'
+exec AddLabel null, 'en', 'Hello'
+
+
+ALTER PROCEDURE AddLabel
+	@LabelID INT = NULL,
+	@LanguageID varchar(5),
+	@Label varchar(100)
+AS
+BEGIN
+	IF EXISTS (	SELECT	1 
+				FROM	Labels l
+				WHERE	l.LabelID = @LabelID
+				AND		l.LanguageID = @LanguageID
+				)
+	BEGIN
+		SELECT	l.LabelID as 'ExistingIDs', l.Label as 'ExistingLabels', l.LanguageID as 'LanguageID'
+		FROM	Labels l
+		WHERE	l.LabelID = @LabelID
+		return -1
+	END
+
+	DECLARE @NewLabelID INT
+	IF(@LabelID is NULL)
+	BEGIN
+		SET @NewLabelID = (SELECT MAX(LabelID) from Labels) +1
+	END
+	ELSE
+	BEGIN
+		SET @NewLabelID = @LabelID
+	END
+
+	INSERT INTO Labels	VALUES	(@NewLabelID,@LanguageID,@Label,null)
+
+	SELECT @NewLabelID as 'LabelID', @Label as 'Label'
+	return 1
+END;
+
+------------------------------------------------------------------------------
+
+
+exec AddFieldToPanel 15,1,'tx'
+SELECT	*
+FROM	PanelFields pf
+
+ALTER PROCEDURE AddFieldToPanel
+	@FieldID INT,
+	@PanelID INT,
+	@FieldType varchar(10)
+AS
+BEGIN
+	IF NOT EXISTS (	SELECT	1 FROM	Labels l WHERE	l.LabelID = @FieldID)
+	BEGIN
+		SELECT	@FieldID as 'Field', 'Unknown FieldID. No translation.' as 'Error'
+		return -1
+	END
+	IF NOT EXISTS (	SELECT	1 FROM	Panels p WHERE	p.PanelID = @PanelID)
+	BEGIN
+		SELECT	@PanelID as 'Panel', 'Unknown PanelID ' as 'Error'
+		return -1
+	END
+	IF NOT EXISTS (	SELECT	1 WHERE	@FieldType in ('tx', 'rb', 'cb', 'ddlb') )
+	BEGIN
+		SELECT	@FieldType as 'FileType', 'Unknown FieldType ' as 'Error'
+		return -1
+	END
+
+	DECLARE @LastField INT
+	SET @LastField =(	SELECT	TOP 1 pf.FieldID
+						FROM	PanelFields pf
+						WHERE	pf.PanelID = @PanelID
+						ORDER BY	pf.PredecessorFieldID DESC )
+
+	--BEGIN TRAN 
+		INSERT INTO PanelFields	(PanelID, FieldID, PredecessorFieldID, FieldType)
+		VALUES		(@PanelID,@FieldID,@LastField,@FieldType)
+		
+		---Not finished
+		SELECT	pf.PanelID, pf.FieldID, pf.PredecessorFieldID, pf.FieldType
+		FROM	PanelFields pf
+		WHERE	pf.PanelID = @PanelID
+		ORDER BY	pf.PredecessorFieldID ASC
+
+	--ROLLBACK TRAN
+
+
+	return 1
+END;

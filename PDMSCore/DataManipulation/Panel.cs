@@ -275,8 +275,6 @@ namespace PDMSCore.DataManipulation
                 //else if (Fields[i].GetType() == typeof(LabelRBCBControl<LabelCheckBoxField>))
                 //    ((LabelRBCBControl<LabelCheckBoxField>)Fields[i]).AddRelevantItems(AllMultiSelectItem);
 
-                ((LabelRadioButtonFields)Fields[i]).RadioButtons.AddRelevantItems(AllMultiSelectItem);
-
                 if (Fields[i].GetType() == typeof(LabelRadioButtonFields))
                     ((LabelRadioButtonFields)Fields[i]).RadioButtons.AddRelevantItems(AllMultiSelectItem);
 
