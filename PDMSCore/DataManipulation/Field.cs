@@ -40,115 +40,73 @@ namespace PDMSCore.DataManipulation
     public interface IHtmlElement
     {
         TagBuilder BuildHtmlTag();
-        //string GetValue();
     }
 
     public class Field
     {
-        private string Name { get; set; }
-        private string id{ get; set; }
-        public string ID
-        {
-            get {
-                return id;
-            }
-        }
-        private string HtmlTag { get; set; }
-        private string FieldValue { get; set; }
+        public string NameAttribute { get; set; }
+        public string ID{ get; set; }
+        public string HtmlTag { get; set; }
+        public string VisibleText { get; set; }
+        public string ValueAttribute { get; set; }
+        public string TypeAttribute { get; set; }
 
-        public Field(string NameID, string HtmlTag, string FieldValue)
+
+        public Field(string NameID, string HtmlTag, string VisibleText)
         {
-            this.Name = NameID;
-            this.id = NameID;
+            this.NameAttribute = NameID;
+            this.ID = NameID;
             this.HtmlTag = HtmlTag;
-            this.FieldValue = FieldValue;
+            this.VisibleText = VisibleText;
         }
-        public Field(string ID, string Name, string HtmlTag, string FieldValue)
+        public Field(string ID, string Name, string HtmlTag, string VisibleText)
         {
-            this.id = ID;
-            this.Name = Name;
+            this.ID = ID;
+            this.NameAttribute = Name;
             this.HtmlTag = HtmlTag;
-            this.FieldValue = FieldValue;
+            this.VisibleText = VisibleText;
         }
 
+        public TagBuilder BuildBaseHtmlTag(string tag)
+        {
+            HtmlTag = tag;
+            return BuildBaseHtmlTag();
+        }
         public TagBuilder BuildBaseHtmlTag()
         {
-            TagBuilder tb = new TagBuilder(HtmlTag);
-            if (Name != null)
-                tb.Attributes.Add("name", Name);
-            if (ID != null)
-                tb.Attributes.Add("id", id);
+            TagBuilder tb = null;
+            if (HtmlTag != null)
+            {
+                tb = new TagBuilder(HtmlTag);
+                if (NameAttribute != null)
+                    tb.Attributes.Add("name", NameAttribute);
+
+                if (ID != null)
+                    tb.Attributes.Add("id", ID);
+
+                if (ValueAttribute != null)
+                    tb.Attributes.Add("value", ValueAttribute);
+
+                if (this.VisibleText != null)
+                    tb.InnerHtml.AppendHtml(VisibleText);
+
+                if (this.TypeAttribute != null)
+                    tb.Attributes.Add("type", TypeAttribute);
+            }
             return tb;
         }
 
         public string GetValue()
         {
-            return FieldValue;
+            return VisibleText;
         }
 
     }
 
-    //public abstract class HtmlElement
-    //{
-    //    public string NameId { get; set; }
 
-    //    public string Tag { get; set; }
 
-    //    public abstract TagBuilder HtmlText();
-    //    public abstract string GetValue();
 
-    //    public static HtmlElement NewLine()
-    //    {
-    //        return new NewLine();
-    //    }
-    //}
-
-    public abstract class MultiOption<T>: Field
-    {
-        public int OtherRef { get; set; }
-        public string[] SelectedValues { get; set; }
-        public List<T> Options { get; set; }
-        public GroupControlType GCType { get; set; }
-
-        public MultiOption(string NameID) :base(NameID,"select",null)
-        {
-            Options = new List<T>();
-        }
-
-        public void AddRelevantItems(List<TempMultiSelectItem> AllMultiSelectItem)
-        {
-            for (int i = 0; i < AllMultiSelectItem.Count; i++)
-            {
-                if (AllMultiSelectItem[i].ParentFieldID == base.ID)
-                {
-                    bool bChecked = (ExistsInSelectedValuesArrays(AllMultiSelectItem[i].MultiSelectItemID.ToString()) ? true : false);
-
-                    if (GCType == GroupControlType.None)
-                    {
-                        throw new Exception("MS: Undefined GroupControlType in AddRelevantItems.");
-                    }
-                    else if (GCType == GroupControlType.DropDownListBoxes)
-                    {   //DropDownOption
-                        T aa = (T)Activator.CreateInstance(typeof(T), AllMultiSelectItem[i].MultiSelectItemID.ToString(), AllMultiSelectItem[i].StringValue);
-                        Options.Add(aa);
-                    }
-                    else if (GCType == GroupControlType.RadioButtons || GCType == GroupControlType.CheckBoxes)
-                    {
-                        T aa = (T)Activator.CreateInstance(typeof(T), "name-TODO", AllMultiSelectItem[i].StringValue, AllMultiSelectItem[i].MultiSelectItemID.ToString(), bChecked, false);
-                        Options.Add(aa);
-                    }
-                }
-            }
-        }
-
-        private bool ExistsInSelectedValuesArrays(string h)
-        {
-            for (int i = 0; i < SelectedValues.Length; i++)
-                if (SelectedValues[i] == h)
-                    return true;
-            return false;
-        }
-    }
+       
 
     public class NewLine : Field, IHtmlElement
     {
@@ -264,16 +222,6 @@ namespace PDMSCore.DataManipulation
             this.For = For;
         }
 
-        //public override TagBuilder HtmlText()
-        //{
-        //    TagBuilder tb = new TagBuilder("label");
-        //    tb.AddCssClass(Bold ? "BoldLabelField" : "LabelField");
-        //    if (this.For != null)
-        //        tb.Attributes.Add("for", this.For);
-        //    tb.InnerHtml.AppendHtml(HtmlLabel);
-        //    return tb;
-        //}
-
         public static Field GetRandom()
         {
             return new LabelField("LabelField");
@@ -374,7 +322,7 @@ namespace PDMSCore.DataManipulation
         public bool ReadOnly { get; set; }
         private string CSS { get; set; }
 
-        public TextBoxField(string NameId, string CSS, string Text="", string PlaceHolder = "", string ToolTip=""):base(NameId, "input", Text)
+        public TextBoxField(string NameId, string CSS, string Text="", string PlaceHolder = "", string ToolTip=""):base(NameId, "input", null)
         {
             this.Text = Text;
             this.PlaceHolder = PlaceHolder;
@@ -680,203 +628,252 @@ namespace PDMSCore.DataManipulation
         //}
     }
 
-    //public class DropDownOption : IHtmlTag
-    public class DropDownOption : Field, IHtmlElement
-    {
-        //public string Value { get; set; }
-        public string Label { get; set; }
-        public bool Enabled { get; set; }
+    //public class DropDownOption : Field, IHtmlElement
+    //{
+    //    //public string Value { get; set; }
+    //    public string Label { get; set; }
+    //    public bool Enabled { get; set; }
 
-        public DropDownOption(string ValueId, string Label, bool Enabled = true): base(ValueId,"option", Label)
-        {
-            //this.NameId ="DD" + ValueId.ToString();
-            this.Label = Label;
-            this.Enabled = Enabled;
-        }
+    //    public DropDownOption(string ValueId, string Label, bool Enabled = true): base(ValueId,"option", Label)
+    //    {
+    //        //this.NameId ="DD" + ValueId.ToString();
+    //        this.Label = Label;
+    //        this.Enabled = Enabled;
+    //    }
 
-        public DropDownOption(string Name, string Label):base(Name,"option", Label)
-        {
-            this.Label = Label;
-            this.Enabled = true;
-        }
+    //    public DropDownOption(string Name, string Label):base(Name,"option", Label)
+    //    {
+    //        this.Label = Label;
+    //        this.Enabled = true;
+    //    }
 
-        public TagBuilder BuildHtmlTag()
-        {   //  <option label="England" value="England"></option> 
-            TagBuilder tb = base.BuildBaseHtmlTag();
-            //tb.Attributes.Add("value", NameId);
-            tb.Attributes.Add("value", "TODO");
-            if (!Enabled)
-                tb.Attributes.Add("disabled", "");
-            tb.InnerHtml.AppendHtml(Label);
-            return tb;
-        }
+    //    public TagBuilder BuildHtmlTag()
+    //    {   //  <option label="England" value="England"></option> 
+    //        TagBuilder tb = base.BuildBaseHtmlTag();
+    //        //tb.Attributes.Add("value", NameId);
+    //        tb.Attributes.Add("value", "TODO");
+    //        if (!Enabled)
+    //            tb.Attributes.Add("disabled", "");
+    //        tb.InnerHtml.AppendHtml(Label);
+    //        return tb;
+    //    }
 
-        //public override string GetValue()
-        //{
-        //    return Label;
-        //}
-    }
-    public class DropDownField : MultiOption<DropDownOption>, IHtmlElement
-    {
-        //List<DropDownOption> Options { get; set; }
-        public int Size { get; set; }
-        private List<string> Classes { get; set; }
-        public string jsOnInputFunction { get; set; }
+    //    //public override string GetValue()
+    //    //{
+    //    //    return Label;
+    //    //}
+    //}
+    //public class DropDownField : MultiOption, IHtmlElement
+    //{
+    //    public int Size { get; set; }
+    //    private List<string> Classes { get; set; }
+    //    public string jsOnInputFunction { get; set; }
 
-        public DropDownField(string Id, int VisibleRows = 1):base(Id)
-        {
-            this.GCType = GroupControlType.DropDownListBoxes;
-            this.Size = VisibleRows;
-            Classes = new List<string>();
-            Classes.Add("ControlOfLabelControlDuo");
-            jsOnInputFunction = "";
-        }
+    //    public DropDownField(string Id, int VisibleRows = 1):base(Id)
+    //    {
+    //        this.GCType = GroupControlType.DropDownListBoxes;
+    //        this.Size = VisibleRows;
+    //        Classes = new List<string>();
+    //        Classes.Add("ControlOfLabelControlDuo");
+    //        jsOnInputFunction = "";
+    //    }
 
-        public void Add(DropDownOption toBeAdded)
-        {
-            Options.Add(toBeAdded);
-        }
+    //    public void Add(DropDownOption toBeAdded)
+    //    {
+    //        Options.Add(toBeAdded);
+    //    }
 
-        public void AddClass(string newClass)
-        {
-            Classes.Add(newClass);
-        }
+    //    public void AddClass(string newClass)
+    //    {
+    //        Classes.Add(newClass);
+    //    }
 
-        public static DropDownField GetRandom(int id, int count)
-        {
-            DropDownField n = new DropDownField(id+":DD", count - 1);
-            for (int i = 0; i < count; i++)
-            {
-                DropDownOption no = new DropDownOption(i.ToString(), "DD" + i.ToString(), i % 2 == 0);
-                n.Add(no);
-            }
-            return n;
-        }
+    //    public static DropDownField GetRandom(int id, int count)
+    //    {
+    //        DropDownField n = new DropDownField(id+":DD", count - 1);
+    //        for (int i = 0; i < count; i++)
+    //        {
+    //            DropDownOption no = new DropDownOption(i.ToString(), "DD" + i.ToString(), i % 2 == 0);
+    //            n.Add(no);
+    //        }
+    //        return n;
+    //    }
 
-        public TagBuilder BuildHtmlTag()
-        {
-            TagBuilder tbDropDown = base.BuildBaseHtmlTag();
-            for (int i = 0; i < Classes.Count; i++)
-                tbDropDown.AddCssClass(Classes[i]);
+    //    public TagBuilder BuildHtmlTag()
+    //    {
+    //        TagBuilder tbDropDown = base.BuildBaseHtmlTag();
+    //        for (int i = 0; i < Classes.Count; i++)
+    //            tbDropDown.AddCssClass(Classes[i]);
 
-            if (jsOnInputFunction!="")
-                tbDropDown.Attributes.Add("oninput", jsOnInputFunction);
+    //        if (jsOnInputFunction!="")
+    //            tbDropDown.Attributes.Add("oninput", jsOnInputFunction);
 
-            //tbDropDown.Attributes.Add("name", NameId);
+    //        //tbDropDown.Attributes.Add("name", NameId);
 
-            if (Size > 1)
-                tbDropDown.Attributes.Add("size", Size.ToString());
+    //        if (Size > 1)
+    //            tbDropDown.Attributes.Add("size", Size.ToString());
 
-            for (int i = 0; i < Options.Count; i++)
-            {
-                TagBuilder t = Options[i].BuildHtmlTag();
-                tbDropDown.InnerHtml.AppendHtml(t);
-            }
-            return tbDropDown;
-        }
+    //        for (int i = 0; i < Options.Count; i++)
+    //        {
+    //            TagBuilder t = Options[i].BuildHtmlTag();
+    //            tbDropDown.InnerHtml.AppendHtml(t);
+    //        }
+    //        return tbDropDown;
+    //    }
 
-        //public override string GetValue()
-        //{
-        //    return "DropDownField,GetValue: TODO";
-        //}
-    }
-    public class LabelDropDownField : Field,IHtmlElement
-    {
-        public LabelField Label { get; set; }
-        public DropDownField Dropdown { get; set; }
+    //    //public override string GetValue()
+    //    //{
+    //    //    return "DropDownField,GetValue: TODO";
+    //    //}
+    //}
+    //public class LabelDropDownField : Field,IHtmlElement
+    //{
+    //    public LabelField Label { get; set; }
+    //    public DropDownField Dropdown { get; set; }
 
-        public LabelDropDownField(string Id, string label, int VisibleRows = 1):base(Id, "div", null)
-        {
-            Init(Id, label, VisibleRows);
-        }
-        public LabelDropDownField(int Id, string label, int VisibleRows = 1):base(Id.ToString(), "div", null)
-        {
-            Init(Id.ToString(),label,VisibleRows);
-        }
-        private void Init(string Id, string label, int VisibleRows)
-        {
-            //GCType = GroupControlType.DropDownListBoxes;
-            //IntId = Id;
-            Label = new LabelField(label, true);
-            Dropdown = new DropDownField(Id, VisibleRows);
-        }
+    //    public LabelDropDownField(string Id, string label, int VisibleRows = 1):base(Id, "div", null)
+    //    {
+    //        Init(Id, label, VisibleRows);
+    //    }
+    //    public LabelDropDownField(int Id, string label, int VisibleRows = 1):base(Id.ToString(), "div", null)
+    //    {
+    //        Init(Id.ToString(),label,VisibleRows);
+    //    }
+    //    private void Init(string Id, string label, int VisibleRows)
+    //    {
+    //        //GCType = GroupControlType.DropDownListBoxes;
+    //        //IntId = Id;
+    //        Label = new LabelField(label, true);
+    //        Dropdown = new DropDownField(Id, VisibleRows);
+    //    }
 
-        public static Field GetRandom(int id, int count)
-        {
-            LabelDropDownField n = new LabelDropDownField(id, id + ":DDLabel");
-            n.Dropdown = DropDownField.GetRandom(id, count);
-            return n;
-        }
+    //    public static Field GetRandom(int id, int count)
+    //    {
+    //        LabelDropDownField n = new LabelDropDownField(id, id + ":DDLabel");
+    //        n.Dropdown = DropDownField.GetRandom(id, count);
+    //        return n;
+    //    }
 
-        public TagBuilder BuildHtmlTag()
-        {
-            TagBuilder tb = base.BuildBaseHtmlTag();
-            tb.AddCssClass("LabelControlDuo");
+    //    public TagBuilder BuildHtmlTag()
+    //    {
+    //        TagBuilder tb = base.BuildBaseHtmlTag();
+    //        tb.AddCssClass("LabelControlDuo");
                 
-            tb.InnerHtml.AppendHtml(Label.BuildHtmlTag());
-            tb.InnerHtml.AppendHtml(Dropdown.BuildHtmlTag());
-            return tb;
-        }
+    //        tb.InnerHtml.AppendHtml(Label.BuildHtmlTag());
+    //        tb.InnerHtml.AppendHtml(Dropdown.BuildHtmlTag());
+    //        return tb;
+    //    }
 
-        //public override string GetValue()
-        //{
-        //    return Dropdown.GetValue();
-        //}
-    }
+    //    //public override string GetValue()
+    //    //{
+    //    //    return Dropdown.GetValue();
+    //    //}
+    //}
 
     public class CheckBoxField : Field, IHtmlElement
     {
-        public string Name { get; set; }
-        public string Id { get; set; }
-        public string Value { get; set; }
         public bool Checked { get; set; }
         public bool Disabled { get; set; }
 
-        public CheckBoxField(string GroupName, string HtmlLabel, string IndividualValueId, bool Checked = false, bool Disabled = false):
-            base(IndividualValueId,"div", HtmlLabel)
+        public CheckBoxField(string GroupName, string IndividualValueID, string HtmlLabel, bool Checked, bool Disabled) :
+            base(IndividualValueID, GroupName, "input", HtmlLabel)
         {
-            this.Name = GroupName;
-            this.Id = IndividualValueId;
-            this.Value = IndividualValueId;
             this.Checked = Checked;
             this.Disabled = Disabled;
-        }
-        public CheckBoxField(string IndividualValueId, string HtmlLabel, bool Checked, WebTagAttributes wta):
-            base(IndividualValueId,"div", HtmlLabel)
-        {
-            this.Name = wta.CheckBoxGroupName;
-            this.Id = IndividualValueId;
-            this.Value = IndividualValueId;
-            this.Checked = Checked;
-            this.Disabled = wta.ReadOnly;
         }
 
         public TagBuilder BuildHtmlTag()
         {
-            TagBuilder tbLabelCheckBox = base.BuildBaseHtmlTag();
+            TagBuilder tb = base.BuildBaseHtmlTag();
+            tb.Attributes.Add("type", "checkbox");
 
-            TagBuilder tbCheckBox = new TagBuilder("input");
-            tbCheckBox.Attributes.Add("type", "checkbox");
-            tbCheckBox.Attributes.Add("name", Name);
-            tbCheckBox.Attributes.Add("id", Id);
-            tbCheckBox.Attributes.Add("value", Value);
-            //tbCheckBox.Attributes.Add("value", Label);
             if (Checked)
-                tbCheckBox.Attributes.Add("checked", "checked");
+                tb.Attributes.Add("checked", "checked");
             if (Disabled)
-                tbCheckBox.Attributes.Add("disabled", "disabled");
+                tb.Attributes.Add("disabled", "disabled");
 
-            tbLabelCheckBox.InnerHtml.AppendHtml(tbCheckBox);
-            return tbLabelCheckBox;
+            return tb;
+        }
+    }
+    public class RadioButtonField : Field, IHtmlElement
+    {
+        public bool Checked { get; set; }
+        public bool Disabled { get; set; }
+
+        public RadioButtonField(string GroupName, string IndividualValueID, string HtmlLabel, bool Checked, bool Disabled):
+            base(IndividualValueID, GroupName, "input", HtmlLabel)
+        {
+            this.Checked = Checked;
+            this.Disabled = Disabled;
         }
 
-        //public override string GetValue()
-        //{
-        //    return Checked ? "1" : "-1";
-        //}
+        public TagBuilder BuildHtmlTag()
+        {
+            TagBuilder tb = base.BuildBaseHtmlTag();
+            tb.Attributes.Add("type", "radio");
 
+            if (Checked)
+                tb.Attributes.Add("checked", "checked");
+            if (Disabled)
+                tb.Attributes.Add("disabled", "disabled");
 
+            return tb;
+        }
     }
+
+    //public class CheckBoxField : Field, IHtmlElement
+    //{
+    //    public string Name { get; set; }
+    //    public string Id { get; set; }
+    //    public string Value { get; set; }
+    //    public bool Checked { get; set; }
+    //    public bool Disabled { get; set; }
+
+    //    public CheckBoxField(string GroupName, string HtmlLabel, string IndividualValueId, bool Checked = false, bool Disabled = false):
+    //        base(IndividualValueId,"div", HtmlLabel)
+    //    {
+    //        this.Name = GroupName;
+    //        this.Id = IndividualValueId;
+    //        this.Value = IndividualValueId;
+    //        this.Checked = Checked;
+    //        this.Disabled = Disabled;
+    //    }
+    //    public CheckBoxField(string IndividualValueId, string HtmlLabel, bool Checked, WebTagAttributes wta):
+    //        base(IndividualValueId,"div", HtmlLabel)
+    //    {
+    //        this.Name = wta.CheckBoxGroupName;
+    //        this.Id = IndividualValueId;
+    //        this.Value = IndividualValueId;
+    //        this.Checked = Checked;
+    //        this.Disabled = wta.ReadOnly;
+    //    }
+
+    //    public TagBuilder BuildHtmlTag()
+    //    {
+    //        TagBuilder tbLabelCheckBox = base.BuildBaseHtmlTag();
+
+    //        TagBuilder tbCheckBox = new TagBuilder("input");
+    //        tbCheckBox.Attributes.Add("type", "checkbox");
+    //        tbCheckBox.Attributes.Add("name", Name);
+    //        tbCheckBox.Attributes.Add("id", Id);
+    //        tbCheckBox.Attributes.Add("value", Value);
+    //        //tbCheckBox.Attributes.Add("value", Label);
+    //        if (Checked)
+    //            tbCheckBox.Attributes.Add("checked", "checked");
+    //        if (Disabled)
+    //            tbCheckBox.Attributes.Add("disabled", "disabled");
+
+    //        tbLabelCheckBox.InnerHtml.AppendHtml(tbCheckBox);
+    //        return tbLabelCheckBox;
+    //    }
+
+    //    //public override string GetValue()
+    //    //{
+    //    //    return Checked ? "1" : "-1";
+    //    //}
+
+
+    //}
 
     public class LabelCheckBoxField : Field, IHtmlElement
     {
@@ -923,11 +920,6 @@ namespace PDMSCore.DataManipulation
         {
             throw new NotImplementedException();
         }
-
-        //public override string GetValue()
-        //{
-        //    return Value;
-        //}
     }
     public class LabelRadioButtonField : Field, IHtmlElement
     {
@@ -987,33 +979,208 @@ namespace PDMSCore.DataManipulation
         CheckBoxes,
         DropDownListBoxes
     };
-    public class LabelRBCBControl<T> : MultiOption<T>, IHtmlElement
+
+
+    public class MultiSelectionItem : Field, IHtmlElement
+    {
+        public string Value { get; set; }
+        public bool SelectedOrChecked { get; set; }
+        public bool Disabled { get; set; }
+        private Field ItemMain { get; set; }
+        private Field ItemLabel { get; set; }
+
+        public GroupControlType gct { get; set; }
+
+        public MultiSelectionItem(GroupControlType ItemType, string GroupID, string ValueID, string VisibleText, bool SelectedOrChecked = false, bool Disabled = false) :
+            base(null, null, "div", VisibleText)
+        {
+            Value = ValueID;
+            gct = ItemType;
+            this.SelectedOrChecked = SelectedOrChecked;
+            this.Disabled = Disabled;
+
+            if (gct == GroupControlType.CheckBoxes || gct == GroupControlType.RadioButtons)
+            {
+                Field MainField = new Field(GroupID + "-" + ValueID, GroupID, "input", null);
+
+                MainField.TypeAttribute = (gct == GroupControlType.CheckBoxes ? "checkbox" : "radio");
+
+                ItemMain = MainField;
+                ItemLabel = new LabelField(VisibleText, false, GroupID + "-" + ValueID);
+                base.VisibleText = null;
+            }
+            else if (gct == GroupControlType.DropDownListBoxes)
+            {
+                ItemMain = new Field(GroupID + "-" + ValueID, "option", VisibleText);
+            }
+            else
+                throw new Exception("MS: Unknown control in MultiSelectionControl");
+        }
+       
+        public TagBuilder BuildHtmlTag()
+        {
+            TagBuilder tb = base.BuildBaseHtmlTag();
+
+            if (gct == GroupControlType.CheckBoxes || gct == GroupControlType.RadioButtons)
+            {
+                TagBuilder tbItemMain = ItemMain.BuildBaseHtmlTag();
+
+                if (this.SelectedOrChecked)
+                    tbItemMain.Attributes.Add("checked", "");   //  TODO: Overit jestli ten 2. parametr muze byt prazdny.
+                if (this.Disabled)
+                    tbItemMain.Attributes.Add("disabled", "");   //  TODO: Overit jestli ten 2. parametr muze byt prazdny.
+
+                tb.InnerHtml.AppendHtml(tbItemMain);
+                tb.InnerHtml.AppendHtml(((LabelField)ItemLabel).BuildHtmlTag());
+            }
+            else if (gct == GroupControlType.DropDownListBoxes)
+            {
+                tb.InnerHtml.AppendHtml(ItemMain.BuildBaseHtmlTag());
+            }
+            return tb;
+        }
+    }
+
+    public class MultiSelectionControl : Field, IHtmlElement
+    {
+        private List<MultiSelectionItem> items { get; set; }
+        private List<string> SelectedItems { get; set; }
+        public GroupControlType gct { get; set; }
+        public string GroupID { get; set; }
+        private string CssClass { get; set; }
+        public int Count
+        {
+            get
+            {
+                return items.Count;
+            }
+        }
+        
+        public MultiSelectionControl(GroupControlType FieldType, string id, string GroupID) : base(id, null, null)
+        {
+            this.GroupID = GroupID;
+            base.NameAttribute = null;
+            items = new List<MultiSelectionItem>();
+            SelectedItems = new List<string>();
+            gct = FieldType;
+
+            CssClass = "ControlOfLabelControlDuo";
+            if (gct == GroupControlType.DropDownListBoxes)
+            {
+                base.HtmlTag = "select";
+            }
+            else if (gct == GroupControlType.CheckBoxes || gct == GroupControlType.RadioButtons)
+            {
+                base.HtmlTag = "div";
+            }
+            else
+                throw new Exception("MS: Unknown control in MultiSelectionControl");
+        }
+
+        public bool AddItem(MultiSelectionItem item)
+        {
+            if (ExistsInExistingItems(item.Value))
+                return false;
+            else
+            {
+                items.Add(item);
+                if (item.SelectedOrChecked && !ExistsInSelectedValuesArrays(item.ID))
+                    SelectedItems.Add(item.ID);
+                return true;
+            }
+        }
+
+        /// <summary>
+        /// Defines the list of selected/checked items. These items don't even have to have been added to the control yet.
+        /// </summary>
+        /// <param name="Selected">String of comma separeated values</param>
+        public void SetSelectedItems(string Selected)
+        {
+            if (Selected == "")
+            {
+                SelectedItems = new List<string>();
+                return;
+            }
+            else
+            {
+                string[] a = Selected.Split(',');
+                SelectedItems = new List<string>(a);
+            }
+        }
+
+        public void AddRelevantItems(List<TempMultiSelectItem> AllMultiSelectItem)
+        {
+            for (int i = 0; i < AllMultiSelectItem.Count; i++)
+            {
+                if (AllMultiSelectItem[i].ParentFieldID == base.ID)
+                {
+                    bool bCheckedOrSelected = (ExistsInSelectedValuesArrays(AllMultiSelectItem[i].MultiSelectItemID.ToString()) ? true : false);
+                    items.Add(new MultiSelectionItem(gct, GroupID, AllMultiSelectItem[i].MultiSelectItemID, AllMultiSelectItem[i].StringValue, bCheckedOrSelected));
+                }
+            }
+        }
+
+        private bool ExistsInSelectedValuesArrays(string id)
+        {
+            for (int i = 0; i < SelectedItems.Count; i++)
+                if (SelectedItems[i] == id)       //  Cannot compare with items[i].ID !!
+                    return true;
+            return false;
+        }
+        private bool ExistsInExistingItems(string id)
+        {
+            for (int i = 0; i < items.Count; i++)
+                if (items[i].Value == id)       
+                    return true;
+            return false;
+        }
+
+        public TagBuilder BuildHtmlTag()
+        {
+            TagBuilder tb = base.BuildBaseHtmlTag();
+            tb.AddCssClass(CssClass);
+
+            if (tb != null)
+            {
+                for (int i = 0; i < items.Count; i++)
+                {
+                    tb.InnerHtml.AppendHtml(items[i].BuildHtmlTag());
+                    //tb = items[i].BuildHtmlTag(tb);
+                }   
+            }
+            return tb;
+        }
+    }
+
+
+    public class RadioButtonFields : MultiSelectionControl, IHtmlElement
+    {
+        public RadioButtonFields(string NameID) : base(GroupControlType.RadioButtons, NameID, NameID) { }
+
+        public void Add(string ItemID, string VisibleText, bool SelectedOrChecked = false, bool Disabled = false)
+        {
+            AddItem(new MultiSelectionItem(GroupControlType.RadioButtons, this.ID, ItemID, VisibleText, SelectedOrChecked, Disabled ));
+        }
+
+        public new TagBuilder BuildHtmlTag()
+        {
+            return base.BuildHtmlTag();
+        }
+    }
+    public class LabelRadioButtonFields : Field, IHtmlElement
     {
         public LabelField Label { get; set; }
+        public RadioButtonFields RadioButtons { get; set; }
 
-        public LabelRBCBControl(string id, string label):base(id)
+        public LabelRadioButtonFields(string NameID, string VisibleText) : base(null, "div", null)
         {
-            this.Label = new LabelField(label, true);
-            Options = new List<T>();
-            if (typeof(T) == typeof(LabelCheckBoxField))
-                GCType = GroupControlType.CheckBoxes;
-            else if (typeof(T) == typeof(LabelRadioButtonField))
-                GCType = GroupControlType.RadioButtons;
-            else
-                throw new Exception("MS: Unknown MultiOption control in LabelRBCBControl.");
+            this.Label = new LabelField(VisibleText, true);
+            RadioButtons = new RadioButtonFields(NameID);
         }
 
         public static Field GetRandom(string id, int count)
         {
-            LabelRBCBControl<T> n = new LabelRBCBControl<T>(id, "control global label");
-            for (int i = 0; i < count; i++)
-            {
-                string Name = typeof(T).ToString() + DateTime.Now.ToLongTimeString();
-                //          string Name, string Label, string IndividualValueId, bool Checked = false, bool Disabled = false
-                T aa = (T)Activator.CreateInstance(typeof(T), Name, typeof(T).ToString() + i.ToString(), typeof(T).ToString() + i.ToString(), false, false);
-                n.Options.Add(aa);
-            }
-            return n;
+            return new LabelRadioButtonFields(id, "Label-" + id.ToString());
         }
 
         public TagBuilder BuildHtmlTag()
@@ -1021,39 +1188,120 @@ namespace PDMSCore.DataManipulation
             TagBuilder tb = base.BuildBaseHtmlTag();
             tb.AddCssClass("LabelControlDuo");
 
-            TagBuilder tbControl = new TagBuilder("div");
-
-            if (GCType == GroupControlType.CheckBoxes)
-                tbControl.AddCssClass("GroupOfCheckBoxes");
-            else if (GCType == GroupControlType.RadioButtons)
-                tbControl.AddCssClass("GroupOfRadioButtons");
-            else
-                return new TagBuilder("error");
-
-            //TagBuilder tbForm = new TagBuilder("form");
-            //tbForm.Attributes.Add("action", "#");
-            //tbForm.Attributes.Add("method", "get");
-
-            for (int i = 0; i < Options.Count; i++)
-            {
-                TagBuilder t = (TagBuilder) Options[i].GetType().GetMethod("BuildHtmlTag").Invoke(Options[i], null);
-                //tbForm.InnerHtml.AppendHtml(t);
-                tbControl.InnerHtml.AppendHtml(t);
-            }
-
-            //tbControl.InnerHtml.AppendHtml(tbForm);
-
             tb.InnerHtml.AppendHtml(Label.BuildHtmlTag());
-            tb.InnerHtml.AppendHtml(tbControl);
+            tb.InnerHtml.AppendHtml(RadioButtons.BuildHtmlTag());
+
             return tb;
         }
-
-        //public override string GetValue()
-        //{
-        //    return "";
-        //}
     }
 
+    public class CheckBoxFields : MultiSelectionControl, IHtmlElement
+    {
+        public CheckBoxFields(string NameID) : base(GroupControlType.CheckBoxes, NameID, NameID) {}
+
+        public void Add(string ItemID, string VisibleText, bool SelectedOrChecked = false, bool Disabled = false)
+        {
+            AddItem(new MultiSelectionItem(GroupControlType.CheckBoxes, this.ID, ItemID, VisibleText, SelectedOrChecked, Disabled));
+        }
+
+        public new TagBuilder BuildHtmlTag()
+        {   // Zadny base.BuildBaseHtmlTag();
+            return base.BuildHtmlTag();
+        }
+    }
+    public class LabelCheckBoxFields : Field, IHtmlElement
+    {
+        public LabelField Label { get; set; }
+        public CheckBoxFields CheckBoxes{ get; set; }
+
+        public LabelCheckBoxFields(string NameID, string VisibleValue) : base(null, "div", null)
+        {
+            this.Label = new LabelField(VisibleValue, true);
+            CheckBoxes = new CheckBoxFields(NameID);
+        }
+
+        public static Field GetRandom(string id, int count)
+        {
+            return new LabelCheckBoxFields(id, "Label-" + id.ToString());
+        }
+
+        public TagBuilder BuildHtmlTag()
+        {
+            TagBuilder tb = base.BuildBaseHtmlTag();
+            tb.AddCssClass("LabelControlDuo");
+
+            tb.InnerHtml.AppendHtml(Label.BuildHtmlTag());
+            tb.InnerHtml.AppendHtml(CheckBoxes.BuildHtmlTag());
+
+            return tb;
+        }
+    }
+
+    public class DropDownListBox : MultiSelectionControl, IHtmlElement
+    {
+        public int VisibleRows { get; set; }
+        public List<string> Classes { get; set; }
+        public string jsOnInputFunction { get; set; }
+
+        public DropDownListBox(string NameID, int VisibleRows=1) : base(GroupControlType.DropDownListBoxes, NameID, NameID)
+        {
+            Classes = new List<string>();
+            this.VisibleRows = VisibleRows;
+            Classes.Add("ControlOfLabelControlDuo");
+            jsOnInputFunction = "";
+        }
+
+        public void Add(string ItemID, string VisibleText, bool SelectedOrChecked = false, bool Disabled = false)
+        {
+            AddItem(new MultiSelectionItem(GroupControlType.DropDownListBoxes, this.ID, ItemID, VisibleText, SelectedOrChecked, Disabled ));
+        }
+
+        public new TagBuilder BuildHtmlTag()
+        {
+            TagBuilder tbDropDown = base.BuildHtmlTag();
+            for (int i = 0; i < Classes.Count; i++)
+                tbDropDown.AddCssClass(Classes[i]);
+
+            if (jsOnInputFunction != "")
+                tbDropDown.Attributes.Add("oninput", jsOnInputFunction);
+
+            if (VisibleRows > 1)
+                tbDropDown.Attributes.Add("size", VisibleRows.ToString());
+            
+            return tbDropDown;
+        }
+    }
+    public class LabelDropDownListBox : Field, IHtmlElement
+    {
+        public LabelField Label { get; set; }
+        public DropDownListBox DropDown { get; set; }
+
+        public LabelDropDownListBox(string NameID, string VisibleValue) : base(null, "div", null)
+        {
+            this.Label = new LabelField(VisibleValue, true);
+            DropDown = new DropDownListBox(NameID);
+        }
+
+        public static Field GetRandom(string id, int count)
+        {
+            return new LabelDropDownListBox(id, "Label-" + id.ToString());
+        }
+
+        public TagBuilder BuildHtmlTag()
+        {
+            TagBuilder tb = base.BuildBaseHtmlTag();
+            tb.AddCssClass("LabelControlDuo");
+
+            tb.InnerHtml.AppendHtml(Label.BuildHtmlTag());
+            tb.InnerHtml.AppendHtml(DropDown.BuildHtmlTag());
+
+            return tb;
+        }
+    }
+
+
     
+
+
 
 }

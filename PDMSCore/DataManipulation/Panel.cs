@@ -61,54 +61,78 @@ namespace PDMSCore.DataManipulation
 
         public void ProcessFields(DataRow dr, int col)
         {
-            Field f = null;
-
-            int FieldID = DBUtil.GetInt(dr, col);
-            string Label = DBUtil.GetString(dr, col + 1);
-            string FieldType = DBUtil.GetString(dr, col+2);
-            string StringValue = DBUtil.GetString(dr, col+3);
-
-            switch (FieldType)
+            try
             {
-                case "tb":
-                    f = new LabelTextBoxField(FieldID, Label, StringValue);
-                    break;
-                case "rb":
-                    f = new LabelRBCBControl<LabelRadioButtonField>(FieldID.ToString(), Label);
-                    ((LabelRBCBControl<LabelRadioButtonField>)f).OtherRef = DBUtil.GetInt(dr, col+8);
-                    ((LabelRBCBControl<LabelRadioButtonField>)f).SelectedValues = StringValue.Split(',');
-                    break;
-                case "cb":
-                    f = new LabelRBCBControl<LabelCheckBoxField>(FieldID.ToString(), Label);
-                    ((LabelRBCBControl<LabelCheckBoxField>)f).OtherRef = DBUtil.GetInt(dr, col + 8);
-                    ((LabelRBCBControl<LabelCheckBoxField>)f).SelectedValues = StringValue.Split(',');
-                    break;
-                case "ddlb":
-                    f = new LabelDropDownField(FieldID, Label);
-                    //((LabelDropDownField)f).IntId = FieldID;
-                    ((LabelDropDownField)f).Dropdown.OtherRef = DBUtil.GetInt(dr, col + 8);
-                    ((LabelDropDownField)f).Dropdown.SelectedValues = StringValue.Split(',');
-                    break;
+                Field f = null;
 
-                case "rb-item":
-                case "cb-item":
-                case "ddlb-item":
-                    TempMultiSelectItem tmsi = new TempMultiSelectItem();
-                    tmsi.StringValue = Label;
-                    //tmsi.OtherRef = DBUtil.GetInt(dr, col + 8);
-                    tmsi.ParentFieldID = DBUtil.GetString(dr, col + 11);
-                    tmsi.MultiSelectItemID = DBUtil.GetInt(dr, col + 9);
+                int FieldID = DBUtil.GetInt(dr, col);
+                string Label = DBUtil.GetString(dr, col + 1);
+                string FieldType = DBUtil.GetString(dr, col+2);
+                string StringValue = DBUtil.GetString(dr, col+3);
 
-                    AllMultiSelectItem.Add(tmsi);
-                    break;
+                switch (FieldType)
+                {
+                    case "tb":
+                        f = new LabelTextBoxField(FieldID, Label, StringValue);
+                        break;
+                    case "rb":
+                        //f = new LabelRBCBControl<LabelRadioButtonField>(FieldID.ToString(), Label);
+                        //((LabelRBCBControl<LabelRadioButtonField>)f).OtherRef = DBUtil.GetInt(dr, col+8);
+                        //((LabelRBCBControl<LabelRadioButtonField>)f).SelectedValues = StringValue.Split(',');
 
-                
+                        //f = new LabelRBCBControl<RadioButtonField>(FieldID.ToString(), Label);
+                        //((LabelRBCBControl<RadioButtonField>)f).RBCBControl.items.OtherRef = DBUtil.GetInt(dr, col + 8);
+                        //((LabelRBCBControl<RadioButtonField>)f).RBCBControl.items.SelectedValues = StringValue.Split(',');
 
-                default:
-                    break;
+                        f = new LabelRadioButtonFields(FieldID.ToString(), Label);
+                        ((LabelRadioButtonFields)f).RadioButtons.SetSelectedItems(StringValue);
+
+                        break;
+                    case "cb":
+                        //f = new LabelRBCBControl<LabelCheckBoxField>(FieldID.ToString(), Label);
+                        //((LabelRBCBControl<LabelCheckBoxField>)f).OtherRef = DBUtil.GetInt(dr, col + 8);
+                        //((LabelRBCBControl<LabelCheckBoxField>)f).SelectedValues = StringValue.Split(',');
+
+                        //f = new LabelRBCBControl<CheckBoxField>(FieldID.ToString(), Label);
+                        //((LabelRBCBControl<CheckBoxField>)f).RBCBControl.items.OtherRef = DBUtil.GetInt(dr, col + 8);
+                        //((LabelRBCBControl<CheckBoxField>)f).RBCBControl.items.SelectedValues = StringValue.Split(',');
+
+                        f = new LabelCheckBoxFields(FieldID.ToString(), Label);
+                        ((LabelCheckBoxFields)f).CheckBoxes.SetSelectedItems(StringValue);
+
+                        break;
+                    case "ddlb":
+                        //f = new LabelDropDownField(FieldID, Label);
+                        //((LabelDropDownField)f).Dropdown.OtherRef = DBUtil.GetInt(dr, col + 8);
+                        //((LabelDropDownField)f).Dropdown.SelectedValues = StringValue.Split(',');
+
+                        f = new LabelDropDownListBox(FieldID.ToString(), Label);
+                        ((LabelDropDownListBox)f).DropDown.SetSelectedItems(StringValue);
+                        break;
+
+                    case "rb-item":
+                    case "cb-item":
+                    case "ddlb-item":
+                        TempMultiSelectItem tmsi = new TempMultiSelectItem();
+                        tmsi.StringValue = Label;
+                        //tmsi.OtherRef = DBUtil.GetInt(dr, col + 8);
+                        tmsi.ParentFieldID = DBUtil.GetString(dr, col + 11);
+                        tmsi.MultiSelectItemID = DBUtil.GetString(dr, col + 9);
+
+                        AllMultiSelectItem.Add(tmsi);
+                        break;
+
+                    default:
+                        break;
+                }
+                if (f != null)
+                    Fields.Add(f);
             }
-            if (f != null)
-                Fields.Add(f);
+            catch (Exception e)
+            {
+                Console.Out.WriteLine(e.ToString());
+
+            }
 
         }
 
@@ -245,12 +269,20 @@ namespace PDMSCore.DataManipulation
             {
                 if (Fields[i] == null)
                     continue;
-                if (Fields[i].GetType() == typeof(LabelRBCBControl<LabelRadioButtonField>))
-                    ((LabelRBCBControl<LabelRadioButtonField>)Fields[i]).AddRelevantItems(AllMultiSelectItem);
-                else if (Fields[i].GetType() == typeof(LabelRBCBControl<LabelCheckBoxField>))
-                    ((LabelRBCBControl<LabelCheckBoxField>)Fields[i]).AddRelevantItems(AllMultiSelectItem);
-                else if (Fields[i].GetType() == typeof(LabelDropDownField))
-                    ((LabelDropDownField)Fields[i]).Dropdown.AddRelevantItems(AllMultiSelectItem);
+                //if (Fields[i].GetType() == typeof(LabelRBCBControl<LabelRadioButtonField>))
+                //    ((LabelRBCBControl<LabelRadioButtonField>)Fields[i]).AddRelevantItems(AllMultiSelectItem);
+
+                //else if (Fields[i].GetType() == typeof(LabelRBCBControl<LabelCheckBoxField>))
+                //    ((LabelRBCBControl<LabelCheckBoxField>)Fields[i]).AddRelevantItems(AllMultiSelectItem);
+
+                if (Fields[i].GetType() == typeof(LabelRadioButtonFields))
+                    ((LabelRadioButtonFields)Fields[i]).RadioButtons.AddRelevantItems(AllMultiSelectItem);
+
+                else if (Fields[i].GetType() == typeof(LabelCheckBoxFields))
+                    ((LabelCheckBoxFields)Fields[i]).CheckBoxes.AddRelevantItems(AllMultiSelectItem);
+
+                else if (Fields[i].GetType() == typeof(LabelDropDownListBox))
+                    ((LabelDropDownListBox)Fields[i]).DropDown.AddRelevantItems(AllMultiSelectItem);
 
             }
         }
@@ -261,7 +293,7 @@ namespace PDMSCore.DataManipulation
         public string StringValue;
         //public int OtherRef;
         public string ParentFieldID;
-        public int MultiSelectItemID;
+        public string MultiSelectItemID;
     }
 
     public class PanelMenuItem

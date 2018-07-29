@@ -27,6 +27,7 @@
 /* .GroupOfCheckBoxes, .GroupOfRadioButtons, .DropDownOptions { */
 .GroupOfCheckBoxes, .GroupOfRadioButtons {
     width: 100%;
+    display: block;
 }
 
 /*.CustomTextBox, .CustomDatePicker {*/
