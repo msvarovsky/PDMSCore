@@ -11,7 +11,7 @@ namespace PDMSCore.DataManipulation
 
         public static string GetString(DataRow dr, int column)
         {
-            if (dr.ItemArray[column] == null)
+            if (dr.ItemArray[column] == System.DBNull.Value)
                 return "";
             return dr.ItemArray[column].ToString().Trim();
         }
@@ -19,7 +19,7 @@ namespace PDMSCore.DataManipulation
         {
             int? FieldID = dr.ItemArray[0] == null ? (int?)null : (int)dr.ItemArray[0];
 
-            if (dr.ItemArray[column] == null)
+            if (dr.ItemArray[column] == System.DBNull.Value)
                 return -1;
             return (int)dr.ItemArray[column];
         }

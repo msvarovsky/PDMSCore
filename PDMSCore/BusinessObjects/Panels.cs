@@ -36,26 +36,19 @@ namespace PDMSCore.BusinessObjects
         {
             object obj;
             int PanelID;
-            string PanelFieldType, Label;
+            string PanelLabel, PanelDecription;
+
+
+            //Title = DBUtil.GetString(dt.Rows[0], 1);
 
             for (int i = 0; i < dt.Rows.Count; i++)
             {
-                obj = dt.Rows[i].ItemArray[0];
-                if (obj == null)
-                    continue;
-                PanelID = Int32.Parse(obj.ToString());
+                PanelID = DBUtil.GetInt(dt.Rows[i], 0);
+                PanelLabel = DBUtil.GetString(dt.Rows[i], 1);
+                PanelDecription = DBUtil.GetString(dt.Rows[i], 2);
 
-                obj = dt.Rows[i].ItemArray[1];
-                if (obj == null)
-                    continue;
-                PanelFieldType = obj.ToString();
-
-                obj = dt.Rows[i].ItemArray[2];
-                if (obj == null)
-                    continue;
-                Label = obj.ToString();
-
-                GetPanel(PanelID).AddParam(PanelFieldType, Label);
+                GetPanel(PanelID).Label = PanelLabel;
+                GetPanel(PanelID).Desc = PanelDecription;
             }
         }
 
@@ -64,15 +57,13 @@ namespace PDMSCore.BusinessObjects
             for (int r = 0; r < dt.Rows.Count; r++)
             {
                 DataRow dr = dt.Rows[r];
-
-                //int PageID = DBUtil.GetInt(dr, 0);
-                int PanelID = DBUtil.GetInt(dr, 1);
+                int PanelID = DBUtil.GetInt(dr, 0);
 
                 Panel p = GetPanel(PanelID);
                 if (p == null)
                     continue;
                 else
-                    p.ProcessFields(dr, 2);
+                    p.ProcessFields(dr, 1);
             }
             for (int i = 0; i < PanelList.Count; i++)
                 PanelList[i].AssignMultiSelectItemsToControls();

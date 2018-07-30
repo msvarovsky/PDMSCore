@@ -67,8 +67,10 @@ namespace PDMSCore.DataManipulation
 
                 int FieldID = DBUtil.GetInt(dr, col);
                 string Label = DBUtil.GetString(dr, col + 1);
-                string FieldType = DBUtil.GetString(dr, col+2);
-                string StringValue = DBUtil.GetString(dr, col+3);
+                int PredecessorFieldID = DBUtil.GetInt(dr, col + 2);
+                string FieldType = DBUtil.GetString(dr, col + 3);
+
+                string StringValue = DBUtil.GetString(dr, col + 5);
 
                 switch (FieldType)
                 {
@@ -98,7 +100,7 @@ namespace PDMSCore.DataManipulation
                         //((LabelRBCBControl<CheckBoxField>)f).RBCBControl.items.SelectedValues = StringValue.Split(',');
 
                         f = new LabelCheckBoxFields(FieldID.ToString(), Label);
-                        ((LabelCheckBoxFields)f).CheckBoxes.SetSelectedItems(StringValue);
+                        ((LabelCheckBoxFields)f).CheckBoxes.SetSelectedItems(DBUtil.GetString(dr, col + 8));
 
                         break;
                     case "ddlb":
@@ -107,7 +109,7 @@ namespace PDMSCore.DataManipulation
                         //((LabelDropDownField)f).Dropdown.SelectedValues = StringValue.Split(',');
 
                         f = new LabelDropDownListBox(FieldID.ToString(), Label);
-                        ((LabelDropDownListBox)f).DropDown.SetSelectedItems(StringValue);
+                        ((LabelDropDownListBox)f).DropDown.SetSelectedItems(DBUtil.GetString(dr, col + 8));
                         break;
 
                     case "rb-item":
@@ -116,8 +118,8 @@ namespace PDMSCore.DataManipulation
                         TempMultiSelectItem tmsi = new TempMultiSelectItem();
                         tmsi.StringValue = Label;
                         //tmsi.OtherRef = DBUtil.GetInt(dr, col + 8);
-                        tmsi.ParentFieldID = DBUtil.GetString(dr, col + 11);
-                        tmsi.MultiSelectItemID = DBUtil.GetString(dr, col + 9);
+                        tmsi.ParentFieldID = DBUtil.GetString(dr, col + 4);
+                        tmsi.MultiSelectItemID = DBUtil.GetString(dr, col + 8);
 
                         AllMultiSelectItem.Add(tmsi);
                         break;

@@ -220,6 +220,8 @@ namespace PDMSCore.BusinessObjects
                 //LoadMenu(id, page) ???
 
                 //LoadPageInfo - P Menu, navigation??
+                LoadPageInfo(gsi, con, ProjectID, PageID);
+                LoadPanelsInfo(gsi, con, ProjectID, PageID);
                 LoadPageContent(gsi, con, ProjectID, PageID);
                 //GeneralSessionInfo gsi = new GeneralSessionInfo() { userID = 1, retailerID = 1, languageID = 1 };
 
@@ -230,6 +232,69 @@ namespace PDMSCore.BusinessObjects
             return ret;
         }
 
+        private bool LoadPageInfo(GeneralSessionInfo gsi, SqlConnection con, int ProjectID, int PageID)
+        {
+            SqlDataAdapter sqlDataAdapter;
+            DataSet dataSet = new DataSet();
+
+            List<TempMultiSelectItem> AllMultiSelectItem = new List<TempMultiSelectItem>();
+            List<Field> ret = new List<Field>();
+            SqlCommand sql = new SqlCommand("GetPageInfo", con);
+            sql.CommandType = CommandType.StoredProcedure;
+            sql.Parameters.Add(new SqlParameter("RetailerID", gsi.retailerID));
+            sql.Parameters.Add(new SqlParameter("PageID", PageID));
+            sql.Parameters.Add(new SqlParameter("LanguageID", gsi.languageID));
+
+            try
+            {
+                sqlDataAdapter = new SqlDataAdapter(sql);
+                sqlDataAdapter.Fill(dataSet);
+                if (dataSet.Tables.Count > 0 && dataSet.Tables[0].Rows.Count > 0)
+                    Page.ProcessPageInfo(dataSet.Tables[0]);
+                else
+                {
+                    Page.GenerateUnknownPageInfo();
+                    Console.WriteLine("No matching records found.");
+                }
+            }
+            catch (Exception eee)
+            {
+                ret.Add(new LabelTextAreaField(1, "Exception in LoadPageInfo(..)", eee.ToString()));
+            }
+            return false;
+        }
+        private bool LoadPanelsInfo(GeneralSessionInfo gsi, SqlConnection con, int ProjectID, int PageID)
+        {
+            SqlDataAdapter sqlDataAdapter;
+            DataSet dataSet = new DataSet();
+
+            List<TempMultiSelectItem> AllMultiSelectItem = new List<TempMultiSelectItem>();
+            List<Field> ret = new List<Field>();
+            SqlCommand sql = new SqlCommand("GetPanelsInfo", con);
+            sql.CommandType = CommandType.StoredProcedure;
+            sql.Parameters.Add(new SqlParameter("RetailerID", gsi.retailerID));
+            sql.Parameters.Add(new SqlParameter("PageID", PageID));
+            sql.Parameters.Add(new SqlParameter("LanguageID", gsi.languageID));
+
+            try
+            {
+                sqlDataAdapter = new SqlDataAdapter(sql);
+                sqlDataAdapter.Fill(dataSet);
+                if (dataSet.Tables.Count > 0 && dataSet.Tables[0].Rows.Count > 0)
+                    Page.ProcessPanelsInfo(dataSet.Tables[0]);
+                else
+                {
+                    Page.GenerateUnknownPageInfo();
+                    Console.WriteLine("No matching records found.");
+                }
+            }
+            catch (Exception eee)
+            {
+                ret.Add(new LabelTextAreaField(1, "Exception in LoadPanelsInfo(..)", eee.ToString()));
+            }
+            return false;
+        }
+
         private bool LoadPageContent(GeneralSessionInfo gsi, SqlConnection con, int ProjectID, int PageID)
         {
             SqlDataAdapter sqlDataAdapter;
@@ -237,7 +302,7 @@ namespace PDMSCore.BusinessObjects
 
             List<TempMultiSelectItem> AllMultiSelectItem = new List<TempMultiSelectItem>();
             List<Field> ret = new List<Field>();
-            SqlCommand sql = new SqlCommand("GetPage", con);
+            SqlCommand sql = new SqlCommand("GetPageFields", con);
             sql.CommandType = CommandType.StoredProcedure;
             sql.Parameters.Add(new SqlParameter("RetailerID", gsi.retailerID));
             sql.Parameters.Add(new SqlParameter("ProjectID", ProjectID));
@@ -250,21 +315,26 @@ namespace PDMSCore.BusinessObjects
 
                 sqlDataAdapter = new SqlDataAdapter(sql);
                 sqlDataAdapter.Fill(dataSet);
-                if (dataSet.Tables.Count > 0)
-                {
-                    if (dataSet.Tables[0].Rows.Count > 0)
-                        Page.ProcessPageInfo(dataSet.Tables[0]);
-
-                    if (dataSet.Tables[1].Rows.Count > 0)
-                        Page.ProcessPanelsInfo(dataSet.Tables[1]);
-
-                    if (dataSet.Tables[2].Rows.Count > 0)
-                        Page.Panels.ProcessFieldsInfo(dataSet.Tables[2]);
+                if (dataSet.Tables.Count > 0 && dataSet.Tables[0].Rows.Count > 0 )
+                { 
+                    Page.Panels.ProcessFieldsInfo(dataSet.Tables[0]);
                 }
                 else
                 {
+                    Page.GenerateUnknownPageInfo();
                     Console.WriteLine("No matching records found.");
                 }
+                //if (dataSet.Tables.Count > 0)
+                //{
+                //    if (dataSet.Tables[0].Rows.Count > 0)
+                //        Page.ProcessPageInfo(dataSet.Tables[0]);
+                //    if (dataSet.Tables[1].Rows.Count > 0)
+                //        Page.ProcessPanelsInfo(dataSet.Tables[1]);
+                //    if (dataSet.Tables[2].Rows.Count > 0)
+                //        Page.Panels.ProcessFieldsInfo(dataSet.Tables[2]);
+                //}
+
+
             }
             catch (Exception eee)
             {
