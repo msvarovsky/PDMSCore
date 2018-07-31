@@ -11,6 +11,7 @@ namespace PDMSCore.DataManipulation
     public class Panel
     {
         public int id { get; set; }
+        public string PanelID { get { return "P" + id.ToString(); } }
         public string Size { get; set; }
         public string Label { get; set; }
         public string Desc { get; set; }
@@ -75,7 +76,7 @@ namespace PDMSCore.DataManipulation
                 switch (FieldType)
                 {
                     case "tb":
-                        f = new LabelTextBoxField(FieldID, Label, StringValue);
+                        f = new LabelTextBoxField(PanelID, FieldID, Label, StringValue);
                         break;
                     case "rb":
                         //f = new LabelRBCBControl<LabelRadioButtonField>(FieldID.ToString(), Label);
@@ -86,7 +87,7 @@ namespace PDMSCore.DataManipulation
                         //((LabelRBCBControl<RadioButtonField>)f).RBCBControl.items.OtherRef = DBUtil.GetInt(dr, col + 8);
                         //((LabelRBCBControl<RadioButtonField>)f).RBCBControl.items.SelectedValues = StringValue.Split(',');
 
-                        f = new LabelRadioButtonFields(FieldID.ToString(), Label);
+                        f = new LabelRadioButtonFields(PanelID, FieldID.ToString(), Label);
                         ((LabelRadioButtonFields)f).RadioButtons.SetSelectedItems(StringValue);
 
                         break;
@@ -99,7 +100,7 @@ namespace PDMSCore.DataManipulation
                         //((LabelRBCBControl<CheckBoxField>)f).RBCBControl.items.OtherRef = DBUtil.GetInt(dr, col + 8);
                         //((LabelRBCBControl<CheckBoxField>)f).RBCBControl.items.SelectedValues = StringValue.Split(',');
 
-                        f = new LabelCheckBoxFields(FieldID.ToString(), Label);
+                        f = new LabelCheckBoxFields(PanelID, FieldID.ToString(), Label);
                         ((LabelCheckBoxFields)f).CheckBoxes.SetSelectedItems(DBUtil.GetString(dr, col + 8));
 
                         break;
@@ -108,7 +109,7 @@ namespace PDMSCore.DataManipulation
                         //((LabelDropDownField)f).Dropdown.OtherRef = DBUtil.GetInt(dr, col + 8);
                         //((LabelDropDownField)f).Dropdown.SelectedValues = StringValue.Split(',');
 
-                        f = new LabelDropDownListBox(FieldID.ToString(), Label);
+                        f = new LabelDropDownListBox(PanelID, FieldID.ToString(), Label);
                         ((LabelDropDownListBox)f).DropDown.SetSelectedItems(DBUtil.GetString(dr, col + 8));
                         break;
 
@@ -119,7 +120,7 @@ namespace PDMSCore.DataManipulation
                         tmsi.StringValue = Label;
                         //tmsi.OtherRef = DBUtil.GetInt(dr, col + 8);
                         tmsi.ParentFieldID = DBUtil.GetString(dr, col + 4);
-                        tmsi.MultiSelectItemID = DBUtil.GetString(dr, col + 8);
+                        tmsi.MultiSelectItemID = FieldID.ToString();
 
                         AllMultiSelectItem.Add(tmsi);
                         break;
@@ -128,7 +129,10 @@ namespace PDMSCore.DataManipulation
                         break;
                 }
                 if (f != null)
+                {
+                    f.ParentID = id.ToString();
                     Fields.Add(f);
+                }
             }
             catch (Exception e)
             {

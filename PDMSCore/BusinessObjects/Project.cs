@@ -26,8 +26,11 @@ namespace PDMSCore.BusinessObjects
         }
         public GeneralSessionInfo(HttpContext s)
         {
-            userID = Int32.Parse(s.Session.GetString("UserID"));
-            retailerID = Int32.Parse(s.Session.GetString("RetailerID"));
+            Int32.TryParse(s.Session.GetString("UserID"), out userID);
+            Int32.TryParse(s.Session.GetString("RetailerID"), out retailerID);
+
+            //userID = Int32.Parse(user);
+            //retailerID = Int32.Parse(s.Session.GetString("RetailerID"));
             languageID = s.Session.GetString("LanguageID");
         }
         public GeneralSessionInfo(int userID, int retailerID, string languageID)
@@ -44,6 +47,7 @@ namespace PDMSCore.BusinessObjects
         public string Name { get; set; }
         //public List<Panel> PanelList { get; set; }
         public Page Page { get; set; }
+        public PageMenu PageMenu{ get; set; }
         //public Menu SideMenu { get; set; }
 
         public Project()
@@ -51,6 +55,7 @@ namespace PDMSCore.BusinessObjects
             //PanelList = new List<Panel>();
             //SideMenu = new Menu();
             Page = new Page();
+            PageMenu = new PageMenu();
 
         }
         public bool Create()
@@ -69,25 +74,25 @@ namespace PDMSCore.BusinessObjects
             Page.SideMenu.GetRandomMenu();
             List<Field> fields = new List<Field>();
 
-            fields.Add(new LabelTextBoxField(ID++, "Project name", "", "...", "Give your project a name."));
-            fields.Add(new LabelTextAreaField(ID++, "Project description:"));
+            fields.Add(new LabelTextBoxField("1", ID++, "Project name", "", "...", "Give your project a name."));
+            fields.Add(new LabelTextAreaField("1", ID++.ToString(), "Project description:"));
             //fields.Add(Field.NewLine());
             fields.Add(new NewLine());
 
-            LabelDropDownListBox dd = new LabelDropDownListBox(ID++.ToString(), "Project type:");
+            LabelDropDownListBox dd = new LabelDropDownListBox("1",ID++.ToString(), "Project type:");
             dd.DropDown.Add("1", "Novy");
             dd.DropDown.Add("2", "Stary",true);
             dd.DropDown.Add("3", "Refresh");
             fields.Add(dd);
 
-            LabelDropDownListBox dd2 = new LabelDropDownListBox(ID++.ToString(), "pt:");
+            LabelDropDownListBox dd2 = new LabelDropDownListBox("1", ID++.ToString(), "pt:");
             dd2.DropDown.Add("1", "Novy");
             dd2.DropDown.Add("2", "Stary", true);
             dd2.DropDown.Add("3", "Refresh");
             fields.Add(dd2);
 
 
-            fields.Add(new LabelDatePickerField(ID++, "Creation date:", DateTime.Now));
+            fields.Add(new LabelDatePickerField("1", ID++, "Creation date:", DateTime.Now));
 
             fields.Add(new LabelSelectableTextBoxField(ID++, "Choose user:", "...", "sp_AllUsers"));
 
@@ -259,7 +264,7 @@ namespace PDMSCore.BusinessObjects
             }
             catch (Exception eee)
             {
-                ret.Add(new LabelTextAreaField(1, "Exception in LoadPageInfo(..)", eee.ToString()));
+                ret.Add(new LabelTextAreaField("1", "Exception in LoadPageInfo(..)", eee.ToString()));
             }
             return false;
         }
@@ -290,11 +295,10 @@ namespace PDMSCore.BusinessObjects
             }
             catch (Exception eee)
             {
-                ret.Add(new LabelTextAreaField(1, "Exception in LoadPanelsInfo(..)", eee.ToString()));
+                ret.Add(new LabelTextAreaField("1", "Exception in LoadPanelsInfo(..)", eee.ToString()));
             }
             return false;
         }
-
         private bool LoadPageContent(GeneralSessionInfo gsi, SqlConnection con, int ProjectID, int PageID)
         {
             SqlDataAdapter sqlDataAdapter;
@@ -338,7 +342,7 @@ namespace PDMSCore.BusinessObjects
             }
             catch (Exception eee)
             {
-                ret.Add(new LabelTextAreaField(1, "Exception in LoadPanelContent(..)", eee.ToString()));
+                ret.Add(new LabelTextAreaField("1", "Exception in LoadPanelContent(..)", eee.ToString()));
             }
 
             return false;

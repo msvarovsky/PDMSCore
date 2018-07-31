@@ -30,9 +30,9 @@ namespace PDMSCore.Controllers
             }
             else
             {
-                r.Add(new LabelTextBoxField(id++, "Testovaci LabelField", ""));
-                r.Add(new LabelTextBoxField(id++, "Testovaci LabelField 2", ""));
-                r.Add(new LabelTextBoxField(id++, "Testovaci LabelField 3", ""));
+                r.Add(new LabelTextBoxField("TODO",id++, "Testovaci LabelField", ""));
+                r.Add(new LabelTextBoxField("TODO", id++, "Testovaci LabelField 2", ""));
+                r.Add(new LabelTextBoxField("TODO", id++, "Testovaci LabelField 3", ""));
                 r.Add(DataGridField2.GetTestData(id++));
             }
             return r;

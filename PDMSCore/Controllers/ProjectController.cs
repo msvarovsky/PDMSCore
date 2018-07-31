@@ -64,7 +64,8 @@ namespace PDMSCore.Controllers
             //p.GetRandom();
             p.Page.SideMenu.Select(HttpContext.Session.GetString("OpenMenu"));
 
-            return View(p);
+            //return View(p);
+            return this.RedirectToAction("ShowProject", "Project");
         }
         [HttpGet]
         public ActionResult ShowProject()
