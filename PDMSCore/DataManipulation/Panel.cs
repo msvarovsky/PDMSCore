@@ -5,6 +5,7 @@ using System.Data.SqlClient;
 using System.Web;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Extensions.Primitives;
 
 namespace PDMSCore.DataManipulation
 {
@@ -239,12 +240,25 @@ namespace PDMSCore.DataManipulation
 
         public bool Save(IFormCollection fc)
         {
-            foreach (var FieldId in fc.Keys)
+            for (int i = 0; i < Fields.Count; i++)
             {
-                if (FieldId == "PanelId")
-                    continue;
+                Fields[i].Save(fc);
 
-                string FieldValue = fc[FieldId];
+                StringValues NewValue;
+                if (fc.TryGetValue(Fields[i].ID, out NewValue))
+                {
+                    if (Fields[i].GetValue() != NewValue)
+                    {
+                        //SAVE
+                        //foreach (KeyValuePair<string, StringValues> key in fc)
+                        //{
+                        //    StringValues sv = "";
+                        //    string kk = key.Key;
+                        //    string vv = key.Value;
+                        //}
+                        return true;
+                    }
+                }
             }
             return false;
         }

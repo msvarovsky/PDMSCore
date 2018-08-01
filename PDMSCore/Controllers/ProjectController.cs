@@ -28,7 +28,7 @@ namespace PDMSCore.Controllers
         [HttpGet]
         public ActionResult CreateNewProject()
         {
-            p = new Project();
+            p = new Project(1);
             p.CreateNew();
             ViewData["panelOwnerID"] = "ID projektu";
             return View("ShowProject",p);
@@ -36,14 +36,10 @@ namespace PDMSCore.Controllers
         [HttpPost]
         public ActionResult CreateNewProject(IFormCollection fc)
         {
-            Project p = new Project();
+            Project p = new Project(1);
             //p.SaveFromHtml(fc);
-
-
             return View();
         }
-
-        
 
         /// <summary>
         /// Save
@@ -53,15 +49,13 @@ namespace PDMSCore.Controllers
         [HttpPost]
         public ActionResult ShowProject(IFormCollection fc)
         {
-            //p = Project.GetProject(PanelID);
-
             //  User, RetailerID, languageID
             GeneralSessionInfo gsi = new GeneralSessionInfo(HttpContext);
-            
-            //  ProjectID, PageID
-            p = new Project();
-            p.LoadProjectFromDB(gsi, 1, 123);
-            //p.GetRandom();
+            gsi = new GeneralSessionInfo(1, 1, "en");
+
+            Project pr = new Project(1);
+            pr.SavePage(gsi, 1, fc); // asi bych ProjectID a PageID mel dodat ze stranky jako hidden fields.
+
             p.Page.SideMenu.Select(HttpContext.Session.GetString("OpenMenu"));
 
             //return View(p);
@@ -72,8 +66,8 @@ namespace PDMSCore.Controllers
         {
             ViewData["panelOwnerID"] = "ID projektu";
 
-            Project pr = new Project();
-            pr.LoadProjectFromDB(new GeneralSessionInfo(1, 1, "en"), 1, 1);
+            Project pr = new Project(1);
+            pr.LoadProjectFromDB(new GeneralSessionInfo(1, 1, "en"), 1);
             return View(pr);
 
             //p = new Project();

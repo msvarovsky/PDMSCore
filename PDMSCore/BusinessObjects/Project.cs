@@ -43,15 +43,16 @@ namespace PDMSCore.BusinessObjects
 
     public class Project
     {
-        public int ID { get; set; }
+        public int ProjectID { get; set; }
         public string Name { get; set; }
         //public List<Panel> PanelList { get; set; }
         public Page Page { get; set; }
         public PageMenu PageMenu{ get; set; }
         //public Menu SideMenu { get; set; }
 
-        public Project()
+        public Project(int ProjectID)
         {
+            this.ProjectID = ProjectID;
             //PanelList = new List<Panel>();
             //SideMenu = new Menu();
             Page = new Page();
@@ -61,7 +62,7 @@ namespace PDMSCore.BusinessObjects
         public bool Create()
         {
             // jdi do DB a vytvor novy projekt.
-            ID = (Int32)DateTime.Now.Ticks;
+            ProjectID = (Int32)DateTime.Now.Ticks;
             return true;
         }
         public void CreateNew()
@@ -69,32 +70,32 @@ namespace PDMSCore.BusinessObjects
             // jdi do DB a vytvor novy projekt.
             //ID = (Int32)DateTime.Now.Ticks;
             //ID = DateTime.Now.Hour * 100000000 + DateTime.Now.Minute * 1000000 + DateTime.Now.Second * 10000 + DateTime.Now.Millisecond * 100;
-            ID = DateTime.Now.Millisecond * 100;
+            ProjectID = DateTime.Now.Millisecond * 100;
 
             Page.SideMenu.GetRandomMenu();
             List<Field> fields = new List<Field>();
 
-            fields.Add(new LabelTextBoxField("1", ID++, "Project name", "", "...", "Give your project a name."));
-            fields.Add(new LabelTextAreaField("1", ID++.ToString(), "Project description:"));
+            fields.Add(new LabelTextBoxField("1", ProjectID++, "Project name", "", "...", "Give your project a name."));
+            fields.Add(new LabelTextAreaField("1", ProjectID++.ToString(), "Project description:"));
             //fields.Add(Field.NewLine());
             fields.Add(new NewLine());
 
-            LabelDropDownListBox dd = new LabelDropDownListBox("1",ID++.ToString(), "Project type:");
+            LabelDropDownListBox dd = new LabelDropDownListBox("1",ProjectID++.ToString(), "Project type:");
             dd.DropDown.Add("1", "Novy");
             dd.DropDown.Add("2", "Stary",true);
             dd.DropDown.Add("3", "Refresh");
             fields.Add(dd);
 
-            LabelDropDownListBox dd2 = new LabelDropDownListBox("1", ID++.ToString(), "pt:");
+            LabelDropDownListBox dd2 = new LabelDropDownListBox("1", ProjectID++.ToString(), "pt:");
             dd2.DropDown.Add("1", "Novy");
             dd2.DropDown.Add("2", "Stary", true);
             dd2.DropDown.Add("3", "Refresh");
             fields.Add(dd2);
 
 
-            fields.Add(new LabelDatePickerField("1", ID++, "Creation date:", DateTime.Now));
+            fields.Add(new LabelDatePickerField("1", ProjectID++, "Creation date:", DateTime.Now));
 
-            fields.Add(new LabelSelectableTextBoxField(ID++, "Choose user:", "...", "sp_AllUsers"));
+            fields.Add(new LabelSelectableTextBoxField(ProjectID++, "Choose user:", "...", "sp_AllUsers"));
 
 
             Panel panel = new Panel(1, "New project:", 2);
@@ -203,7 +204,7 @@ namespace PDMSCore.BusinessObjects
 
         }
 
-        public bool LoadProjectFromDB(GeneralSessionInfo gsi, int ProjectID, int PageID)
+        public bool LoadProjectFromDB(GeneralSessionInfo gsi, int PageID)
         {
             bool ret = false;
             string cd = Directory.GetCurrentDirectory();
@@ -221,18 +222,9 @@ namespace PDMSCore.BusinessObjects
             {
                 con.Open();
 
-                //LoadProjectInfo(id);
-                //LoadMenu(id, page) ???
-
-                //LoadPageInfo - P Menu, navigation??
                 LoadPageInfo(gsi, con, ProjectID, PageID);
                 LoadPanelsInfo(gsi, con, ProjectID, PageID);
                 LoadPageContent(gsi, con, ProjectID, PageID);
-                //GeneralSessionInfo gsi = new GeneralSessionInfo() { userID = 1, retailerID = 1, languageID = 1 };
-
-                //Label = LoadPanelInfo(con, 1, "en");
-                //Content = LoadPanelContent(con, 1, "en");
-                //  LoadMenu
             }
             return ret;
         }
@@ -337,8 +329,6 @@ namespace PDMSCore.BusinessObjects
                 //    if (dataSet.Tables[2].Rows.Count > 0)
                 //        Page.Panels.ProcessFieldsInfo(dataSet.Tables[2]);
                 //}
-
-
             }
             catch (Exception eee)
             {
@@ -347,7 +337,15 @@ namespace PDMSCore.BusinessObjects
 
             return false;
         }
-      
+
+        public bool SavePage(GeneralSessionInfo gsi, int PageID, IFormCollection fc)
+        {
+            Project OldProject = new Project(ProjectID);
+            OldProject.LoadProjectFromDB(gsi, PageID);
+            OldProject.Page.Panels.SavePanels(fc);
+
+            return false;
+        }
 
     }
     

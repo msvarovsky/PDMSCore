@@ -1,4 +1,5 @@
-﻿using PDMSCore.DataManipulation;
+﻿using Microsoft.AspNetCore.Http;
+using PDMSCore.DataManipulation;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -34,10 +35,8 @@ namespace PDMSCore.BusinessObjects
 
         public void ProcessPanelsInfo(DataTable dt)
         {
-            object obj;
             int PanelID;
             string PanelLabel, PanelDecription;
-
 
             //Title = DBUtil.GetString(dt.Rows[0], 1);
 
@@ -67,6 +66,15 @@ namespace PDMSCore.BusinessObjects
             }
             for (int i = 0; i < PanelList.Count; i++)
                 PanelList[i].AssignMultiSelectItemsToControls();
+        }
+
+        public void SavePanels(IFormCollection fc)
+        {
+            for (int i = 0; i < PanelList.Count; i++)
+            {
+                PanelList[i].Save(fc);
+            }
+
         }
     }
 }

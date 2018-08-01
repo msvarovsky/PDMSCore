@@ -437,6 +437,10 @@ namespace PDMSCore.DataManipulation
             return tb;
         }
 
+        public string GetDBID()
+        {
+            return null;
+        }
     }
 
     public class TableRow : IHtmlTag
