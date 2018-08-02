@@ -41,6 +41,22 @@ namespace PDMSCore.BusinessObjects
         }
     }
 
+    public class FieldValueUpdateInfo
+    {
+        public SqlConnection con { get; set; }
+        public int RetailerID { get; set; }
+        public int ProjectID { get; set; }
+        public string FieldID { get; set; }
+
+        public FieldValueUpdateInfo(SqlConnection con, int RetailerID, int ProjectID, string FieldID = null)
+        {
+            this.con = con;
+            this.RetailerID = RetailerID;
+            this.ProjectID = ProjectID;
+            this.FieldID = FieldID;
+        }
+    }
+
     public class Project
     {
         public int ProjectID { get; set; }
@@ -204,21 +220,20 @@ namespace PDMSCore.BusinessObjects
 
         }
 
-        public bool LoadProjectFromDB(GeneralSessionInfo gsi, int PageID)
+        private string GetSqlConnectionString()
         {
-            bool ret = false;
             string cd = Directory.GetCurrentDirectory();
             string l = "PDMSCore";
             int a = cd.IndexOf(l);
             string AttachDbFilename = cd.Substring(0, a + l.Length) + "\\PDMSCore\\wwwroot\\TestDB\\System.mdf;";
 
-            using (SqlConnection con = new SqlConnection(
-                "Data Source=(LocalDB)\\MSSQLLocalDB;" +
-                "AttachDbFilename=" + AttachDbFilename +
-                "Connect Timeout=30;" +
-                "User Id=martin;" +
-                "Password=martin;")
-                )
+            return "Data Source=(LocalDB)\\MSSQLLocalDB;" + "AttachDbFilename=" + AttachDbFilename +
+                "Connect Timeout=30;" + "User Id=martin;" + "Password=martin;";
+        }
+
+        public bool LoadProjectFromDB(GeneralSessionInfo gsi, int PageID)
+        {
+            using (SqlConnection con = new SqlConnection(GetSqlConnectionString()))
             {
                 con.Open();
 
@@ -226,7 +241,7 @@ namespace PDMSCore.BusinessObjects
                 LoadPanelsInfo(gsi, con, ProjectID, PageID);
                 LoadPageContent(gsi, con, ProjectID, PageID);
             }
-            return ret;
+            return false;
         }
 
         private bool LoadPageInfo(GeneralSessionInfo gsi, SqlConnection con, int ProjectID, int PageID)
@@ -342,7 +357,12 @@ namespace PDMSCore.BusinessObjects
         {
             Project OldProject = new Project(ProjectID);
             OldProject.LoadProjectFromDB(gsi, PageID);
-            OldProject.Page.Panels.SavePanels(fc);
+            using (SqlConnection con = new SqlConnection(GetSqlConnectionString()))
+            {
+                con.Open();
+                FieldValueUpdateInfo UpdateInfo = new FieldValueUpdateInfo(con, gsi.retailerID, ProjectID);
+                OldProject.Page.Panels.SavePanels(fc, UpdateInfo);
+            }
 
             return false;
         }

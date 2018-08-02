@@ -2,17 +2,19 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Text;
 using System.Web;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Primitives;
+using PDMSCore.BusinessObjects;
 
 namespace PDMSCore.DataManipulation
 {
     public class Panel
     {
-        public int id { get; set; }
-        public string PanelID { get { return "P" + id.ToString(); } }
+        public int PanelID { get; set; }
+        public string PanelIDString { get { return "P" + PanelID.ToString(); } }
         public string Size { get; set; }
         public string Label { get; set; }
         public string Desc { get; set; }
@@ -25,7 +27,7 @@ namespace PDMSCore.DataManipulation
         {
             Init();
 
-            this.id = id;
+            this.PanelID = id;
             this.Label = Label;
 
             xSize = (xSize > 2) ? 2 : xSize;
@@ -35,13 +37,13 @@ namespace PDMSCore.DataManipulation
         public Panel(int PanelID)
         {
             Init();
-            id = PanelID;
+            this.PanelID = PanelID;
         }
         private void Init()
         {
             AllMultiSelectItem = new List<TempMultiSelectItem>();
             this.Fields = new List<Field>();
-            menu = new PanelMenu(id);
+            menu = new PanelMenu(PanelID);
         }
 
         public void AddParam(string FieldType, string value)
@@ -77,7 +79,7 @@ namespace PDMSCore.DataManipulation
                 switch (FieldType)
                 {
                     case "tb":
-                        f = new LabelTextBoxField(PanelID, FieldID, Label, StringValue);
+                        f = new LabelTextBoxField(PanelIDString, FieldID, Label, StringValue);
                         break;
                     case "rb":
                         //f = new LabelRBCBControl<LabelRadioButtonField>(FieldID.ToString(), Label);
@@ -88,8 +90,8 @@ namespace PDMSCore.DataManipulation
                         //((LabelRBCBControl<RadioButtonField>)f).RBCBControl.items.OtherRef = DBUtil.GetInt(dr, col + 8);
                         //((LabelRBCBControl<RadioButtonField>)f).RBCBControl.items.SelectedValues = StringValue.Split(',');
 
-                        f = new LabelRadioButtonFields(PanelID, FieldID.ToString(), Label);
-                        ((LabelRadioButtonFields)f).RadioButtons.SetSelectedItems(StringValue);
+                        f = new LabelRadioButtonFields(PanelIDString, FieldID.ToString(), Label);
+                        ((LabelRadioButtonFields)f).RadioButtons.SetSelectedItems(DBUtil.GetString(dr, col + 8));
 
                         break;
                     case "cb":
@@ -101,7 +103,7 @@ namespace PDMSCore.DataManipulation
                         //((LabelRBCBControl<CheckBoxField>)f).RBCBControl.items.OtherRef = DBUtil.GetInt(dr, col + 8);
                         //((LabelRBCBControl<CheckBoxField>)f).RBCBControl.items.SelectedValues = StringValue.Split(',');
 
-                        f = new LabelCheckBoxFields(PanelID, FieldID.ToString(), Label);
+                        f = new LabelCheckBoxFields(PanelIDString, FieldID.ToString(), Label);
                         ((LabelCheckBoxFields)f).CheckBoxes.SetSelectedItems(DBUtil.GetString(dr, col + 8));
 
                         break;
@@ -110,7 +112,7 @@ namespace PDMSCore.DataManipulation
                         //((LabelDropDownField)f).Dropdown.OtherRef = DBUtil.GetInt(dr, col + 8);
                         //((LabelDropDownField)f).Dropdown.SelectedValues = StringValue.Split(',');
 
-                        f = new LabelDropDownListBox(PanelID, FieldID.ToString(), Label);
+                        f = new LabelDropDownListBox(PanelIDString, FieldID.ToString(), Label);
                         ((LabelDropDownListBox)f).DropDown.SetSelectedItems(DBUtil.GetString(dr, col + 8));
                         break;
 
@@ -131,7 +133,7 @@ namespace PDMSCore.DataManipulation
                 }
                 if (f != null)
                 {
-                    f.ParentID = id.ToString();
+                    f.ParentID = PanelID.ToString();
                     Fields.Add(f);
                 }
             }
@@ -148,7 +150,7 @@ namespace PDMSCore.DataManipulation
             List<Field> ret = new List<Field>();
             SqlCommand sql = new SqlCommand("GetPanelFromID", con);
             sql.CommandType = CommandType.StoredProcedure;
-            sql.Parameters.Add(new SqlParameter("PanelID", this.id));
+            sql.Parameters.Add(new SqlParameter("PanelID", this.PanelID));
             sql.Parameters.Add(new SqlParameter("CompanyID", CompanyID));
             sql.Parameters.Add(new SqlParameter("LanguageID", LanguageID));
 
@@ -238,28 +240,30 @@ namespace PDMSCore.DataManipulation
         //    return ret;
         //}
 
-        public bool Save(IFormCollection fc)
+        public bool Save(IFormCollection fc, FieldValueUpdateInfo UpdateInfo)
         {
+            StringBuilder sb = new StringBuilder();
+
             for (int i = 0; i < Fields.Count; i++)
             {
-                Fields[i].Save(fc);
+                List<Field> DBFields = Fields[i].GetDBFields();
 
-                StringValues NewValue;
-                if (fc.TryGetValue(Fields[i].ID, out NewValue))
+                for (int f = 0; f < DBFields.Count; f++)
                 {
-                    if (Fields[i].GetValue() != NewValue)
-                    {
-                        //SAVE
-                        //foreach (KeyValuePair<string, StringValues> key in fc)
-                        //{
-                        //    StringValues sv = "";
-                        //    string kk = key.Key;
-                        //    string vv = key.Value;
-                        //}
-                        return true;
-                    }
+                    string UpdateString = null;
+                    StringValues NewValue = new StringValues();
+                    if (fc.TryGetValue(DBFields[f].HTMLFieldID, out NewValue))
+                        UpdateString = DBFields[f].CreateDBUpdateStringIfNecessary(NewValue, UpdateInfo);
+                    else
+                        UpdateString = DBFields[f].GetResetDBUpdateString(UpdateInfo);         //  Update DB value to default val.
+
+                    if (UpdateString != null)
+                        sb.AppendLine(UpdateString);
                 }
+                
             }
+
+            //TODO UPDATE ALL
             return false;
         }
 
@@ -270,7 +274,7 @@ namespace PDMSCore.DataManipulation
 
         public void GenerateRandomPanelMenuItems(int count)
         {
-            string PanelID = id.ToString();
+            string PanelID = this.PanelID.ToString();
 
             menu.items.Add(new PanelMenuItem(true, "Refresh", "refresh", PanelID));
             menu.items.Add(new PanelMenuItem(true, "Save", "save", PanelID));

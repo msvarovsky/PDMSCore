@@ -3,7 +3,7 @@ using PDMSCore.DataManipulation;
 using System;
 using System.Collections.Generic;
 using System.Data;
-
+using System.Data.SqlClient;
 
 namespace PDMSCore.BusinessObjects
 {
@@ -20,7 +20,7 @@ namespace PDMSCore.BusinessObjects
         {
             for (int i = 0; i < PanelList.Count; i++)
             {
-                if (PanelList[i].id == PanelID)
+                if (PanelList[i].PanelID == PanelID)
                     return PanelList[i];
             }
             if (PanelID == -1)
@@ -68,11 +68,11 @@ namespace PDMSCore.BusinessObjects
                 PanelList[i].AssignMultiSelectItemsToControls();
         }
 
-        public void SavePanels(IFormCollection fc)
+        public void SavePanels(IFormCollection fc, FieldValueUpdateInfo UpdateInfo)
         {
             for (int i = 0; i < PanelList.Count; i++)
             {
-                PanelList[i].Save(fc);
+                PanelList[i].Save(fc, UpdateInfo);
             }
 
         }

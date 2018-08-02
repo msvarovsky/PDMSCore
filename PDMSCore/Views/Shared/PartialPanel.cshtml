@@ -9,7 +9,7 @@
     ViewBag.Title = "partial view panels";
 }
 
-<div class="Panel @Model.Size" id="Panel-@Model.id">
+<div class="Panel @Model.Size" id="Panel-@Model.PanelID">
 
     <div id='ajax_loader' style="position: fixed; left: 50%; top: 50%; display: none;">
         WAITING
@@ -25,8 +25,8 @@
     </div>
 
     <div class="Panel-Body">
-        <form id="Form-@Model.id" method="post">
-            <input name="PanelId" hidden type="text" value="@Model.id" />
+        <form id="Form-@Model.PanelID" method="post">
+            <input name="PanelId" hidden type="text" value="@Model.PanelID" />
             @for (int f = 0; f < Model.Fields.Count; f++)
             {
                 @MSHelpers.Field(Model.Fields[f]);

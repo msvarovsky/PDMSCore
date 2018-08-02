@@ -15,9 +15,10 @@ namespace TestingConsoleApp
             Dictionary<string, StringValues> d = new Dictionary<string, Microsoft.Extensions.Primitives.StringValues>();
             FormCollection a = new FormCollection(d);
 
-            a.Keys.Add("ahoj");
-            a.Keys.Add("Key1");
-            a.Keys.Add("Key2");
+
+            //a.Keys.Add("ahoj");
+            //a.Keys.Add("Key1");
+            //a.Keys.Add("Key2");
 
 
             GeneralSessionInfo gsi = new GeneralSessionInfo(1, 1, "en");
