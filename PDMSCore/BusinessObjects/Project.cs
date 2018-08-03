@@ -97,15 +97,16 @@ namespace PDMSCore.BusinessObjects
             fields.Add(new NewLine());
 
             LabelDropDownListBox dd = new LabelDropDownListBox("1",ProjectID++.ToString(), "Project type:");
-            dd.DropDown.Add("1", "Novy");
-            dd.DropDown.Add("2", "Stary",true);
-            dd.DropDown.Add("3", "Refresh");
+
+            dd.DropDown.AddItem("1", "Novy");
+            dd.DropDown.AddItem("2", "Stary",true);
+            dd.DropDown.AddItem("3", "Refresh");
             fields.Add(dd);
 
             LabelDropDownListBox dd2 = new LabelDropDownListBox("1", ProjectID++.ToString(), "pt:");
-            dd2.DropDown.Add("1", "Novy");
-            dd2.DropDown.Add("2", "Stary", true);
-            dd2.DropDown.Add("3", "Refresh");
+            dd2.DropDown.AddItem("1", "Novy");
+            dd2.DropDown.AddItem("2", "Stary", true);
+            dd2.DropDown.AddItem("3", "Refresh");
             fields.Add(dd2);
 
 

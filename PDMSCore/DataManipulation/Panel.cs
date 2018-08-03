@@ -133,7 +133,6 @@ namespace PDMSCore.DataManipulation
                 }
                 if (f != null)
                 {
-                    f.ParentID = PanelID.ToString();
                     Fields.Add(f);
                 }
             }

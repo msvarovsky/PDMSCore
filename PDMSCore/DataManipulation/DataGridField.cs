@@ -26,7 +26,7 @@ namespace PDMSCore.DataManipulation
         private string[] HeaderLabels;
         private int[] MinColumnWidtg;
 
-        public DataGridField2():base("TODO","TODO","GridTable","table", null)
+        public DataGridField2():base("TODO","GridTable","table", null)
         {
             HeaderLabels = null;
             Data = new List<TableRow2>();
@@ -388,7 +388,7 @@ namespace PDMSCore.DataManipulation
         private TableRow HeaderRow;
         private List<TableRow> DataRow;
 
-        public DataGridField():base("todo","TODO","GridTable","table", null)
+        public DataGridField():base("TODO","GridTable","table", null)
         {
             DataRow = new List<TableRow>();
         }
