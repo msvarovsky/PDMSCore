@@ -26,7 +26,7 @@ namespace PDMSCore.DataManipulation
         private string[] HeaderLabels;
         private int[] MinColumnWidtg;
 
-        public DataGridField2():base("GridTable","table", null)
+        public DataGridField2():base("TODO","GridTable","table", null)
         {
             HeaderLabels = null;
             Data = new List<TableRow2>();
@@ -185,7 +185,7 @@ namespace PDMSCore.DataManipulation
 
                 if (tr.Cells[i].GetType() == typeof(CheckBoxField))
                 {
-                    DropDownListBox ddf = new DropDownListBox("filter-ddf-1", 1);
+                    DropDownListBox ddf = new DropDownListBox("todo","filter-ddf-1", 1);
                     ddf.jsOnInputFunction = "OnDataGridFilterChange()";
                     ddf.Add("", "(All)");
                     ddf.Add("1", "Yes");
@@ -218,7 +218,7 @@ namespace PDMSCore.DataManipulation
         {
             TagBuilder tbTableBody = new TagBuilder("tbody");
             //tbTableBody.Attributes.Add("id", "DataGridContent");
-            tbTableBody.Attributes.Add("id", "dg-" + this.ID + "-b");
+            tbTableBody.Attributes.Add("id", "dg-" + this.HTMLFieldID + "-b");
 
             for (int i = 0; i < Data.Count; i++)
                 tbTableBody.InnerHtml.AppendHtml(Data[i].HtmlText());
@@ -388,7 +388,7 @@ namespace PDMSCore.DataManipulation
         private TableRow HeaderRow;
         private List<TableRow> DataRow;
 
-        public DataGridField():base("GridTable","table", null)
+        public DataGridField():base("TODO","GridTable","table", null)
         {
             DataRow = new List<TableRow>();
         }

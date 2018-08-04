@@ -1,8 +1,93 @@
 ﻿
+exec GetPageInfo 1, 2, 'en'
+----------------------------
+ALTER PROCEDURE GetPageInfo
+	@RetailerID int,
+    @PageID int,
+	@LanguageID varchar(5)
+AS
+BEGIN
+	SELECT	p.PageID, l.Label as 'PageLabel', p.[URL] as 'URL'
+	FROM	RetailerPages rp
+	LEFT OUTER JOIN Pages p		ON p.PageID = rp.PageID
+	LEFT OUTER JOIN Labels l	ON l.LabelID = p.LabelID
+	WHERE	1 = 1
+	AND		rp.RetailerID	= @RetailerID
+	AND		rp.PageID		= @PageID
+	AND		l.LanguageID	= @LanguageID
+	AND		(l.CompanyID = @RetailerID OR l.CompanyID is NULL)
+END;
+
+--------------	Na hrani	-----------------------
+
+SELECT	p.PageID, l.Label as 'PageLabel', p.[URL] as 'URL'
+FROM	RetailerPages rp
+LEFT OUTER JOIN Pages p		ON p.PageID = rp.PageID
+LEFT OUTER JOIN Labels l	ON l.LabelID = p.LabelID
+WHERE	1=1
+AND		rp.RetailerID	= 1
+AND		rp.PageID		= 1
+AND		l.LanguageID	= 'en'
+AND		(l.CompanyID = 1 OR l.CompanyID is NULL)
+
+---------------------------------------------------------------------------------------------------------------
+
+exec GetPanelsInfo 1,1,'en'
+----------------------------
+ALTER PROCEDURE GetPanelsInfo
+	@RetailerID int,
+    @PageID int,
+	@LanguageID varchar(5)
+AS
+BEGIN
+	WITH cte as
+	(
+		SELECT	pan.PanelID, l.Label as 'PanelLabel', pan.DescriptionLabelID	
+		FROM	RetailerPages rp
+		LEFT OUTER JOIN PagePanels pp	ON	rp.PageID = pp.PageID
+		LEFT OUTER JOIN Panels pan		ON	pan.PanelID = pp.PanelID
+		LEFT OUTER JOIN Labels l		ON	l.LabelID = pan.LabelID 
+		WHERE	1=1
+		AND		rp.RetailerID	= @RetailerID
+		AND		rp.PageID		= @PageID
+		AND		l.LanguageID	= @LanguageID
+		AND		(l.CompanyID = @RetailerID OR l.CompanyID is NULL)
+	)
+	SELECT	cte.PanelID, cte.PanelLabel, l.Label as 'DescriptionLabel'
+	FROM	cte
+	LEFT OUTER JOIN Labels l	ON cte.DescriptionLabelID = l.LabelID
+	WHERE	l.LanguageID	= @LanguageID
+	AND		(l.CompanyID	= @RetailerID OR l.CompanyID is NULL)
+END;
+
+-----------------------		Na hrani	-----------------------
+
+WITH cte as
+(
+	SELECT	pan.PanelID, l.Label as 'PanelLabel', pan.DescriptionLabelID	
+	FROM	RetailerPages rp
+	LEFT OUTER JOIN PagePanels pp	ON	rp.PageID = pp.PageID
+	LEFT OUTER JOIN Panels pan		ON	pan.PanelID = pp.PanelID
+	LEFT OUTER JOIN Labels l		ON	l.LabelID = pan.LabelID 
+	WHERE	1=1
+	AND		rp.RetailerID	= 1
+	AND		rp.PageID		= 1
+	AND		l.LanguageID	= 'en'
+	AND		(l.CompanyID = 1 OR l.CompanyID is NULL)
+)
+SELECT	cte.PanelID, cte.PanelLabel, l.Label as 'DescriptionLabel'
+FROM	cte
+LEFT OUTER JOIN Labels l	ON cte.DescriptionLabelID = l.LabelID
+WHERE	l.LanguageID	= 'en'
+AND		(l.CompanyID	= 1 OR l.CompanyID is NULL)
+
+---------------------------------------------------------------------------------------------------------------
+
+
+
 exec GetPageFields 1,1,1,'en'
--------------------------------------
+-----------------------------
 ALTER PROCEDURE GetPageFields
---	Retailer Project, Page, Language, 
 	@RetailerID int,
 	@ProjectID int,
     @PageID int,
@@ -11,196 +96,131 @@ AS
 BEGIN
 	DECLARE @temp TABLE
 	(
-		PageID		int,
 		PanelID		int,
 		FieldID		int,
 		FieldLabel	nvarchar(100),
-		FieldType	nvarchar(100),
-		StringValue nvarchar(4000),
-		IntValue	int,
-		DateValue	Date,
-		FileValue	VARBINARY (MAX),
-		MulitValue  VARCHAR(100),
-		OtherRef	int,
-		MultiSelectItemID	int,
-		PredecessorFieldID	int
-	)
-	--Ziskam hodnoty projektu
-	INSERT INTO @temp
-	SELECT	pf.PageID, pf.PanelID, pf.FieldID, NULL as 'FieldLabel', pf.FieldType
-			,pf.StringValue, pf.IntValue, pf.DateValue, pf.FileValue, pf.MultiValue
-			,pf.OtherRef ,null, null
-	FROM	ProjectFields pf
-	WHERE	pf.ProjectID = @ProjectID
-	AND		pf.RetailerID = @RetailerID
-	AND		pf.PageID = @PageID
-
-	--Zde se pridaji obtions dropdown list boxu a radio buttonu
-	INSERT INTO @temp
-	SELECT	t.PageID, t.PanelID, ms.LabelID as 'FieldID', NULL as 'FieldLabel', (RTRIM(LTRIM(t.FieldType)) + '-item') as 'FieldType'
-			,NULL as 'StringValue',NULL as 'IntValue',NULL as 'DateValue',NULL as 'FileValue',NULL as 'MultiValue'
-			,t.FieldID as 'OtherRef', ms.ItemID as 'MultiSelectItemID', NULL as 'PredecessorFieldID'
-	FROM	MultiSelection ms, @temp t
-	WHERE	ms.ReferenceID = t.OtherRef
-
-	--Zde se pridaji Labels ve spravnem jazyce
-	SELECT	t.PageID, t.PanelID, t.FieldID, l.Label, t.FieldType, t.StringValue, t.IntValue, t.DateValue, t.FileValue, t.MulitValue
-			, t.OtherRef, t.MultiSelectItemID, t.PredecessorFieldID
-	FROM	@temp t
-	LEFT OUTER JOIN	Labels l ON t.FieldID= l.LabelID
-	AND		(l.LanguageID = @LanguageID	OR l.LanguageID IS NULL)
-	AND		(l.CompanyID = @RetailerID	OR l.CompanyID IS NULL)
-END;
-
-------------------------------------------------------------------
-
-
-
-exec GetPage 1,1,1,'en'
-------------------------------------------------------------------
-ALTER PROCEDURE GetPage
-	@RetailerID int,
-	@ProjectID int,
-    @PageID int,
-	@LanguageID varchar(5)
-AS
-BEGIN
-	DECLARE @temp TABLE
-	(
-		PageID		int,
-		PanelID		int,
-		FieldID		int,
-		FieldLabel	nvarchar(100),
-		FieldType	nvarchar(100),
-		StringValue nvarchar(100),
-		IntValue	int,
-		DateValue	Date,
-		FileValue	VARBINARY (MAX),
-		MultiValue  VARCHAR(100),
-		OtherRef	int,
-		MultiSelectItemID	int,
 		PredecessorFieldID	int,
-		ParentFieldID	int
+		FieldType	nvarchar(100),
+		ParentFieldID	int,
+		StringValue nvarchar(100),
+		FileValues VARBINARY (MAX),
+		OtherRef	int,
+		SelectedItemsIDs int
 	)
-	INSERT INTO @temp
-	SELECT	pf.PageID, pf.PanelID, pf.FieldID, 'label-tbd1' as 'Label', pf.FieldType
-			,pf.StringValue, pf.IntValue, pf.DateValue, pf.FileValue, pf.MultiValue
-			,pf.OtherRef ,null, pf.PredecessorFieldID, pf.ParentFieldID 
-	FROM	ProjectFields pf
-	WHERE	pf.ProjectID = @ProjectID
-	AND		pf.RetailerID = @RetailerID
-	AND		pf.PageID = @PageID
 
 	INSERT INTO @temp
-	SELECT	t.PageID, t.PanelID, ms.LabelID as 'FieldID', 'fieldlabel-tbd' as 'FieldLabel', (RTRIM(LTRIM(t.FieldType)) + '-item') as 'FieldType'
-			,NULL as 'StringValue',NULL as 'IntValue',NULL as 'DateValue',NULL as 'FileValue',NULL as 'MultiValue'
-			,t.FieldID as 'OtherRef', ms.ItemID as 'MultiSelectItemID', NULL as 'PredecessorFieldID', ms.ParentFieldID
-	FROM	MultiSelection ms, @temp t
-	WHERE	ms.ParentFieldID = t.FieldID
+	-- Ty zakladni (ne z multiselection) fields
+	SELECT	pc.PanelID,
+			pc.FieldID, NULL as 'FieldLabel', pc.PredecessorFieldID, pc.FieldType, NULL as 'ParentFieldID',
+			NULL as 'StringValue', NULL as 'FileValue', NULL as 'OtherRef', NULL as 'SelectedItemsIDs'
+	FROM	PanelsContent pc
+	WHERE	1=1	--	Vyfiltruju pouze radky tykajici se meho RetailerID a PageID. 
+	AND		pc.RetailerID	= @RetailerID
+	AND		pc.PageID		= @PageID
+		UNION
+	-- Fields z multiselection
+	SELECT	pc.PanelID,
+			ms.ItemID, NULL as 'FieldLabel', ms.PredecessorItemID, f.FieldType as 'FieldType', ms.ParentFieldID 'ParentFieldID',
+			NULL as 'StringValue', NULL as 'FileValue', NULL as 'OtherRef', NULL as 'SelectedItemsIDs'
+	FROM	PanelsContent pc, MultiSelection ms, Fields f
+	WHERE	ms.ParentFieldID = pc.FieldID
+	AND		ms.ItemID = f.FieldID
+	AND		1=1	--	Vyfiltruju pouze radky tykajici se meho RetailerID a PageID. 
+	AND		pc.RetailerID	= @RetailerID
+	AND		pc.PageID		= @PageID
+
+	--		Dodam predklad fields
+	UPDATE  t
+	SET		t.FieldLabel = l.Label
+	FROM	@temp t 
+	LEFT OUTER JOIN Fields f ON t.FieldID = f.FieldID
+	LEFT OUTER JOIN Labels l ON f.LabelID = l.LabelID
+	WHERE	l.LanguageID = @LanguageID
+	AND		(l.CompanyID = @RetailerID OR l.CompanyID is NULL)
 
 
-	SELECT	DISTINCT(t.PageID), l.Label
+	--		Dodam hodnoty vsech (non-Multiselection) fields z FieldsValues
+	SELECT	t.PanelID,
+			t.FieldID, t.FieldLabel, t.PredecessorFieldID, t.FieldType, t.ParentFieldID,
+			fv.StringValue, fv.FileValue, fv.OtherRef, fv.MultiValue as 'SelectedItemsIDs'
 	FROM	@temp t
-	LEFT OUTER JOIN	Pages p	ON t.PageID = p.PageID
-	LEFT OUTER JOIN	Labels l ON p.LabelID = l.LabelID
-	WHERE	l.LanguageID = @LanguageID
-
-	SELECT	DISTINCT(t.PanelID), 'Desc' as 'FieldType', l.Label
-	FROM	@temp t
-	LEFT OUTER JOIN	Panels p ON t.PanelID = p.PanelID
-	LEFT OUTER JOIN	Labels l ON p.DescriptionLabelID = l.LabelID
-	WHERE	l.LanguageID = @LanguageID
-	UNION
-	SELECT	DISTINCT(t.PanelID), 'Title' as 'FieldType', l.Label
-	FROM	@temp t
-	LEFT OUTER JOIN	Panels p	ON t.PanelID = p.PanelID
-	LEFT OUTER JOIN	Labels l	ON p.LabelID = l.LabelID
-	WHERE	l.LanguageID = @LanguageID
-
-	select t.PageID, t.PanelID, t.FieldID, l.Label as 'FieldLabel', t.FieldType, 
-			t.StringValue, t.IntValue, t.DateValue, t.FileValue, t.MultiValue, 
-			t.OtherRef, t.MultiSelectItemID, t.PredecessorFieldID, t.ParentFieldID
-	FROM	@temp t
-	LEFT OUTER JOIN	Panels p	ON t.PanelID = p.PanelID
-	LEFT OUTER JOIN	Labels l	ON t.FieldID = l.LabelID
-	WHERE	l.LanguageID = @LanguageID
-	ORDER BY t.PredecessorFieldID
+	LEFT OUTER JOIN FieldsValues fv ON t.FieldID = fv.FieldID
+	WHERE	fv.RetailerID is NULL
+			OR
+			(	--	RetailerID musim vyzadovat pouze v pripade norm fields. 
+				--	Ne tech z multiselection. A to se pozna podle ParentFieldID.
+				--	Update: Vlastne tomu nerozumim, ale funguje to.
+					fv.RetailerID = @RetailerID 
+				AND t.ParentFieldID is NULL
+			)
+	AND		fv.ProjectID = @ProjectID
 END;
 
---------------
+------------	Na Hrani	-----------------
 
----- Na hrani ----
 DECLARE @temp TABLE
 (
-	PageID		int,
 	PanelID		int,
 	FieldID		int,
 	FieldLabel	nvarchar(100),
-	FieldType	nvarchar(100),
-	StringValue nvarchar(100),
-	IntValue	int,
-	DateValue	Date,
-	FileValue	VARBINARY (MAX),
-	MultiValue  VARCHAR(100),
-	OtherRef	int,
-	MultiSelectItemID	int,
 	PredecessorFieldID	int,
-	ParentFieldID	int
+	FieldType	nvarchar(100),
+	ParentFieldID	int,
+	StringValue nvarchar(100),
+	FileValues VARBINARY (MAX),
+	OtherRef	int,
+	SelectedItemsIDs int
 )
-INSERT INTO @temp
-SELECT	pf.PageID, pf.PanelID, pf.FieldID, 'label-tbd1' as 'Label', pf.FieldType
-		,pf.StringValue, pf.IntValue, pf.DateValue, pf.FileValue, pf.MultiValue
-		,pf.OtherRef, null, pf.PredecessorFieldID, pf.ParentFieldID 
-FROM	ProjectFields pf
-WHERE	pf.ProjectID = 1
-AND		pf.RetailerID = 1
-AND		pf.PageID = 1
-
-
 
 INSERT INTO @temp
-SELECT	t.PageID, t.PanelID, ms.LabelID as 'FieldID', 'fieldlabel-tbd' as 'FieldLabel', (RTRIM(LTRIM(t.FieldType)) + '-item') as 'FieldType'
-		,NULL as 'StringValue',NULL as 'IntValue',NULL as 'DateValue',NULL as 'FileValue',NULL as 'MultiValue'
-		,t.FieldID as 'OtherRef', ms.ItemID as 'MultiSelectItemID', NULL as 'PredecessorFieldID', ms.ParentFieldID 
-FROM	MultiSelection ms, @temp t
-WHERE	ms.ParentFieldID = t.FieldID
+-- Ty zakladni (ne z multiselection) fields
+SELECT	pc.PanelID,
+		pc.FieldID, NULL as 'FieldLabel', pc.PredecessorFieldID, pc.FieldType, NULL as 'ParentFieldID',
+		NULL as 'StringValue', NULL as 'FileValue', NULL as 'OtherRef', NULL as 'SelectedItemsIDs'
+FROM	PanelsContent pc
+WHERE	1=1	--	Vyfiltruju pouze radky tykajici se meho RetailerID a PageID. 
+AND		pc.RetailerID	= 1
+AND		pc.PageID		= 1
+	UNION
+-- Fields z multiselection
+SELECT	pc.PanelID,
+		ms.ItemID, NULL as 'FieldLabel', ms.PredecessorItemID, f.FieldType as 'FieldType', ms.ParentFieldID 'ParentFieldID',
+		NULL as 'StringValue', NULL as 'FileValue', NULL as 'OtherRef', NULL as 'SelectedItemsIDs'
+FROM	PanelsContent pc, MultiSelection ms, Fields f
+WHERE	ms.ParentFieldID = pc.FieldID
+AND		ms.ItemID = f.FieldID
+AND		1=1	--	Vyfiltruju pouze radky tykajici se meho RetailerID a PageID. 
+AND		pc.RetailerID	= 1
+AND		pc.PageID		= 1
 
-SELECT	* from @temp
+--		Dodam predklad fields
+UPDATE  t
+SET		t.FieldLabel = l.Label
+FROM	@temp t 
+LEFT OUTER JOIN Fields f ON t.FieldID = f.FieldID
+LEFT OUTER JOIN Labels l ON f.LabelID = l.LabelID
+WHERE	l.LanguageID = 'en'
+AND		(l.CompanyID = 1 OR l.CompanyID is NULL)
 
-SELECT	DISTINCT(t.PageID), l.Label
+--		Dodam hodnoty vsech (non-Multiselection) fields z FieldsValues
+SELECT	t.PanelID,
+		t.FieldID, t.FieldLabel, t.PredecessorFieldID, t.FieldType, t.ParentFieldID,
+		fv.StringValue, fv.FileValue, fv.OtherRef, fv.MultiValue as 'SelectedItemsIDs'
 FROM	@temp t
-LEFT OUTER JOIN	Pages p	ON t.PageID = p.PageID
-LEFT OUTER JOIN	Labels l ON p.LabelID = l.LabelID
-WHERE	l.LanguageID = 'cs'
-
-SELECT	DISTINCT(t.PanelID), 'Desc' as 'FieldType', l.Label
-FROM	@temp t
-LEFT OUTER JOIN	Panels p ON t.PanelID = p.PanelID
-LEFT OUTER JOIN	Labels l ON p.DescriptionLabelID = l.LabelID
-WHERE	l.LanguageID = 'cs'
-UNION
-SELECT	DISTINCT(t.PanelID), 'Title' as 'FieldType', l.Label
-FROM	@temp t
-LEFT OUTER JOIN	Panels p	ON t.PanelID = p.PanelID
-LEFT OUTER JOIN	Labels l	ON p.LabelID = l.LabelID
-WHERE	l.LanguageID = 'cs'
-
-select t.PageID, t.PanelID, t.FieldID, l.Label, t.FieldType, 
-		t.StringValue, t.IntValue, t.DateValue, t.FileValue, t.MultiValue, 
-		t.OtherRef, t.MultiSelectItemID, t.PredecessorFieldID, t.ParentFieldID
-FROM	@temp t
-LEFT OUTER JOIN	Panels p	ON t.PanelID = p.PanelID
-LEFT OUTER JOIN	Labels l	ON t.FieldID = l.LabelID
-WHERE	l.LanguageID = 'cs'
-ORDER BY t.PredecessorFieldID
----------------
-
-SELECT * FROM PagePanels
-SELECT * FROM Panels
-SELECT * FROM Labels
+LEFT OUTER JOIN FieldsValues fv ON t.FieldID = fv.FieldID
+WHERE	fv.RetailerID is NULL
+		OR
+		(	--	RetailerID musim vyzadovat pouze v pripade norm fields. 
+			--	Ne tech z multiselection. A to se pozna podle ParentFieldID.
+			--	Update: Vlastne tomu nerozumim, ale funguje to.
+				fv.RetailerID = 1 
+			AND t.ParentFieldID is NULL
+		)
+AND		fv.ProjectID = 1
 
 
-------------------------------------------------------------------------------
+
+---------------------------------------------------------------------------------------------------------------
 
 SELECT * from Labels
 exec AddLabel 16, 'cs', 'Nazdar'
@@ -248,7 +268,7 @@ exec AddFieldToPanel 15,1,'tx'
 SELECT	*
 FROM	PanelFields pf
 
-ALTER PROCEDURE AddFieldToPanel
+CREATE PROCEDURE AddFieldToPanel
 	@FieldID INT,
 	@PanelID INT,
 	@FieldType varchar(10)

@@ -8,3 +8,18 @@ SELECT * from Labels
 --					FieldID,	PanelID,	FileType????? (to je divne)
 exec AddFieldToPanel 15,1,'tx'
 SELECT	*	FROM	PanelFields pf
+
+
+
+SELECT	*	FROM	ProjectFields
+SELECT	*	FROM	MultiSelection
+
+
+
+
+
+
+
+
+SELECT * FROM ProjectFields
+

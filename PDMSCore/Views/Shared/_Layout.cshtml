@@ -83,7 +83,9 @@
     </div>
 
     <div class="AllButFixed">
-        <div class="PageMenu">PageMenu</div>
+        <div class="PageMenu">
+            @RenderSection("PageMenuSection", false)
+        </div>
         <div class="PageContent">
             @*@RenderSection("BreadAndMenu", false)
                 @RenderSection("PageInfo", false)*@
