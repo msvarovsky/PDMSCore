@@ -56,7 +56,7 @@ namespace PDMSCore.Controllers
             Project pr = new Project(1);
             pr.SavePage(gsi, 1, fc); // asi bych ProjectID a PageID mel dodat ze stranky jako hidden fields.
 
-            p.Page.SideMenu.Select(HttpContext.Session.GetString("OpenMenu"));
+            //p.Page.SideMenu.Select(HttpContext.Session.GetString("OpenMenu"));
 
             //return View(p);
             return this.RedirectToAction("ShowProject", "Project");

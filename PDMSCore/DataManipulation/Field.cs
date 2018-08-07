@@ -1110,7 +1110,7 @@ namespace PDMSCore.DataManipulation
 
     public class SimpleRadioButton : Field, IHtmlElement, IDBSaveable
     {
-        private Field RadioButton { get; set; }
+        private Field RadioButtonLabel { get; set; }
         public bool SelectedOrChecked { get; set; }
 
         public SimpleRadioButton(string PredecessorHtmlID, string GroupID, string ValueID, string VisibleText, bool SelectedOrChecked = false, bool Disabled = false)
@@ -1127,7 +1127,7 @@ namespace PDMSCore.DataManipulation
 
             this.TypeAttribute = "radio";
 
-            RadioButton = new LabelField(VisibleText, false, IDAndFor);
+            RadioButtonLabel = new LabelField(VisibleText, false, IDAndFor);
         }
 
         public TagBuilder BuildHtmlTag()
@@ -1142,7 +1142,7 @@ namespace PDMSCore.DataManipulation
                 tbItemMain.Attributes.Add("checked", "");   //  TODO: Overit jestli ten 2. parametr muze byt prazdny.
 
             tbParent.InnerHtml.AppendHtml(tbItemMain);
-            tbParent.InnerHtml.AppendHtml(((LabelField)RadioButton).BuildHtmlTag());
+            tbParent.InnerHtml.AppendHtml(((LabelField)RadioButtonLabel).BuildHtmlTag());
             return tbParent;
         }
         
@@ -1181,24 +1181,20 @@ namespace PDMSCore.DataManipulation
     /// </summary>
     public class SimpleDropDownListBox : Field, IHtmlElement, IDBSaveable
     {
-        private Field RadioButton { get; set; }
         public bool SelectedOrChecked { get; set; }
 
         public SimpleDropDownListBox(string PredecessorHtmlID, string GroupID, string ValueID, string VisibleText, bool SelectedOrChecked = false, bool Disabled = false)
-            : base(null, null, "input", null)
+            : base(null, null, "option", VisibleText)
         {
             string IDAndFor = PredecessorHtmlID + "-o" + ValueID;
             this.SelectedOrChecked = SelectedOrChecked;
             base.Disabled = Disabled;
 
-            this.NameAttribute = PredecessorHtmlID;
-            this.HTMLFieldID = IDAndFor;
-            this.ParentDBID = GroupID;
-            base.ValueAttribute = ValueID;
-
-            this.TypeAttribute = "radio";
-
-            RadioButton = new LabelField(VisibleText, false, IDAndFor);
+            NameAttribute = PredecessorHtmlID;
+            HTMLFieldID = IDAndFor;
+            ParentDBID = GroupID;
+            ValueAttribute = ValueID;
+            //base.VisibleText = VisibleText;
         }
 
         public TagBuilder BuildHtmlTag()
@@ -1213,7 +1209,6 @@ namespace PDMSCore.DataManipulation
                 tbItemMain.Attributes.Add("checked", "");   //  TODO: Overit jestli ten 2. parametr muze byt prazdny.
 
             tbParent.InnerHtml.AppendHtml(tbItemMain);
-            tbParent.InnerHtml.AppendHtml(((LabelField)RadioButton).BuildHtmlTag());
             return tbParent;
         }
 
@@ -1268,7 +1263,11 @@ namespace PDMSCore.DataManipulation
             else if (gct == GroupControlType.DropDownListBoxes)
             {
                 //ItemMain = new Field(PredecessorHtmlID, ValueID, GroupID + "-" + ValueID, "option", VisibleText);
-                ItemMain = new Field(ValueID, PredecessorHtmlID + "-o" + ValueID, "option", VisibleText);
+
+                ItemMain = new SimpleDropDownListBox(PredecessorHtmlID, GroupID, ValueID, VisibleText, SelectedOrChecked, Disabled);
+
+
+                //ItemMain = new Field(ValueID, PredecessorHtmlID + "-o" + ValueID, "option", VisibleText);
                 ItemMain.NameAttribute = null;
             }
             else
@@ -1279,31 +1278,17 @@ namespace PDMSCore.DataManipulation
         {
             TagBuilder tb = base.BuildBaseHtmlTag();
 
-            if (gct == GroupControlType.CheckBoxes)
+            if (ItemMain != null)
             {
-                if (ItemMain != null)
+                if (gct == GroupControlType.CheckBoxes)
                     tb = ((SimpleCheckBox)ItemMain).BuildHtmlTag(tb);
-                else
-                    return tb;
-            }
-            else if(gct == GroupControlType.RadioButtons)
-            {
-                if (ItemMain != null)
+                else if (gct == GroupControlType.RadioButtons)
                     tb = ((SimpleRadioButton)ItemMain).BuildHtmlTag(tb);
-                else
-                    return tb;
-            }
-            else if (gct == GroupControlType.DropDownListBoxes)
-            {
-                if (ItemMain != null)
-                    tb = ((SimpleRadioButton)ItemMain).BuildHtmlTag(tb);
-                else
-                    return tb;
+                else if (gct == GroupControlType.DropDownListBoxes)
+                    tb = ((SimpleDropDownListBox)ItemMain).BuildHtmlTag(tb);
             }
             else
-                return null;
-
-
+                tb = null;
 
             return tb;
         }
@@ -1476,7 +1461,8 @@ namespace PDMSCore.DataManipulation
             }
             else
             {
-                string[] a = Selected.Split(',');
+                Selected = Selected.Trim('[');
+                string[] a = Selected.Split(']',StringSplitOptions.RemoveEmptyEntries);
                 SelectedItems = new List<string>(a);
             }
         }
@@ -1530,7 +1516,6 @@ namespace PDMSCore.DataManipulation
         public override List<Field> GetDBFields()
         {
             List<Field> l = new List<Field>();
-
             for (int i = 0; i < items.Count; i++)
             {
                 List<Field> inner = items[i].GetDBFields();
@@ -1680,6 +1665,21 @@ namespace PDMSCore.DataManipulation
 
             return tbDropDown;
         }
+
+        public override string CreateDBUpdateStringIfNecessary(StringValues NewValue, FieldValueUpdateInfo UpdateInfo)
+        {
+            //  exec AddOrUpdateMultiValue 1,1,19,7,1
+
+            UpdateInfo.FieldID = this.DBFieldID;
+            string ret = "exec AddOrUpdateMultiValue " 
+                +UpdateInfo.RetailerID + ", " 
+                +UpdateInfo.ProjectID + ", " 
+                +UpdateInfo.FieldID + ", " 
+                +NewValue.ToString() + ", " 
+                +UpdateInfo.UserID.ToString();
+
+            return ret + ";";
+        }
     }
     public class LabelDropDownListBox : Field, IHtmlElement
     {
@@ -1710,7 +1710,9 @@ namespace PDMSCore.DataManipulation
 
         public override List<Field> GetDBFields()
         {
-            return DropDown.GetDBFields();
+            //return DropDown.GetDBFields();
+
+            return new List<Field>() { DropDown };
         }
     }
 

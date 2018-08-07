@@ -47,13 +47,15 @@ namespace PDMSCore.BusinessObjects
         public int RetailerID { get; set; }
         public int ProjectID { get; set; }
         public string FieldID { get; set; }
+        public int UserID { get; set; }
 
-        public FieldValueUpdateInfo(SqlConnection con, int RetailerID, int ProjectID, string FieldID = null)
+        public FieldValueUpdateInfo(SqlConnection con, int RetailerID, int ProjectID, string FieldID, int UserID)
         {
             this.con = con;
             this.RetailerID = RetailerID;
             this.ProjectID = ProjectID;
             this.FieldID = FieldID;
+            this.UserID = UserID;
         }
     }
 
@@ -361,7 +363,7 @@ namespace PDMSCore.BusinessObjects
             using (SqlConnection con = new SqlConnection(GetSqlConnectionString()))
             {
                 con.Open();
-                FieldValueUpdateInfo UpdateInfo = new FieldValueUpdateInfo(con, gsi.retailerID, ProjectID);
+                FieldValueUpdateInfo UpdateInfo = new FieldValueUpdateInfo(con, gsi.retailerID, ProjectID,null, gsi.userID);
                 OldProject.Page.Panels.SavePanels(fc, UpdateInfo);
             }
 

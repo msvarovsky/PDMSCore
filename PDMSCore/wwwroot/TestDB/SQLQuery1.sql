@@ -222,6 +222,99 @@ LEFT OUTER JOIN FieldsValues fv ON pf.FieldID = fv.FieldID
 
 
 
-SELECT	*
-FROM	FieldsValues fv
-LEFT OUTER JOIN PanelFields pf ON pf.FieldID = fv.FieldID     
+SELECT	*	FROM	FieldsValues fv
+
+IF EXISTS (	SELECT	1 
+			FROM	FieldsValues fv
+			WHERE	fv.RetailerID = 1
+			AND		fv.ProjectID = 1
+			AND		fv.FieldID = 19
+			)
+BEGIN
+
+
+SELECT	*	FROM	Fields
+
+
+SELECT	*	FROM	FieldsValues fv
+	UPDATE	FieldsValues
+	SET		MultiValue = 6
+	WHERE	RetailerID = 1
+	AND		ProjectID = 1
+	AND		FieldID = 19
+	SELECT	*	FROM	FieldsValues fv
+
+	
+END
+
+
+SELECT	*	FROM	FieldsValues fv
+begin tran
+	exec AddOrUpdateMultiValue 1,1,19,6,1
+	SELECT	*	FROM	FieldsValues fv
+	exec AddOrUpdateMultiValue 1,1,19,7,1
+	SELECT	*	FROM	FieldsValues fv
+rollback tran
+
+
+
+-----------
+ALTER PROCEDURE AddOrUpdateMultiValue
+	@RetailerID int,
+    @ProjectID int,
+	@FieldID int,
+	@SelectedFieldID int,
+	@UserID int
+AS
+BEGIN
+	DECLARE @SelectedFieldIDAsString nvarchar(10)
+	SET		@SelectedFieldIDAsString = '[' + CONVERT(varchar(10), @SelectedFieldID) + ']'
+	
+	IF EXISTS --  ...Row with FieldID in FieldsValues
+	(
+		SELECT	1
+		FROM	FieldsValues fv
+		WHERE	fv.RetailerID = @RetailerID
+		AND		fv.ProjectID = @ProjectID
+		AND		fv.FieldID = @FieldID
+	)
+	BEGIN
+		DECLARE	@typ nvarchar(10)
+		SELECT	@typ = LTRIM(RTRIM(f.FieldType))
+		FROM	Fields f
+		WHERE	f.FieldID = @FieldID
+
+		IF @typ = 'ddlb' OR @typ = 'rb'	--	dropdown lixtbox, radio buttons
+		BEGIN
+			UPDATE	FieldsValues
+			SET		MultiValue	= @SelectedFieldIDAsString
+			WHERE	RetailerID	= @RetailerID
+			AND		ProjectID	= @ProjectID
+			AND		FieldID		= @FieldID
+		END
+		IF @typ = 'cb'	--	checkbox
+		BEGIN
+			IF NOT EXISTS --  
+			(
+				SELECT	1
+				FROM	FieldsValues fv
+				WHERE	fv.RetailerID = @RetailerID
+				AND		fv.ProjectID = @ProjectID
+				AND		fv.FieldID = @FieldID
+				AND		fv.MultiValue like '%' + @SelectedFieldIDAsString + '%'
+			)
+			BEGIN		--	Append the ID there
+				UPDATE	FieldsValues
+				SET		MultiValue = ISNULL (CONCAT(MultiValue,@SelectedFieldIDAsString),@SelectedFieldIDAsString)
+				WHERE	RetailerID = @RetailerID
+				AND		ProjectID = @ProjectID
+				AND		FieldID = @FieldID
+			END
+		END
+	END
+	else
+	BEGIN
+		INSERT INTO FieldsValues (RetailerID, ProjectID, FieldID, MultiValue)
+		VALUES				(@RetailerID, @ProjectID, @FieldID, @SelectedFieldIDAsString)
+	END
+END;
