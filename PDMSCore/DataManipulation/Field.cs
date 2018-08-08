@@ -376,12 +376,13 @@ namespace PDMSCore.DataManipulation
         {
             if (NewValue != Text)
             {
-                UpdateInfo.FieldID = HTMLFieldID;
-                string ret = "UPDATE FieldsValues" + 
-                    " SET StringValue = '" + NewValue + "'" +
-                    " WHERE RetailerID = " + UpdateInfo.RetailerID +
-                    " AND ProjectID = " + UpdateInfo.ProjectID +
-                    " AND FieldID = " + UpdateInfo.FieldID;
+                string ret = "exec AddOrUpdateStringValue " +
+                        UpdateInfo.RetailerID +
+                    ", " + UpdateInfo.ProjectID +
+                    ", " + this.DBFieldID +
+                    ", '" + NewValue + "'"+
+                    ", " + UpdateInfo.UserID;
+
                 return ret + ";";
             }
             return null;
@@ -1046,7 +1047,7 @@ namespace PDMSCore.DataManipulation
         public bool SelectedOrChecked { get; set; }
         
         public SimpleCheckBox(string PredecessorHtmlID, string GroupID, string ValueID, string VisibleText, bool SelectedOrChecked = false, bool Disabled = false)
-            : base(null, null, "input", null)
+            : base(ValueID, null, "input", null)
         {
             string IDAndFor = PredecessorHtmlID + "-o" + ValueID;
             this.SelectedOrChecked = SelectedOrChecked;
@@ -1084,27 +1085,34 @@ namespace PDMSCore.DataManipulation
 
             if (c != SelectedOrChecked)
             {
-                UpdateInfo.FieldID = HTMLFieldID;
-                string ret = "UPDATE FieldsValues" +
-                    " SET StringValue = '" + NewValue + "'" +
-                    " WHERE RetailerID = " + UpdateInfo.RetailerID +
-                    " AND ProjectID = " + UpdateInfo.ProjectID +
-                    " AND FieldID = " + UpdateInfo.FieldID;
+                UpdateInfo.FieldID = this.DBFieldID;
+                string ret = "exec AddOrUpdateMultiValue "
+                    + UpdateInfo.RetailerID + ", "
+                    + UpdateInfo.ProjectID + ", "
+                    + this.ParentDBID + ", "
+                    + this.DBFieldID + ", "
+                    + UpdateInfo.UserID.ToString();
+
                 return ret + ";";
             }
             return null;
         }
         public override string GetResetDBUpdateString(FieldValueUpdateInfo UpdateInfo)
         {
-            string NewValue = "";
+            //  RemoveMultiValue 1,1,5,16,1
+            if (SelectedOrChecked)
+            {
+                UpdateInfo.FieldID = HTMLFieldID;
+                string ret = "exec RemoveMultiValue " +
+                        UpdateInfo.RetailerID +
+                    ", " + UpdateInfo.ProjectID +
+                    ", " + this.ParentDBID +
+                    ", " + this.DBFieldID +
+                    ", " + UpdateInfo.UserID;
 
-            UpdateInfo.FieldID = HTMLFieldID;
-            string ret = "UPDATE FieldsValues" +
-                " SET StringValue = '" + NewValue + "'" +
-                " WHERE RetailerID = " + UpdateInfo.RetailerID +
-                " AND ProjectID = " + UpdateInfo.ProjectID +
-                " AND FieldID = " + UpdateInfo.FieldID;
-            return ret + ";";
+                return ret + ";";
+            }
+            return null;
         }
     }
 
@@ -1114,7 +1122,7 @@ namespace PDMSCore.DataManipulation
         public bool SelectedOrChecked { get; set; }
 
         public SimpleRadioButton(string PredecessorHtmlID, string GroupID, string ValueID, string VisibleText, bool SelectedOrChecked = false, bool Disabled = false)
-            : base(null, null, "input", null)
+            : base(ValueID, null, "input", null)
         {
             string IDAndFor = PredecessorHtmlID + "-o" + ValueID;
             this.SelectedOrChecked = SelectedOrChecked;
@@ -1164,14 +1172,14 @@ namespace PDMSCore.DataManipulation
         }
         public override string GetResetDBUpdateString(FieldValueUpdateInfo UpdateInfo)
         {
-            string NewValue = "";
-
             UpdateInfo.FieldID = HTMLFieldID;
-            string ret = "UPDATE FieldsValues" +
-                " SET StringValue = '" + NewValue + "'" +
-                " WHERE RetailerID = " + UpdateInfo.RetailerID +
-                " AND ProjectID = " + UpdateInfo.ProjectID +
-                " AND FieldID = " + UpdateInfo.FieldID;
+            string ret = "exec RemoveMultiValue " +
+                    UpdateInfo.RetailerID +
+                ", " + UpdateInfo.ProjectID +
+                ", " + this.ParentDBID +
+                ", " + this.DBFieldID +
+                ", " + UpdateInfo.UserID;
+
             return ret + ";";
         }
     }
@@ -1206,7 +1214,7 @@ namespace PDMSCore.DataManipulation
             TagBuilder tbItemMain = base.BuildBaseHtmlTag();
 
             if (SelectedOrChecked)
-                tbItemMain.Attributes.Add("checked", "");   //  TODO: Overit jestli ten 2. parametr muze byt prazdny.
+                tbItemMain.Attributes.Add("selected", "");   //  TODO: Overit jestli ten 2. parametr muze byt prazdny.
 
             tbParent.InnerHtml.AppendHtml(tbItemMain);
             return tbParent;
@@ -1429,24 +1437,20 @@ namespace PDMSCore.DataManipulation
                 throw new Exception("MS: Unknown control in MultiSelectionControl");
         }
 
-        public void AddItem(string ItemID, string VisibleText, bool SelectedOrChecked = false, bool Disabled = false)
+        public bool AddItem(string ItemID, string VisibleText)
+        { }
+
+        public bool AddItem(string ItemID, string VisibleText, bool SelectedOrChecked = false, bool Disabled = false)
         {
+            if (ItemAlreadyExists(ItemID))
+                return false;
+
             items.Add(new MultiSelectionItem(gct, PredecessorHtmlID, GroupID, ItemID, VisibleText, SelectedOrChecked, Disabled));
+            if (SelectedOrChecked && !SelectedItems.Contains(ItemID))
+                SelectedItems.Add(ItemID);
 
+            return true;
         }
-
-        //public bool AddItem(MultiSelectionItem item)
-        //{
-        //    if (ExistsInExistingItems(item.Value))
-        //        return false;
-        //    else
-        //    {
-        //        items.Add(item);
-        //        if (item.SelectedOrChecked && !ExistsInSelectedValuesArrays(item.HTMLFieldID))
-        //            SelectedItems.Add(item.HTMLFieldID);
-        //        return true;
-        //    }
-        //}
 
         /// <summary>
         /// Defines the list of selected/checked items. These items don't even have to have been added to the control yet.
@@ -1461,8 +1465,10 @@ namespace PDMSCore.DataManipulation
             }
             else
             {
-                Selected = Selected.Trim('[');
-                string[] a = Selected.Split(']',StringSplitOptions.RemoveEmptyEntries);
+                Selected = Selected.Replace(")(", "|");
+                Selected = Selected.Trim('(').Trim(')');
+
+                string[] a = Selected.Trim().Split('|',StringSplitOptions.RemoveEmptyEntries);
                 SelectedItems = new List<string>(a);
             }
         }
@@ -1471,17 +1477,23 @@ namespace PDMSCore.DataManipulation
         {
             for (int i = 0; i < AllMultiSelectItem.Count; i++)
             {
-                //if (AllMultiSelectItem[i].ParentFieldID == base.HTMLFieldID)
                 if (AllMultiSelectItem[i].ParentFieldID == base.DBFieldID)
                 {
                     bool bCheckedOrSelected = (ExistsInSelectedValuesArrays(AllMultiSelectItem[i].MultiSelectItemID.ToString()) ? true : false);
 
-                    //pozdeji nahradit mim AddItem(...)
-                    items.Add(new MultiSelectionItem(gct, PredecessorHtmlID, GroupID, AllMultiSelectItem[i].MultiSelectItemID, AllMultiSelectItem[i].StringValue, bCheckedOrSelected));
+                    //items.Add(new MultiSelectionItem(gct, PredecessorHtmlID, GroupID, AllMultiSelectItem[i].MultiSelectItemID, AllMultiSelectItem[i].StringValue, bCheckedOrSelected));
+                    AddItem(AllMultiSelectItem[i].MultiSelectItemID, AllMultiSelectItem[i].StringValue, bCheckedOrSelected);
+                    AddItem(AllMultiSelectItem[i].MultiSelectItemID, AllMultiSelectItem[i].StringValue)
                 }
             }
         }
-
+        private bool ItemAlreadyExists(string id)
+        {
+            for (int i = 0; i < items.Count; i++)
+                if (items[i].DBFieldID == id)
+                    return true;
+            return false;
+        }
         private bool ExistsInSelectedValuesArrays(string id)
         {
             for (int i = 0; i < SelectedItems.Count; i++)
@@ -1489,13 +1501,6 @@ namespace PDMSCore.DataManipulation
                     return true;
             return false;
         }
-        //private bool ExistsInExistingItems(string id)
-        //{
-        //    for (int i = 0; i < items.Count; i++)
-        //        if (items[i].Value == id)       
-        //            return true;
-        //    return false;
-        //}
 
         public TagBuilder BuildHtmlTag()
         {
@@ -1505,10 +1510,7 @@ namespace PDMSCore.DataManipulation
             if (tb != null)
             {
                 for (int i = 0; i < items.Count; i++)
-                {
                     tb.InnerHtml.AppendHtml(items[i].BuildHtmlTag());
-                    //tb = items[i].BuildHtmlTag(tb);
-                }   
             }
             return tb;
         }
@@ -1520,11 +1522,31 @@ namespace PDMSCore.DataManipulation
             {
                 List<Field> inner = items[i].GetDBFields();
                 for (int r = 0; r < inner.Count; r++)
-                {
                     l.Add(inner[r]);
-                }
             }
             return l;
+        }
+
+        public override string CreateDBUpdateStringIfNecessary(StringValues NewValue, FieldValueUpdateInfo UpdateInfo)
+        {
+            int NewValInt = -1;
+            if (Int32.TryParse(NewValue, out NewValInt))
+            {
+                if (!ExistsInSelectedValuesArrays(NewValue))
+                {
+                    if (gct == GroupControlType.RadioButtons || gct == GroupControlType.DropDownListBoxes)  //  Jeste nevim proc to zde testuju, ale radeji pro jistotu.
+                    {
+                        string ret = "exec AddOrUpdateMultiValue "
+                            + UpdateInfo.RetailerID + ", "
+                            + UpdateInfo.ProjectID + ", "
+                            + this.DBFieldID + ", "
+                            + NewValue + ", "
+                            + UpdateInfo.UserID.ToString();
+                        return ret + ";";
+                    }
+                }
+            }
+            return null;
         }
     }
 
@@ -1575,25 +1597,12 @@ namespace PDMSCore.DataManipulation
 
         public override List<Field> GetDBFields()
         {
-            return RadioButtons.GetDBFields();
+            return new List<Field>() { RadioButtons };
+
+            //return RadioButtons.GetDBFields();
         }
     }
 
-    //public class CheckBoxFields : MultiSelectionControl, IHtmlElement
-    //{
-    //    //public CheckBoxFields(string ParentID, string NameID) : base(GroupControlType.CheckBoxes, ParentID, NameID, NameID) {}
-    //    public CheckBoxFields(string ParentID, string NameID) : base(GroupControlType.CheckBoxes, ParentID, NameID) { }
-
-    //    public void Add(string ItemID, string VisibleText, bool SelectedOrChecked = false, bool Disabled = false)
-    //    {
-    //        AddItem(new MultiSelectionItem(GroupControlType.CheckBoxes, this.ParentID, this.HTMLFieldID, ItemID, VisibleText, SelectedOrChecked, Disabled));
-    //    }
-
-    //    public new TagBuilder BuildHtmlTag()
-    //    {   // Zadny base.BuildBaseHtmlTag();
-    //        return base.BuildHtmlTag();
-    //    }
-    //}
     public class LabelCheckBoxFields : Field, IHtmlElement
     {
         public LabelField Label { get; set; }
@@ -1637,7 +1646,6 @@ namespace PDMSCore.DataManipulation
         public string jsOnInputFunction { get; set; }
 
         public DropDownListBox(string ParentID, string NameID, int VisibleRows = 1)
-            //: base(GroupControlType.DropDownListBoxes, ParentID, NameID, NameID)
             : base(GroupControlType.DropDownListBoxes, ParentID, NameID)
         {
             Classes = new List<string>();
@@ -1665,21 +1673,6 @@ namespace PDMSCore.DataManipulation
 
             return tbDropDown;
         }
-
-        public override string CreateDBUpdateStringIfNecessary(StringValues NewValue, FieldValueUpdateInfo UpdateInfo)
-        {
-            //  exec AddOrUpdateMultiValue 1,1,19,7,1
-
-            UpdateInfo.FieldID = this.DBFieldID;
-            string ret = "exec AddOrUpdateMultiValue " 
-                +UpdateInfo.RetailerID + ", " 
-                +UpdateInfo.ProjectID + ", " 
-                +UpdateInfo.FieldID + ", " 
-                +NewValue.ToString() + ", " 
-                +UpdateInfo.UserID.ToString();
-
-            return ret + ";";
-        }
     }
     public class LabelDropDownListBox : Field, IHtmlElement
     {
@@ -1704,14 +1697,11 @@ namespace PDMSCore.DataManipulation
 
             tb.InnerHtml.AppendHtml(Label.BuildHtmlTag());
             tb.InnerHtml.AppendHtml(DropDown.BuildHtmlTag());
-
             return tb;
         }
 
         public override List<Field> GetDBFields()
         {
-            //return DropDown.GetDBFields();
-
             return new List<Field>() { DropDown };
         }
     }

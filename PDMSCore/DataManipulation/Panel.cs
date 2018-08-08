@@ -239,7 +239,7 @@ namespace PDMSCore.DataManipulation
         //    return ret;
         //}
 
-        public bool Save(IFormCollection fc, FieldValueUpdateInfo UpdateInfo)
+        public string GetSaveSQL(IFormCollection fc, FieldValueUpdateInfo UpdateInfo)
         {
             StringBuilder sb = new StringBuilder();
 
@@ -259,11 +259,8 @@ namespace PDMSCore.DataManipulation
                     if (UpdateString != null)
                         sb.AppendLine(UpdateString);
                 }
-                
             }
-
-            //TODO UPDATE ALL
-            return false;
+            return sb.ToString();
         }
 
         public void AddFields(Field newField)

@@ -3,7 +3,7 @@ using PDMSCore.DataManipulation;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
+using System.Text;
 
 namespace PDMSCore.BusinessObjects
 {
@@ -70,11 +70,16 @@ namespace PDMSCore.BusinessObjects
 
         public void SavePanels(IFormCollection fc, FieldValueUpdateInfo UpdateInfo)
         {
+            StringBuilder sb = new StringBuilder();
+
             for (int i = 0; i < PanelList.Count; i++)
             {
-                PanelList[i].Save(fc, UpdateInfo);
+                string a = PanelList[i].GetSaveSQL(fc, UpdateInfo);
+                if (a != null)
+                    sb.Append(a);
             }
-
+            if (sb.Length != 0)
+                DBUtil.RunSQLQuery(UpdateInfo, sb.ToString().Trim());
         }
     }
 }

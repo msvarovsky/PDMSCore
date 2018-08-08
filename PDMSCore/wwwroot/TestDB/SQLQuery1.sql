@@ -268,7 +268,7 @@ ALTER PROCEDURE AddOrUpdateMultiValue
 AS
 BEGIN
 	DECLARE @SelectedFieldIDAsString nvarchar(10)
-	SET		@SelectedFieldIDAsString = '[' + CONVERT(varchar(10), @SelectedFieldID) + ']'
+	SET		@SelectedFieldIDAsString = '(' + CONVERT(varchar(10), @SelectedFieldID) + ')'
 	
 	IF EXISTS --  ...Row with FieldID in FieldsValues
 	(
@@ -318,3 +318,123 @@ BEGIN
 		VALUES				(@RetailerID, @ProjectID, @FieldID, @SelectedFieldIDAsString)
 	END
 END;
+
+
+-----------------------------------------------------------------
+
+SELECT	*	FROM	Fields	WHERE FieldID = 5
+
+SELECT	*	FROM	FieldsValues fv
+begin tran
+	exec AddOrUpdateMultiValue 1,1,5,17,1
+	SELECT	*	FROM	FieldsValues fv
+rollback tran
+
+
+SELECT	*	FROM	FieldsValues fv
+WHERE	1=1
+AND		fv.MultiValue like '%(17)%'
+AND		fv.FieldID = 5
+
+
+
+SELECT	*	FROM	Fields
+
+SELECT	*	FROM	FieldsValues fv
+begin tran
+	exec RemoveMultiValue 1,1,5,16,1
+	SELECT	*	FROM	FieldsValues fv
+
+	exec AddOrUpdateMultiValue 1,1,5,16,1
+	SELECT	*	FROM	FieldsValues fv
+
+	exec AddOrUpdateMultiValue 1,1,5,17,1
+	SELECT	*	FROM	FieldsValues fv
+
+	exec RemoveMultiValue 1,1,5,17,1
+	SELECT	*	FROM	FieldsValues fv
+
+	exec RemoveMultiValue 1,1,5,17,1
+	SELECT	*	FROM	FieldsValues fv
+
+	exec RemoveMultiValue 1,1,5,16,1
+	SELECT	*	FROM	FieldsValues fv
+rollback tran
+
+
+
+exec RemoveMultiValue 1,1,3,1,1
+	SELECT	*	FROM	FieldsValues fv
+	exec RemoveMultiValue 1,1,3,1,1
+	SELECT	*	FROM	FieldsValues fv
+
+
+
+-------------
+
+ALTER PROCEDURE RemoveMultiValue
+	@RetailerID int,
+    @ProjectID int,
+	@FieldID int,
+	@SelectedFieldID int,
+	@UserID int
+AS
+BEGIN
+	DECLARE @SelectedFieldIDAsString nvarchar(10)
+	SET		@SelectedFieldIDAsString = '(' + CONVERT(varchar(10), @SelectedFieldID) + ')'
+	
+	IF EXISTS --  ...Row with FieldID in FieldsValues
+	(
+		SELECT	1
+		FROM	FieldsValues fv
+		WHERE	fv.RetailerID = @RetailerID
+		AND		fv.ProjectID = @ProjectID
+		AND		fv.FieldID = @FieldID
+	)
+	BEGIN
+		DECLARE	@typ nvarchar(10)
+		SELECT	@typ = LTRIM(RTRIM(f.FieldType))
+		FROM	Fields f
+		WHERE	f.FieldID = @FieldID
+
+		IF @typ = 'ddlb' OR @typ = 'rb'	OR @typ = 'cb'	--	dropdown lixtbox, radio buttons and checkbox
+		BEGIN			--	For RB and DDLB, I could as well only update the value without verifying if it exists before.
+			IF EXISTS --  
+			(
+				SELECT	1
+				FROM	FieldsValues fv
+				WHERE	fv.RetailerID = @RetailerID
+				AND		fv.ProjectID = @ProjectID
+				AND		fv.FieldID = @FieldID
+				AND		fv.MultiValue like '%' + @SelectedFieldIDAsString + '%'
+			)
+			BEGIN		--	Remove ID from there
+				UPDATE	FieldsValues
+				SET		MultiValue = ISNULL (REPLACE(MultiValue,@SelectedFieldIDAsString,''),NULL)
+				WHERE	RetailerID = @RetailerID
+				AND		ProjectID = @ProjectID
+				AND		FieldID = @FieldID
+			END
+		END
+	END
+	--else  -- For the moment, if the row does not exist, let's not do anything.
+	--BEGIN
+		
+	--END
+END;
+
+-------------
+
+
+
+begin tran
+	SELECT	*	FROM	FieldsValues fv
+exec AddOrUpdateMultiValue 1, 1, 5, 16, 1;	
+	SELECT	*	FROM	FieldsValues fv
+rollback tran
+
+
+
+
+
+

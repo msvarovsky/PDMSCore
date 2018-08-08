@@ -362,7 +362,6 @@ namespace PDMSCore.BusinessObjects
             OldProject.LoadProjectFromDB(gsi, PageID);
             using (SqlConnection con = new SqlConnection(GetSqlConnectionString()))
             {
-                con.Open();
                 FieldValueUpdateInfo UpdateInfo = new FieldValueUpdateInfo(con, gsi.retailerID, ProjectID,null, gsi.userID);
                 OldProject.Page.Panels.SavePanels(fc, UpdateInfo);
             }
