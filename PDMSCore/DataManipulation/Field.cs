@@ -835,13 +835,12 @@ namespace PDMSCore.DataManipulation
     public class CheckBoxField : Field, IHtmlElement
     {
         public bool Checked { get; set; }
-        public bool Disabled { get; set; }
 
         public CheckBoxField(string GroupName, string IndividualValueID, string HtmlLabel, bool Checked, bool Disabled) :
             base(GroupName, GroupName, "input", HtmlLabel)
         {
             this.Checked = Checked;
-            this.Disabled = Disabled;
+            base.Disabled = Disabled;
         }
 
         public TagBuilder BuildHtmlTag()
@@ -861,13 +860,12 @@ namespace PDMSCore.DataManipulation
     public class RadioButtonField : Field, IHtmlElement
     {
         public bool Checked { get; set; }
-        public bool Disabled { get; set; }
 
         public RadioButtonField(string GroupName, string IndividualValueID, string HtmlLabel, bool Checked, bool Disabled):
             base(GroupName, GroupName, "input", HtmlLabel)
         {
             this.Checked = Checked;
-            this.Disabled = Disabled;
+            base.Disabled = Disabled;
         }
 
         public TagBuilder BuildHtmlTag()
@@ -1172,6 +1170,7 @@ namespace PDMSCore.DataManipulation
         }
         public override string GetResetDBUpdateString(FieldValueUpdateInfo UpdateInfo)
         {
+            //  should never be used. Is it?
             UpdateInfo.FieldID = HTMLFieldID;
             string ret = "exec RemoveMultiValue " +
                     UpdateInfo.RetailerID +
@@ -1257,7 +1256,7 @@ namespace PDMSCore.DataManipulation
         public GroupControlType gct { get; set; }
 
         public MultiSelectionItem(GroupControlType ItemType, string PredecessorHtmlID, string GroupID, string ValueID, string VisibleText, bool SelectedOrChecked = false, bool Disabled = false) :
-            base(null, null, "div", null)
+            base(ValueID, null, "div", null)
         {
             gct = ItemType;
 
@@ -1437,17 +1436,24 @@ namespace PDMSCore.DataManipulation
                 throw new Exception("MS: Unknown control in MultiSelectionControl");
         }
 
-        public bool AddItem(string ItemID, string VisibleText)
-        { }
 
-        public bool AddItem(string ItemID, string VisibleText, bool SelectedOrChecked = false, bool Disabled = false)
+        public bool AddItem(string ItemID, string VisibleText, bool? SelectedOrChecked = null, bool Disabled = false)
         {
             if (ItemAlreadyExists(ItemID))
                 return false;
 
-            items.Add(new MultiSelectionItem(gct, PredecessorHtmlID, GroupID, ItemID, VisibleText, SelectedOrChecked, Disabled));
-            if (SelectedOrChecked && !SelectedItems.Contains(ItemID))
-                SelectedItems.Add(ItemID);
+
+            bool AlreadyInSelected = SelectedItems.Contains(ItemID);
+
+            if (SelectedOrChecked == null)
+                SelectedOrChecked = AlreadyInSelected;
+            else if (SelectedOrChecked == true)
+            {
+                if (!AlreadyInSelected)
+                    SelectedItems.Add(ItemID);
+            }
+
+            items.Add(new MultiSelectionItem(gct, PredecessorHtmlID, GroupID, ItemID, VisibleText, (bool)SelectedOrChecked, Disabled));
 
             return true;
         }
@@ -1479,11 +1485,10 @@ namespace PDMSCore.DataManipulation
             {
                 if (AllMultiSelectItem[i].ParentFieldID == base.DBFieldID)
                 {
-                    bool bCheckedOrSelected = (ExistsInSelectedValuesArrays(AllMultiSelectItem[i].MultiSelectItemID.ToString()) ? true : false);
-
+                    //bool bCheckedOrSelected = (ExistsInSelectedValuesArrays(AllMultiSelectItem[i].MultiSelectItemID.ToString()) ? true : false);
                     //items.Add(new MultiSelectionItem(gct, PredecessorHtmlID, GroupID, AllMultiSelectItem[i].MultiSelectItemID, AllMultiSelectItem[i].StringValue, bCheckedOrSelected));
-                    AddItem(AllMultiSelectItem[i].MultiSelectItemID, AllMultiSelectItem[i].StringValue, bCheckedOrSelected);
-                    AddItem(AllMultiSelectItem[i].MultiSelectItemID, AllMultiSelectItem[i].StringValue)
+
+                    AddItem(AllMultiSelectItem[i].MultiSelectItemID, AllMultiSelectItem[i].StringValue);
                 }
             }
         }
@@ -1494,13 +1499,13 @@ namespace PDMSCore.DataManipulation
                     return true;
             return false;
         }
-        private bool ExistsInSelectedValuesArrays(string id)
-        {
-            for (int i = 0; i < SelectedItems.Count; i++)
-                if (SelectedItems[i] == id)       //  Cannot compare with items[i].ID !!
-                    return true;
-            return false;
-        }
+        //private bool ExistsInSelectedValuesArrays(string id)
+        //{
+        //    for (int i = 0; i < SelectedItems.Count; i++)
+        //        if (SelectedItems[i] == id)       //  Cannot compare with items[i].ID !!
+        //            return true;
+        //    return false;
+        //}
 
         public TagBuilder BuildHtmlTag()
         {
@@ -1532,7 +1537,8 @@ namespace PDMSCore.DataManipulation
             int NewValInt = -1;
             if (Int32.TryParse(NewValue, out NewValInt))
             {
-                if (!ExistsInSelectedValuesArrays(NewValue))
+                //if (!ExistsInSelectedValuesArrays(NewValue))
+                if (!SelectedItems.Contains(NewValue))
                 {
                     if (gct == GroupControlType.RadioButtons || gct == GroupControlType.DropDownListBoxes)  //  Jeste nevim proc to zde testuju, ale radeji pro jistotu.
                     {
@@ -1547,6 +1553,18 @@ namespace PDMSCore.DataManipulation
                 }
             }
             return null;
+        }
+
+        public override string GetResetDBUpdateString(FieldValueUpdateInfo UpdateInfo)
+        {
+            if (gct == GroupControlType.RadioButtons)
+            {
+                //  This is a case where no radio button was selected. If that happens, then I've decided to do nothing.
+                //  The alternative is to remove every selection from the radiobutton in FieldsValues.
+                return null;
+            }
+            else  //  There is GetResetDBUpdateString(...) for ddlb and cb. This should never happen.
+                return null;
         }
     }
 
