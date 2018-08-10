@@ -1,5 +1,5 @@
 ﻿
-exec GetPageInfo 1, 2, 'en'
+exec GetPageInfo 1, 1, 'en'
 ----------------------------
 ALTER PROCEDURE GetPageInfo
 	@RetailerID int,
@@ -7,7 +7,7 @@ ALTER PROCEDURE GetPageInfo
 	@LanguageID varchar(5)
 AS
 BEGIN
-	SELECT	p.PageID, l.Label as 'PageLabel', p.[URL] as 'URL'
+	SELECT	p.PageID, l.Label as 'PageLabel', p.[URL] as 'URL', p.NavID
 	FROM	RetailerPages rp
 	LEFT OUTER JOIN Pages p		ON p.PageID = rp.PageID
 	LEFT OUTER JOIN Labels l	ON l.LabelID = p.LabelID
@@ -480,4 +480,27 @@ BEGIN
 		INSERT INTO FieldsValues (RetailerID, ProjectID, FieldID, StringValue)
 		VALUES				(@RetailerID, @ProjectID, @FieldID, @NewValue)
 	END
+END;
+
+
+--------------------------------------------------------------------------------
+
+exec GetNavigation 2, 'en', 1
+SELECT	*	FROM	Navigation nav
+-----------------------------
+
+ALTER PROCEDURE GetNavigation
+	@NavID int,
+	@LanguageID varchar(5),
+	@UserID int
+AS
+BEGIN
+	SELECT	nav.NavID, l.Label, nav.[URL], nav.ParentNavID, nav.Icon
+	FROM	Navigation nav
+	LEFT OUTER JOIN Labels l ON nav.LabelID = l.LabelID
+	WHERE	l.LanguageID = @LanguageID
+	AND		
+	(
+		nav.NavID = @NavID OR nav.SuperParentNavID = @NavID
+	)
 END;

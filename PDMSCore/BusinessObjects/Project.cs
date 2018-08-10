@@ -241,8 +241,9 @@ namespace PDMSCore.BusinessObjects
                 con.Open();
 
                 LoadPageInfo(gsi, con, ProjectID, PageID);
+                LoadNavigation(gsi, con);
                 LoadPanelsInfo(gsi, con, ProjectID, PageID);
-                LoadPageContent(gsi, con, ProjectID, PageID);
+                LoadPanelsFields(gsi, con, ProjectID, PageID);
             }
             return false;
         }
@@ -278,6 +279,36 @@ namespace PDMSCore.BusinessObjects
             }
             return false;
         }
+        private bool LoadNavigation(GeneralSessionInfo gsi, SqlConnection con)
+        {
+            SqlDataAdapter sqlDataAdapter;
+            DataSet dataSet = new DataSet();
+
+            List<Field> ret = new List<Field>();
+            SqlCommand sql = new SqlCommand("GetNavigation", con);
+            sql.CommandType = CommandType.StoredProcedure;
+            sql.Parameters.Add(new SqlParameter("NavID", Page.SideMenu.NavID));
+            sql.Parameters.Add(new SqlParameter("LanguageID", gsi.languageID));
+            sql.Parameters.Add(new SqlParameter("UserID", gsi.userID));
+
+            try
+            {
+                sqlDataAdapter = new SqlDataAdapter(sql);
+                sqlDataAdapter.Fill(dataSet);
+                if (dataSet.Tables.Count > 0 && dataSet.Tables[0].Rows.Count > 0)
+                    Page.SideMenu.ProcessNavigation(dataSet.Tables[0]);
+                else
+                {
+                    //Page.GenerateUnknownPageInfo();
+                    Console.WriteLine("No matching records found.");
+                }
+            }
+            catch (Exception eee)
+            {
+                ret.Add(new LabelTextAreaField("1", "Exception in LoadNavigation(..)", eee.ToString()));
+            }
+            return false;
+        }
         private bool LoadPanelsInfo(GeneralSessionInfo gsi, SqlConnection con, int ProjectID, int PageID)
         {
             SqlDataAdapter sqlDataAdapter;
@@ -309,7 +340,7 @@ namespace PDMSCore.BusinessObjects
             }
             return false;
         }
-        private bool LoadPageContent(GeneralSessionInfo gsi, SqlConnection con, int ProjectID, int PageID)
+        private bool LoadPanelsFields(GeneralSessionInfo gsi, SqlConnection con, int ProjectID, int PageID)
         {
             SqlDataAdapter sqlDataAdapter;
             DataSet dataSet = new DataSet();

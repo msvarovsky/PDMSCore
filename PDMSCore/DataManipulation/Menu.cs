@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Data;
+using System.Text;
 using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -189,7 +191,7 @@ namespace PDMSCore.DataManipulation
     {   /*  1   1.1     1.1.1
                         1.1.2
                 1.2     1.2.1        */
-
+        public int NavID { get; set; }
         private MenuItem root { get; set; }
 
         public Menu()
@@ -228,6 +230,19 @@ namespace PDMSCore.DataManipulation
             root.UnselectAll();
             root.Select(path);
         }
-      
+
+        public void ProcessNavigation(DataTable dt)
+        {
+            for (int r = 0; r < dt.Rows.Count; r++)
+            {
+                int NavID = DBUtil.GetInt(dt.Rows[r],0);
+                string Label = DBUtil.GetString(dt.Rows[r], 1);
+                string url = DBUtil.GetString(dt.Rows[r], 2);
+                int ParentNavID = DBUtil.GetInt(dt.Rows[r], 3);
+                byte[] icon = Encoding.UTF8.GetBytes(DBUtil.GetString(dt.Rows[r], 4));
+            }
+
+
+        }
     }
 }

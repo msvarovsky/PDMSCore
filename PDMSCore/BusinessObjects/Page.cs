@@ -20,6 +20,7 @@ namespace PDMSCore.BusinessObjects
         {
             Title = DBUtil.GetString(dt.Rows[0], 1);
             url = DBUtil.GetString(dt.Rows[0], 2);
+            SideMenu.NavID = DBUtil.GetInt(dt.Rows[0], 3);
         }
         public void GenerateUnknownPageInfo()
         {

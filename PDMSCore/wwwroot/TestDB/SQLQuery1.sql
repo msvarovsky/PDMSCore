@@ -433,8 +433,37 @@ exec AddOrUpdateMultiValue 1, 1, 5, 16, 1;
 	SELECT	*	FROM	FieldsValues fv
 rollback tran
 
+--delete from Navigation 
+SELECT	*	FROM	Navigation nav
 
+INSERT INTO 
 
+begin tran
+	INSERT INTO Navigation (LabelID, [URL], PredecessorNavID, Icon, TechnicalName)
+	VALUES				(20, 'www.hovno.cz', NULL, convert(varbinary, 'obrazek hledej'), 'Search project')
+	SELECT	SCOPE_IDENTITY()
 
+rollback tran
 
+UPDATE	Navigation
+SET		PredecessorNavID = 1
+WHERE	NavID = 2
+
+-----------------------------------------------------
+
+ALTER PROCEDURE GetNavigation
+	@NavID int,
+	@LanguageID varchar(5),
+	@UserID int
+AS
+BEGIN
+	SELECT	nav.NavID, l.Label, nav.[URL], nav.ParentNavID, nav.Icon
+	FROM	Navigation nav
+	LEFT OUTER JOIN Labels l ON nav.LabelID = l.LabelID
+	WHERE	l.LanguageID = @LanguageID
+	AND		
+	(
+		nav.NavID = @NavID OR nav.SuperParentNavID = @NavID
+	)
+END;
 
