@@ -485,7 +485,9 @@ END;
 
 --------------------------------------------------------------------------------
 
-exec GetNavigation 2, 'en', 1
+--drop procedure GetNavigation 
+
+exec GetNavigation 6, 'en', 1
 SELECT	*	FROM	Navigation nav
 -----------------------------
 
@@ -495,12 +497,24 @@ ALTER PROCEDURE GetNavigation
 	@UserID int
 AS
 BEGIN
-	SELECT	nav.NavID, l.Label, nav.[URL], nav.ParentNavID, nav.Icon
+	SELECT	nav.NavID, l.Label, nav.[URL], nav.ParentNavID, nav.Icon, nav.ChildrenNavIDs
 	FROM	Navigation nav
-	LEFT OUTER JOIN Labels l ON nav.LabelID = l.LabelID
-	WHERE	l.LanguageID = @LanguageID
-	AND		
+	LEFT OUTER JOIN Labels l ON nav.LabelID = l.LabelID AND l.LanguageID = @LanguageID
+	WHERE	
 	(
 		nav.NavID = @NavID OR nav.SuperParentNavID = @NavID
 	)
 END;
+--- na hrani ------
+
+	SELECT	nav.NavID, l.Label, nav.[URL], nav.ParentNavID, nav.Icon, nav.ChildrenNavIDs
+	FROM	Navigation nav
+	LEFT OUTER JOIN Labels l ON nav.LabelID = l.LabelID AND l.LanguageID = 'cs'
+	WHERE	
+	(
+		nav.NavID = 6 OR nav.SuperParentNavID = 6
+	)
+
+
+
+

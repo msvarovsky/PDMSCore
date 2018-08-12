@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Text;
 using System.Text.Encodings.Web;
@@ -10,17 +11,40 @@ namespace PDMSCore.DataManipulation
 {
     public class MenuItem
     {
+        private int NavID { get; set; }
         public MenuHeading MIHeading { get; set; }
         private List<MenuItem> SubMenu { get; set; }
         public int Level { get; set; }
 
-        public MenuItem(string Label, string Url)
+        public MenuItem(int ID, NavFromDB nav)
+        {
+            NavItemFromDB ni = nav.GetNavID(ID);
+            ni.Udane = true;
+
+            Init(ID, ni.Label, ni.Url);
+            for (int i = 0; i < ni.ChildrenNavIDs.Count; i++)
+            {
+                int ChildID = -1;
+                if (Int32.TryParse(ni.ChildrenNavIDs[i], out ChildID))
+                {
+                    MenuItem nmi = new MenuItem(ChildID, nav);
+                    AddMenuItem(nmi);
+
+                    //SubMenu.Add(new MenuItem(ChildID, nav));
+                }
+            }
+
+        }
+        public MenuItem(int ID, string Label, string Url)
+        {
+            Init(ID, Label, Url);
+        }
+        private void Init(int ID, string Label, string Url)
         {
             Level = 0;
-
+            NavID = ID;
             MIHeading = new MenuHeading(Label, Url);
             SubMenu = new List<MenuItem>();
-
         }
 
         public MenuItem GetSubMenu(int index)
@@ -187,6 +211,69 @@ namespace PDMSCore.DataManipulation
         }
     }
 
+    public class NavItemFromDB
+    {
+        public bool Udane { get; set; }
+        public int NavID { get; set; }
+        public string Label { get; set; }
+        public string Url { get; set; }
+        public int ParentNavID { get; set; }
+        public List<string> ChildrenNavIDs { get; set; }
+        public byte[] Icon { get; set; }
+
+        public NavItemFromDB()
+        {
+            Udane = false;
+            ChildrenNavIDs = new List<string>();
+        }
+
+        public void SetChildrenNavIDs(string par)
+        {
+            if (par == "")
+            {
+                ChildrenNavIDs = new List<string>();
+                return;
+            }
+            else
+            {
+                par = par.Replace(")(", "|");
+                par = par.Trim('(').Trim(')');
+
+                string[] a = par.Trim().Split('|', StringSplitOptions.RemoveEmptyEntries);
+                ChildrenNavIDs = new List<string>(a);
+            }
+        }
+
+    }
+    public class NavFromDB
+    {
+        public List<NavItemFromDB> navs { get; set; }
+
+        public NavFromDB()
+        {
+            navs = new List<NavItemFromDB>();
+        }
+
+        public NavItemFromDB GetParentOf(int c)
+        {
+            return null;
+        }
+
+        public NavItemFromDB GetNavID(int id)
+        {
+            for (int i = 0; i < navs.Count; i++)
+            {
+                if (navs[i].Udane)
+                    continue;
+
+                if (navs[i].NavID == id)
+                    return navs[i];
+            }
+            return null;
+        }
+    }
+    
+
     public class Menu
     {   /*  1   1.1     1.1.1
                         1.1.2
@@ -196,7 +283,7 @@ namespace PDMSCore.DataManipulation
 
         public Menu()
         {
-            root = new MenuItem("root","root");
+            root = new MenuItem(-1, "root","root");
         }
 
         public TagBuilder HtmlText()
@@ -207,17 +294,17 @@ namespace PDMSCore.DataManipulation
 
         public void GetRandomMenu()
         {
-            root.AddMenuItem(new MenuItem("1","#1"));                                   //1
-            root.GetLastSubMenu().AddMenuItem(new MenuItem("1.1","#1.1"));                      //1.1
-            root.GetLastSubMenu().GetLastSubMenu().AddMenuItem(new MenuItem("1.1.1", "#1.1.1"));     //1.1.1
-            root.GetLastSubMenu().GetLastSubMenu().AddMenuItem(new MenuItem("1.1.2", "#1.1.2"));     //1.1.2
+            root.AddMenuItem(new MenuItem(1,"1","#1"));                                   //1
+            root.GetLastSubMenu().AddMenuItem(new MenuItem(11,"1.1","#1.1"));                      //1.1
+            root.GetLastSubMenu().GetLastSubMenu().AddMenuItem(new MenuItem(111,"1.1.1", "#1.1.1"));     //1.1.1
+            root.GetLastSubMenu().GetLastSubMenu().AddMenuItem(new MenuItem(112,"1.1.2", "#1.1.2"));     //1.1.2
 
-            root.GetLastSubMenu().AddMenuItem(new MenuItem("1.2", "#1.2"));                     //1.2
-            root.GetLastSubMenu().GetLastSubMenu().AddMenuItem(new MenuItem("1.2.1", "#1.2.1"));     //1.2.1
+            root.GetLastSubMenu().AddMenuItem(new MenuItem(12,"1.2", "#1.2"));                     //1.2
+            root.GetLastSubMenu().GetLastSubMenu().AddMenuItem(new MenuItem(121, "1.2.1", "#1.2.1"));     //1.2.1
 
-            root.AddMenuItem(new MenuItem("2", "#2"));                                   //2
-            root.GetLastSubMenu().AddMenuItem(new MenuItem("2.1", "#2.1"));                      //1.1
-            root.GetLastSubMenu().AddMenuItem(new MenuItem("2.2", "#2.2"));                      //1.1
+            root.AddMenuItem(new MenuItem(2, "2", "#2"));                                   //2
+            root.GetLastSubMenu().AddMenuItem(new MenuItem(21, "2.1", "#2.1"));                      //1.1
+            root.GetLastSubMenu().AddMenuItem(new MenuItem(22, "2.2", "#2.2"));                      //1.1
 
             //root.Select("#1.1.2", "1.1.2");
             root.Select("#1.1.2");
@@ -233,16 +320,22 @@ namespace PDMSCore.DataManipulation
 
         public void ProcessNavigation(DataTable dt)
         {
+            NavFromDB nav = new NavFromDB();
+
             for (int r = 0; r < dt.Rows.Count; r++)
             {
-                int NavID = DBUtil.GetInt(dt.Rows[r],0);
-                string Label = DBUtil.GetString(dt.Rows[r], 1);
-                string url = DBUtil.GetString(dt.Rows[r], 2);
-                int ParentNavID = DBUtil.GetInt(dt.Rows[r], 3);
-                byte[] icon = Encoding.UTF8.GetBytes(DBUtil.GetString(dt.Rows[r], 4));
+                NavItemFromDB ni = new NavItemFromDB();
+                ni.NavID = DBUtil.GetInt(dt.Rows[r],0);
+                ni.Label = DBUtil.GetString(dt.Rows[r], 1);
+                ni.Url = DBUtil.GetString(dt.Rows[r], 2);
+                ni.ParentNavID = DBUtil.GetInt(dt.Rows[r], 3);
+                ni.Icon = Encoding.UTF8.GetBytes(DBUtil.GetString(dt.Rows[r], 4));
+                ni.SetChildrenNavIDs(DBUtil.GetString(dt.Rows[r], 5));
+                nav.navs.Add(ni);
             }
 
-
+            root = new MenuItem(NavID, nav);    // Reconstruct Navigation
+            root.Select("ShowProject");
         }
     }
 }

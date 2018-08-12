@@ -63,7 +63,6 @@ namespace PDMSCore.BusinessObjects
     {
         public int ProjectID { get; set; }
         public string Name { get; set; }
-        //public List<Panel> PanelList { get; set; }
         public Page Page { get; set; }
         public PageMenu PageMenu{ get; set; }
         //public Menu SideMenu { get; set; }
