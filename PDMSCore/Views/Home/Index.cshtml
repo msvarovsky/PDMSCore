@@ -1,6 +1,8 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
 }
+@model PDMSCore.DataManipulation.Menu
+
 @section PageInfo
     {
     <div class="Section PageInfo">Page Info</div>
@@ -9,6 +11,20 @@
 @section BreadAndMenu
     {
     <div class="Section BreadAndMenu">BreadAndMenu</div>
+}
+
+@section SideMenu
+    {
+    @Model.HtmlText()
+}
+
+@section UserSection
+    {
+}
+
+@section PageMenuSection
+    {
+    @*@Model.PageMenu.HtmlText()*@
 }
 
 <div class="Section Content">

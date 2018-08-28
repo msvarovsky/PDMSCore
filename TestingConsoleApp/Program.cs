@@ -5,6 +5,7 @@ using PDMSCore.BusinessObjects;
 using PDMSCore.DataManipulation;
 using System;
 using System.Collections.Generic;
+using System.Web;
 
 namespace TestingConsoleApp
 {
@@ -16,9 +17,8 @@ namespace TestingConsoleApp
             FormCollection a = new FormCollection(d);
 
 
-            //a.Keys.Add("ahoj");
-            //a.Keys.Add("Key1");
-            //a.Keys.Add("Key2");
+            Menu navigation = new Menu();
+            navigation.LoadNavigation(new GeneralSessionInfo(1, 1, "en"));
 
 
             GeneralSessionInfo gsi = new GeneralSessionInfo(1, 1, "en");

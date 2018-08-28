@@ -67,14 +67,20 @@ namespace PDMSCore.BusinessObjects
         public PageMenu PageMenu{ get; set; }
         //public Menu SideMenu { get; set; }
 
-        public Project(int ProjectID)
+        public Project(int? ProjectID)
         {
-            this.ProjectID = ProjectID;
-            //PanelList = new List<Panel>();
-            //SideMenu = new Menu();
-            Page = new Page();
             PageMenu = new PageMenu();
 
+            if (ProjectID == null)
+                this.ProjectID = -1;
+            else
+            {
+                this.ProjectID = (int)ProjectID;
+                Page = new Page();
+            }
+
+            //PanelList = new List<Panel>();
+            //SideMenu = new Menu();
         }
         public bool Create()
         {
@@ -222,25 +228,14 @@ namespace PDMSCore.BusinessObjects
 
         }
 
-        private string GetSqlConnectionString()
-        {
-            string cd = Directory.GetCurrentDirectory();
-            string l = "PDMSCore";
-            int a = cd.IndexOf(l);
-            string AttachDbFilename = cd.Substring(0, a + l.Length) + "\\PDMSCore\\wwwroot\\TestDB\\System.mdf;";
-
-            return "Data Source=(LocalDB)\\MSSQLLocalDB;" + "AttachDbFilename=" + AttachDbFilename +
-                "Connect Timeout=30;" + "User Id=martin;" + "Password=martin;";
-        }
-
         public bool LoadProjectFromDB(GeneralSessionInfo gsi, int PageID)
         {
-            using (SqlConnection con = new SqlConnection(GetSqlConnectionString()))
+            using (SqlConnection con = new SqlConnection(DBUtil.GetSqlConnectionString()))
             {
                 con.Open();
 
                 LoadPageInfo(gsi, con, ProjectID, PageID);
-                LoadNavigation(gsi, con);
+                //LoadNavigation(gsi, con);
                 LoadPanelsInfo(gsi, con, ProjectID, PageID);
                 LoadPanelsFields(gsi, con, ProjectID, PageID);
             }
@@ -390,7 +385,7 @@ namespace PDMSCore.BusinessObjects
         {
             Project OldProject = new Project(ProjectID);
             OldProject.LoadProjectFromDB(gsi, PageID);
-            using (SqlConnection con = new SqlConnection(GetSqlConnectionString()))
+            using (SqlConnection con = new SqlConnection(DBUtil.GetSqlConnectionString()))
             {
                 FieldValueUpdateInfo UpdateInfo = new FieldValueUpdateInfo(con, gsi.retailerID, ProjectID,null, gsi.userID);
                 OldProject.Page.Panels.SavePanels(fc, UpdateInfo);

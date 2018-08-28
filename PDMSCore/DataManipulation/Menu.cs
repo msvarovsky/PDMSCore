@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
+using System.IO;
 using System.Text;
 using System.Text.Encodings.Web;
+using System.Web;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
-
+using PDMSCore.BusinessObjects;
 
 namespace PDMSCore.DataManipulation
 {
@@ -173,10 +176,13 @@ namespace PDMSCore.DataManipulation
         {
             TagBuilder tb = new TagBuilder("div");
             tb.AddCssClass("MIChevronArea");
+            tb.Attributes.Add(WebStuffHelper.CreateJSParameter("onclick", "OnNavItemClick", "this", "MIChevronArea"));
 
             TagBuilder tbMIChevron = new TagBuilder("div");
             tbMIChevron.AddCssClass("MIChevron");
+            tbMIChevron.Attributes.Add(WebStuffHelper.CreateJSParameter("onclick", "OnNavItemClick", "this", "MIChevron"));
             AddCssClass(tbMIChevron, Expanded, "MIChevronExpanded");
+
 
             tb.InnerHtml.AppendHtml(tbMIChevron);
             return tb;
@@ -196,12 +202,22 @@ namespace PDMSCore.DataManipulation
             AddCssClass(tbOuter, Selected, "MISelected");
             AddCssClass(tbOuter, Empty, "MIEmpty");
             AddCssClass(tbOuter, Expanded, "MIExpanded");
+
+            //
+            //tbOuter.Attributes.Add(WebStuffHelper.CreateJSParameter("onclick", "ReloadPageContent", "Project/ShowProject", "dataDoMVC"));
+            tbOuter.Attributes.Add(WebStuffHelper.CreateJSParameter("onclick", "OnNavItemClick", "this", "MenuItemL"));
+
+            /*tbOuter.Attributes.Add("onclick", "onNavigationItemClick('" +   HttpUtility.JavaScriptStringEncode("ProjectController/ShowProject") +
+                                                                            HttpUtility.JavaScriptStringEncode("ahoj") + "')");*/
+            //
             tbOuter.AddCssClass("MenuItemL" + Level.ToString());
 
-            TagBuilder tbA = new TagBuilder("a");
-            tbA.Attributes.Add("href", Url);
+            //TagBuilder tbA = new TagBuilder("a");
+            TagBuilder tbA = new TagBuilder("div");
+            //tbA.Attributes.Add("href", Url);
             tbA.AddCssClass("MenuItemText");
             tbA.InnerHtml.AppendHtml(Label);
+            tbA.Attributes.Add(WebStuffHelper.CreateJSParameter("onclick", "OnNavItemClick", "this", "MenuItemText"));
 
 
             tbOuter.InnerHtml.AppendHtml(tbA);
@@ -316,6 +332,45 @@ namespace PDMSCore.DataManipulation
                 return;
             root.UnselectAll();
             root.Select(path);
+        }
+
+        public bool LoadNavigation(GeneralSessionInfo gsi)
+        {
+            int RootNavigationItemID = 6;
+            NavID = RootNavigationItemID;
+
+            using (SqlConnection con = new SqlConnection(DBUtil.GetSqlConnectionString()))
+            {
+                con.Open();
+
+                SqlDataAdapter sqlDataAdapter;
+                DataSet dataSet = new DataSet();
+
+                List<Field> ret = new List<Field>();
+                SqlCommand sql = new SqlCommand("GetNavigation", con);
+                sql.CommandType = CommandType.StoredProcedure;
+                sql.Parameters.Add(new SqlParameter("NavID", RootNavigationItemID));
+                sql.Parameters.Add(new SqlParameter("LanguageID", gsi.languageID));
+                sql.Parameters.Add(new SqlParameter("UserID", gsi.userID));
+
+                try
+                {
+                    sqlDataAdapter = new SqlDataAdapter(sql);
+                    sqlDataAdapter.Fill(dataSet);
+                    if (dataSet.Tables.Count > 0 && dataSet.Tables[0].Rows.Count > 0)
+                        ProcessNavigation(dataSet.Tables[0]);
+                    else
+                    {
+                        //Page.GenerateUnknownPageInfo();
+                        Console.WriteLine("No matching records found.");
+                    }
+                }
+                catch (Exception eee)
+                {
+                    ret.Add(new LabelTextAreaField("1", "Exception in LoadNavigation(..)", eee.ToString()));
+                }
+                return false;
+            }
         }
 
         public void ProcessNavigation(DataTable dt)

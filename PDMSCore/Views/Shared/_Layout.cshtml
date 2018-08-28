@@ -86,10 +86,12 @@
         <div class="PageMenu">
             @RenderSection("PageMenuSection", false)
         </div>
-        <div class="PageContent">
-            @*@RenderSection("BreadAndMenu", false)
-                @RenderSection("PageInfo", false)*@
-            @RenderBody()
+        <div id="PageContentID" class="PageContent">
+            @RenderSection("BreadAndMenu", false)
+              @RenderSection("PageInfo", false)
+            
+            @*@RenderBody()*@
+
 
         </div>
     </div>

@@ -1,5 +1,7 @@
 ﻿using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using PDMSCore.BusinessObjects;
+using PDMSCore.DataManipulation;
 using PDMSCore.Models;
 
 namespace PDMSCore.Controllers
@@ -9,8 +11,14 @@ namespace PDMSCore.Controllers
         public IActionResult Index()
         {
             //return this.RedirectToAction("CreateNewProject", "Project");
-            return this.RedirectToAction("ShowProject", "Project");
-            //return View();
+            ////return this.RedirectToAction("ShowProject", "Project");
+            //Project pr = new Project(null);
+
+            Menu navigation = new Menu();
+            navigation.LoadNavigation(new GeneralSessionInfo(1, 1, "en"));
+
+            
+            return View(navigation);
         }
 
         public IActionResult About()

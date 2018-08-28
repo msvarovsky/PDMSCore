@@ -105,6 +105,22 @@ function onPanelMenuItemClick(panelOwnerID, panelID, panelMenuItemID) {
     }
 }
 
+function ReloadPageContent(partialControlAndAction, data) {
+    console.log("ReloadPageContent");
+    $.ajax({
+        url: "/" + partialControlAndAction,
+        type: "GET",
+        data: { ProjectID: data, Other: data },
+        success: function (partialViewResult) {
+            if (partialViewResult.length > 0)
+                $("#PageContentID").html(partialViewResult);
+        },
+        error: function (result) {
+            alert("error: ReloadPageContent: " + result);
+        }
+    });
+}
+
 
 
 

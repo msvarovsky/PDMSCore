@@ -21,8 +21,9 @@ namespace PDMSCore.Controllers
         {
             //TempData.Add("a", "b");
             //p = new Project();
-            //return View(p);
-            return this.RedirectToAction("ShowProject", "Project");
+            return View();
+            //return this.RedirectToAction("ShowProject", "Project");
+
         }
 
         [HttpGet]
@@ -61,27 +62,37 @@ namespace PDMSCore.Controllers
             //return View(p);
             return this.RedirectToAction("ShowProject", "Project");
         }
+
         [HttpGet]
-        public ActionResult ShowProject()
+        public ActionResult GetProject(string Param1, string Param2)
+        {
+            return ShowProject(Param1);
+        }
+        [HttpGet]
+        //public ActionResult ShowProject()
+        public ActionResult ShowProject(string ProjectID = null, string Other = null)
         {
             ViewData["panelOwnerID"] = "ID projektu";
-
             Project pr = new Project(1);
             pr.LoadProjectFromDB(new GeneralSessionInfo(1, 1, "en"), 1);
-            return View(pr);
 
-            //p = new Project();
-            //p.GetRandom();
-            //return View(p);
+            if (ProjectID==null)
+                return View(pr);
+            else
+                return PartialView("ShowProjectPartial", pr);
         }
 
         /// <summary>
-        /// Uschova do cookie link kliknuteho menu 
+        /// Uschova do cookie link kliknuteho menu .
+        /// UPDATE 28.8.2018: Asi to nebudu potrebovat. A to proto, ze tedka nacitam content jako ajax volani, 
+        ///                 takze se navigace nerefreshuje a tudis nemusim ukladat kliknute menu/nav item.
         /// </summary>
         /// <param name="href"></param>
         [HttpPost]
         public void OpenMenuUpdate(string href)
         {
+            if (href == null)
+                href = "";
             HttpContext.Session.SetString("OpenMenu", href);
         }
 

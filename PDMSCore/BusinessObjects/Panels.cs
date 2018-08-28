@@ -46,7 +46,8 @@ namespace PDMSCore.BusinessObjects
                 PanelLabel = DBUtil.GetString(dt.Rows[i], 1);
                 PanelDecription = DBUtil.GetString(dt.Rows[i], 2);
 
-                GetPanel(PanelID).Label = PanelLabel;
+                //GetPanel(PanelID).Label = PanelLabel;
+                GetPanel(PanelID).Label = PanelLabel + DateTime.Now.ToLongTimeString();
                 GetPanel(PanelID).Desc = PanelDecription;
             }
         }

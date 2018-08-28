@@ -2,6 +2,7 @@
 using System;
 using System.Data;
 using System.Data.SqlClient;
+using System.IO;
 
 namespace PDMSCore.DataManipulation
 {
@@ -42,6 +43,17 @@ namespace PDMSCore.DataManipulation
                 UpdateInfo.con.Close();
             }
             return -1;
+        }
+
+        public static string GetSqlConnectionString()
+        {
+            string cd = Directory.GetCurrentDirectory();
+            string l = "PDMSCore";
+            int a = cd.IndexOf(l);
+            string AttachDbFilename = cd.Substring(0, a + l.Length) + "\\PDMSCore\\wwwroot\\TestDB\\System.mdf;";
+
+            return "Data Source=(LocalDB)\\MSSQLLocalDB;" + "AttachDbFilename=" + AttachDbFilename +
+                "Connect Timeout=30;" + "User Id=martin;" + "Password=martin;";
         }
     }
 }
