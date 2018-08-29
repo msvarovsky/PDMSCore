@@ -2,11 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.IO;
 using System.Text;
-using System.Text.Encodings.Web;
-using System.Web;
-using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using PDMSCore.BusinessObjects;
 
@@ -19,8 +15,9 @@ namespace PDMSCore.DataManipulation
         private List<MenuItem> SubMenu { get; set; }
         public int Level { get; set; }
 
-        public MenuItem(int ID, NavFromDB nav)
+        public MenuItem(int ID, NavFromDB nav, int level)
         {
+            Level = level;
             NavItemFromDB ni = nav.GetNavID(ID);
             ni.Udane = true;
 
@@ -30,10 +27,8 @@ namespace PDMSCore.DataManipulation
                 int ChildID = -1;
                 if (Int32.TryParse(ni.ChildrenNavIDs[i], out ChildID))
                 {
-                    MenuItem nmi = new MenuItem(ChildID, nav);
+                    MenuItem nmi = new MenuItem(ChildID, nav, level+1);
                     AddMenuItem(nmi);
-
-                    //SubMenu.Add(new MenuItem(ChildID, nav));
                 }
             }
 
@@ -44,7 +39,6 @@ namespace PDMSCore.DataManipulation
         }
         private void Init(int ID, string Label, string Url)
         {
-            Level = 0;
             NavID = ID;
             MIHeading = new MenuHeading(Label, Url);
             SubMenu = new List<MenuItem>();
@@ -136,7 +130,6 @@ namespace PDMSCore.DataManipulation
                 tb = new TagBuilder("aside");
                 tb.AddCssClass("Accordion");
                 HtmlTextItems(tb);
-                //tb.InnerHtml.AppendHtml();
             }
             else
             {
@@ -176,11 +169,11 @@ namespace PDMSCore.DataManipulation
         {
             TagBuilder tb = new TagBuilder("div");
             tb.AddCssClass("MIChevronArea");
-            tb.Attributes.Add(WebStuffHelper.CreateJSParameter("onclick", "OnNavItemClick", "this", "MIChevronArea"));
+            tb.Attributes.Add(WebStuffHelper.CreateJSParameter("onclick", "OnNavItemClick", "this", "MICA", Url, ""));
 
             TagBuilder tbMIChevron = new TagBuilder("div");
             tbMIChevron.AddCssClass("MIChevron");
-            tbMIChevron.Attributes.Add(WebStuffHelper.CreateJSParameter("onclick", "OnNavItemClick", "this", "MIChevron"));
+            tbMIChevron.Attributes.Add(WebStuffHelper.CreateJSParameter("onclick", "OnNavItemClick", "this", "MIC", Url, ""));
             AddCssClass(tbMIChevron, Expanded, "MIChevronExpanded");
 
 
@@ -205,7 +198,7 @@ namespace PDMSCore.DataManipulation
 
             //
             //tbOuter.Attributes.Add(WebStuffHelper.CreateJSParameter("onclick", "ReloadPageContent", "Project/ShowProject", "dataDoMVC"));
-            tbOuter.Attributes.Add(WebStuffHelper.CreateJSParameter("onclick", "OnNavItemClick", "this", "MenuItemL"));
+            tbOuter.Attributes.Add(WebStuffHelper.CreateJSParameter("onclick", "OnNavItemClick", "this", "MIL", Url, ""));
 
             /*tbOuter.Attributes.Add("onclick", "onNavigationItemClick('" +   HttpUtility.JavaScriptStringEncode("ProjectController/ShowProject") +
                                                                             HttpUtility.JavaScriptStringEncode("ahoj") + "')");*/
@@ -217,7 +210,7 @@ namespace PDMSCore.DataManipulation
             //tbA.Attributes.Add("href", Url);
             tbA.AddCssClass("MenuItemText");
             tbA.InnerHtml.AppendHtml(Label);
-            tbA.Attributes.Add(WebStuffHelper.CreateJSParameter("onclick", "OnNavItemClick", "this", "MenuItemText"));
+            tbA.Attributes.Add(WebStuffHelper.CreateJSParameter("onclick", "OnNavItemClick", "this", "MIT", Url, ""));
 
 
             tbOuter.InnerHtml.AppendHtml(tbA);
@@ -389,7 +382,7 @@ namespace PDMSCore.DataManipulation
                 nav.navs.Add(ni);
             }
 
-            root = new MenuItem(NavID, nav);    // Reconstruct Navigation
+            root = new MenuItem(NavID, nav, 0);    // Reconstruct Navigation
             root.Select("ShowProject");
         }
     }

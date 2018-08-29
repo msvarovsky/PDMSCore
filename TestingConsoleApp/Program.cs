@@ -20,6 +20,7 @@ namespace TestingConsoleApp
             Menu navigation = new Menu();
             navigation.LoadNavigation(new GeneralSessionInfo(1, 1, "en"));
 
+            navigation.HtmlText();
 
             GeneralSessionInfo gsi = new GeneralSessionInfo(1, 1, "en");
             Project pr = new Project(1);

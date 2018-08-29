@@ -76,7 +76,7 @@ namespace PDMSCore.Controllers
             Project pr = new Project(1);
             pr.LoadProjectFromDB(new GeneralSessionInfo(1, 1, "en"), 1);
 
-            if (ProjectID==null)
+            if (ProjectID==null || ProjectID == "")
                 return View(pr);
             else
                 return PartialView("ShowProjectPartial", pr);

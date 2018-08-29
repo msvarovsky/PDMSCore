@@ -3,174 +3,67 @@ $(document).ready(function () {
   $(".Accordion").find(".MIExpanded").next().show();
 });
 
-
-var changeChevron = function () {
-    $('.MIChevron.down').toggleClass('up');
-}
-
-
-function OnNavItemClick(target, data) {
-
+function OnNavItemClick(target, TypeOfNavItem, URL, data) {
     event.stopPropagation();
-
     var MenuItem;
+    var SlideUpSpeed = 100;
+    var SlideDownSpeed = 200;
 
-    if (data == "MenuItemL") {
+    console.log("OnNavItemClick: URL = " + URL);
+
+    if (TypeOfNavItem == "MIL") {
         console.log("OnNavItemClick: MenuItemL");
         MenuItem = $(target);
     }
-    else if (data == "MenuItemText" || data == "MIChevronArea") {
+    else if (TypeOfNavItem == "MIT" || TypeOfNavItem == "MICA") {
         console.log("OnNavItemClick: MenuItemText OR MIChevronArea");
         MenuItem = $(target).parent();
     }
-    else if (data == "MIChevron") {
+    else if (TypeOfNavItem == "MIC") {
         console.log("OnNavItemClick: MIChevron");
         MenuItem = $(target).parent().parent();
     }
 
-
-    var SlideUpSpeed = 50;
-    var SlideDownSpeed = 200;
+    $(MenuItem).parent().parent().find('.MISelected').removeClass('MISelected');    //  Removes the highlight/bold from all
 
     if ($(MenuItem).hasClass("MIExpanded")) {
         $(MenuItem).removeClass("MIExpanded");
         $(MenuItem).next().slideUp(SlideUpSpeed);
-
+        
         var h = $(MenuItem).children()[1];
         var hh = $(h).children()[0];
-        $(hh).removeClass('MIChevronExpanded');
+        $(hh).removeClass('MIChevronExpanded'); //  Changes the chevron to contracted.
     }
     else {
-        $(MenuItem).addClass("MIExpanded");
-        $(MenuItem).next().slideDown(SlideUpSpeed);
+        $(MenuItem).parent().children('.MenuContent').slideUp(SlideUpSpeed);    //  Closes all siblings (+ probably also the clicked one).
+        $(MenuItem).parent().children('.MIExpanded').removeClass('MIExpanded'); //  Removes .MIExpanded from all where it is.
+        $(MenuItem).parent().children("[class^='MenuItemL']").find('.MIChevronExpanded').removeClass('MIChevronExpanded');  //  Changes the chevron.
+
+        $(MenuItem).addClass("MIExpanded"); //  Adds the MIExpanded to the clicked one.
+        $(MenuItem).next().slideDown(SlideDownSpeed); //  Expands the MenuContent of the clicked one.
 
         var h = $(MenuItem).children()[1];
         var hh = $(h).children()[0];
-        $(hh).addClass('MIChevronExpanded');
+        $(hh).addClass('MIChevronExpanded');    //  Changes the chevron to expanded.
     }
 
-    return;
-    /////////////////////
+    $(MenuItem).addClass("MISelected"); // Adds the highlight/bold to the clicked item.
 
 
-
-
-    if (!$(target).hasClass("MIExpanded")) { //Sbalene
-        $(target).siblings("[class^='MenuItemL']").removeClass("MIExpanded");
-        $(target).siblings("[class^='MenuItemL']").next().slideUp(SlideUpSpeed);
-
-
-        if (!$(target).hasClass("MIEmpty")) {
-            $(target).addClass("MIExpanded");
-            $(target).next().slideDown(SlideDownSpeed);
-        }
-    }
-    else { // ROZbalene
-        $(target).removeClass("MIExpanded");
-
-        
-    }
-
-    //  Only 1 menu item can be selected.
-    //$(".MISelected").removeClass("MISelected");
-    //$(target).addClass("MISelected");
-    //$(target).find(".MIChevron").toggleClass('MIChevronExpanded');
-
-
-
-
-}
-
-// $(".accordion").click(function (e) {
-$("*").click(function (e) {
+    if (URL !== undefined && URL != "")
+        ReloadPageContent(URL, data);
     
-    var target;
-    var tagClasses = $(e.target).attr('class');
-
-    console.log("click - navigation");
 
     return;
-
-    if (typeof tagClasses == 'undefined')
-        return;
-
-
-    if ((tagClasses.indexOf("MenuItemText") != -1) || (tagClasses.indexOf("MIChevron") != -1)) {
-        target = $(e.target).parent();
-        ////event.stopPropagation();//  Nemuze byt na zacatku teto funkce.
-        if (tagClasses.indexOf("MenuItemText") != -1) {
-            //console.log("MenuItemText");
-            var href = e.target.getAttribute("href");
-            OpenMenuUpdate(href);
-        }
-        if (tagClasses.indexOf("MIChevron") != -1) {
-            //console.log("MIChevron: Redirecting to MenuItemText...");
-            var children = $(target).children(".MenuItemText");
-            ///children[0].click();
-            return;
-        }
-    }
-    else if (tagClasses.indexOf("MenuItemL") != -1) {
-        //console.log('MenuItemL: Redirecting to MenuItemText...');
-        ////event.stopPropagation();    //  Nemuze byt na zacatku teto funkce.
-        target = e.target;
-        var children = $(target).children(".MenuItemText");
-        children[0].click();
-        return;
-    }
-    else
-        return;
-
-
-    var SlideUpSpeed = 50;
-    var SlideDownSpeed = 200;
-
-    if (!$(target).hasClass("MIExpanded")) { //Sbalene
-        $(target).siblings("[class^='MenuItemL']").removeClass("MIExpanded");
-        $(target).siblings("[class^='MenuItemL']").next().slideUp(SlideUpSpeed);
-
-        // Prehodi Chevron rozbaleneho menu zpet na sbaleny symbol.
-        $(target).siblings("[class^='MenuItemL']").find(".MIChevron").removeClass("MIChevronExpanded");
-
-
-        if (!$(target).hasClass("MIEmpty")) {
-            $(target).addClass("MIExpanded");
-            $(target).next().slideDown(SlideDownSpeed);
-        }
-    }
-    else { // ROZbalene
-        $(target).removeClass("MIExpanded");
-        $(target).next().slideUp(SlideUpSpeed);
-    }
-
-    //  Only 1 menu item can be selected.
-    $(".MISelected").removeClass("MISelected");
-    $(target).addClass("MISelected");
-    $(target).find(".MIChevron").toggleClass('MIChevronExpanded');
-
-    ////////////////////////////////////////////////////////////////////
-
-    /*if (!$(target).hasClass("MIEmpty"))
-      $(target).toggleClass("MIExpanded");
-    $(target).siblings().removeClass("MISelected");
-    $(target).siblings().children().removeClass("MISelected");
-    $(target).siblings().removeClass("MIExpanded");
-    $(target).siblings().children().removeClass("MIExpanded");
-    $(target).addClass("MISelected");
-    $(allAtDepth).slideUp("fast");
-    subItem.slideToggle("fast");*/
-
-});
-
-function OpenMenuUpdate(href) {
-  //console.log('OpenMenuUpdate.href:', href);
-
-  $.ajax({
-    url: "/Project/OpenMenuUpdate/",
-    type: "POST",
-    highlightPhrase: false,
-    dataType: "json",
-    data: { href: href },
-    success: function (data) { }
-  })
 }
+
+//function OpenMenuUpdate(href) {
+//  $.ajax({
+//    url: "/Project/OpenMenuUpdate/",
+//    type: "POST",
+//    highlightPhrase: false,
+//    dataType: "json",
+//    data: { href: href },
+//    success: function (data) { }
+//  })
+//}

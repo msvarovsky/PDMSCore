@@ -52,8 +52,14 @@ namespace PDMSCore.DataManipulation
             int a = cd.IndexOf(l);
             string AttachDbFilename = cd.Substring(0, a + l.Length) + "\\PDMSCore\\wwwroot\\TestDB\\System.mdf;";
 
-            return "Data Source=(LocalDB)\\MSSQLLocalDB;" + "AttachDbFilename=" + AttachDbFilename +
-                "Connect Timeout=30;" + "User Id=martin;" + "Password=martin;";
+            string ret = "Data Source=(LocalDB)\\MSSQLLocalDB;" 
+                + "AttachDbFilename=" + AttachDbFilename 
+                //+ "Database = " + cd.Substring(0, a + l.Length) + "\\PDMSCORE\\WWWROOT\\TESTDB\\SYSTEM.MDF;"
+                + "Connect Timeout=30;" 
+                + "User Id=martin;" 
+                + "Password=martin;";
+
+            return ret;
         }
     }
 }
