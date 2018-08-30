@@ -1,0 +1,30 @@
+/*            -TOP Fixed row             */
+
+.LeftFixedColumn {  /*Mozna pozdeji presunu do General.css*/
+    position: fixed;
+    background-color: green;
+    width: var(--NavWidth);
+    min-height: calc(100% - var(--TopFixedRowHeight));
+    /*z-index: 1;*/
+    z-index: 0;
+    top: var(--TopFixedRowHeight);
+}
+
+.AllButFixed {
+    background-color: cyan;
+    /* min-height: 900px; */
+    position: absolute;
+    top: var(--TopFixedRowHeight);
+    left: var(--NavWidth);
+    width: calc(100% - var(--NavWidth));
+    z-index: 0;
+    display: grid;
+    grid-template-areas: "PageMenu" "PageContent";
+    grid-template-rows: 50px 1fr;
+}
+
+
+.PageMenu {
+    grid-area: PageMenu;
+    background-color: #ffff64;
+}

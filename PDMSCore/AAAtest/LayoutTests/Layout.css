@@ -3,7 +3,7 @@ body {
     padding: 0;
     --TopFixedRowHeight: 50px;
     --UserWidth: 200px;
-    --NavWidth: 200px;
+    --NavWidth: 250px;
     --GreyBackgroundColor: rgb(245,245,245);
     --WhiteBackgroundColor: rgb(255,255,255);
     --PanelBorderColor: rgb(221,221,221);
@@ -51,7 +51,8 @@ body {
     background-color: green;
     width: var(--NavWidth);
     min-height: calc(100% - var(--TopFixedRowHeight));
-    z-index: 1;
+    /*z-index: 1;*/
+    z-index: 0;
     top: var(--TopFixedRowHeight);
 }
 
@@ -60,14 +61,16 @@ body {
     min-height: 900px;
     position: absolute;
     top: var(--TopFixedRowHeight);
+
     left: var(--NavWidth);
+    float: left;
+    
     width: calc(100% - var(--NavWidth));
     z-index: 0;
 
     display: grid;
     grid-template-areas: "PageMenu" "PageContent";
     grid-template-rows: 50px 1fr;
-    /* grid-template-columns: 1fr; */
 }
 
 
@@ -78,7 +81,7 @@ body {
 
 .PageContent {
     grid-area: PageContent;
-    background-color: #8ca0ff;
-
-    
+    /*background-color: #8ca0ff;*/
+    background-color: var(--GreyBackgroundColor);
+    z-index: 0;
 }

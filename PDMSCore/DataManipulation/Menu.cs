@@ -189,6 +189,18 @@ namespace PDMSCore.DataManipulation
 
         public TagBuilder HtmlText(int Level)
         {
+            /*
+            Projects    Search project
+                        Create new project
+                        -- - Recent-- -
+                        Project 1       Global info
+                                        Spec
+                                        Pack copy
+                        Project 2       Global info
+                                        Spec
+                                        Pack copy
+        */
+
             TagBuilder tbOuter = new TagBuilder("div");
             
             /* MenuItemLx musi byt pred MIExpanded. Aby se toho docililo, tak sa do tbOuter musi pridat az po MIExpanded.*/

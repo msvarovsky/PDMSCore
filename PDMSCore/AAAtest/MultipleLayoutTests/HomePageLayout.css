@@ -1,0 +1,15 @@
+
+/*            -TOP Fixed row             */
+
+.AllButFixed {
+    background-color: cyan;
+    min-height: 900px;
+    position: absolute;
+    top: var(--TopFixedRowHeight);
+    width: 100%;
+    z-index: 0;
+    display: grid;
+    grid-template-areas: "PageMenu" "PageContent";
+    grid-template-rows: 50px 1fr;
+}
+

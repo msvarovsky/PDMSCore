@@ -1,0 +1,174 @@
+body {
+    margin: 0;
+    padding: 0;
+    /* --TopFixedRowHeight: 50px; */
+    --TopFixedRowHeight: 70px;
+    --UserWidth: 200px;
+    --NavWidth: 250px;
+    --GreyBackgroundColor: rgb(245,245,245);
+    --WhiteBackgroundColor: rgb(255,255,255);
+    --PanelBorderColor: rgb(221,221,221);
+    --PanelHeaderHeight: 60px;
+
+    background-color: var(--GreyBackgroundColor);
+}
+/*            TOP Fixed row             */
+/* .TopFixedRow {
+    background-color: red;
+    width: 100%;
+    position: fixed;
+    height: var(--TopFixedRowHeight);
+    z-index: 1;
+    display: grid;
+    grid-template-columns: calc(var(--NavWidth) - 1px) 1fr var(--UserWidth);
+} */
+.TopFixed2Rows {
+    /* grid-row: 1 / span 2; */
+    background-color: red;
+    width: 100%;
+    position: fixed;
+    height: var(--TopFixedRowHeight);
+    z-index: 1;
+    display: grid;
+    grid-template-columns: calc(var(--NavWidth) - 1px) 1fr var(--UserWidth);
+}
+.TopFixedRow {
+    grid-column: 1 / span 3;
+    grid-row: 1 / span 2;
+    
+    width: 100%;
+    height: 100%;
+
+    z-index: 1;
+    display: grid;
+    grid-template-columns: calc(var(--NavWidth) - 1px) 1fr var(--UserWidth);
+
+    
+}
+.GlobalMenu{
+    grid-column: 1 / span 3;
+    grid-row: 3 / span 3;
+
+    display:flex;
+    
+    background: linear-gradient(rgb(38, 166, 154) 0%, rgba(38, 161, 149, 0.808) 100%);
+    
+    border-bottom: 1px solid rgba(35, 148, 137, 0.795)
+    /* border-bottom: 1px solid red; */
+}
+
+/* https://colorlib.com/polygon/gentelella/index.html# */
+
+.GMItem
+{
+    padding-left: 20px;
+    padding-right: 20px;
+    /* border-left: 1px solid rgb(77, 77, 77); */
+
+    display: flex;
+    align-items: center;
+    /* #E7E7E7; */
+    font-size: 0.9rem;
+    color: black;
+    font-family: 'Open Sans', sans-serif;
+    text-shadow: 0 1px 1px rgba(21, 87, 80, 0.692)
+}
+
+.GMItem:hover
+{
+    /* background: linear-gradient(rgb(38, 166, 154) 0%, rgba(29, 124, 114, 0.897) 100%); */
+    background: linear-gradient(rgb(47, 201, 185) 0%, rgba(35, 150, 138, 0.897) 100%);
+    text-shadow: 0 1px 1px rgb(179, 189, 188)
+}
+
+.LogoSection {
+    grid-column: 1 / span 1;
+    grid-row: 1/ span 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-family: 'Trocchi', serif;
+    font-size: 1.5em;
+    letter-spacing: 4px;
+    background-color: rgb(38, 166, 154);
+    text-shadow: 0 1px 1px rgb(218, 224, 224)
+}
+.Nada {
+    grid-column: 2 / span 1;
+    grid-row: 1/ span 1;
+    background-color: rgb(38, 166, 154);
+    display: flex;
+    align-items: center;
+}
+.UserSection {
+    grid-column: 3 / span 1;
+    grid-row: 1/ span 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgb(195, 195, 195);
+    box-shadow: inset 1px -1px var(--BorderColour);
+}
+
+/*            end TOP Fixed row             */
+
+
+.PageContent {
+    grid-area: PageContent;
+    /*background-color: #8ca0ff;*/
+    /* height:100%; */
+    z-index: 0;
+}
+
+.Content{
+    background-color: var(--GreyBackgroundColor);
+    width: 100%;
+    height: 100%;
+}
+
+ul.GlobalMenu, ul.sub1, ul.sub2, ul.sub3{
+    list-style-type: none;
+    padding: 0px;
+    margin:0px;
+}
+
+ul.GlobalMenu li{
+    /* outline: 1px solid red; */
+    position: relative;
+    float:left;
+    width: 100px;
+    margin:0px;
+    line-height: 25px;
+    border: 1px solid green;
+}
+
+
+/* https://www.youtube.com/watch?v=T7ayE5AtRUA */
+
+ul#GlobalMenu .sub2 div{
+    margin-left: 10px;
+}
+
+ul#GlobalMenu ul.sub1{
+    /* display: none; */
+    display: none;
+
+    position: absolute;
+    top:25px;
+    left: 0px;
+}
+ul#GlobalMenu ul.sub2{
+    display: none;
+    position: absolute;
+    top:0px;
+    left: 100px;
+}
+
+ul#GlobalMenu div:hover .sub1{
+    display:block;
+}
+
+ul#GlobalMenu .sub1 div:hover .sub2 {
+    display:block;
+}
