@@ -1,0 +1,208 @@
+body {
+    margin: 0;
+    padding: 0;
+    --TopFixed2RowsHeight: 70px;
+    --UserWidth: 200px;
+    --NavWidth: 250px;
+    --GreyBackgroundColor: rgb(245,245,245);
+    --WhiteBackgroundColor: rgb(255,255,255);
+    --PanelBorderColor: rgb(221,221,221);
+    --PanelHeaderHeight: 60px;
+    --TopFixedFirstRowColour: rgb(38, 166, 154);
+    --SecondTopFixedRowColour: rgb(43,63,83);
+    --LighterBorder: rgb(85,99,112);
+    /* --MenuTextColour: rgb(229,229,229); */
+    --MenuTextColour: rgb(188,199,210);
+    --HighlightedMenuTextColour: rgb(250, 250, 250);
+    --HighlightedMenuItemColour: rgb(54,73,92);
+    --UserSectionColour: rgb(195, 195, 195);
+    --GMItemsWidth: 100px;
+    --GMSubItemsWidth: 200px;
+    --NavItemTopBorderColour: rgb(85,99,112);
+    --NavItemBottomBorderColour: rgb(32,47,62);
+    --NavItemGradientTopColour: rgb(52,69,85);
+    --NavItemGradientBottomColour: rgb(45,66,86);
+    font-family: "Helvetica Neue",Roboto,Arial,"Droid Sans",sans-serif;
+    /* font-family: "Source Sans Pro",sans-serif; */
+    background-color: var(--GreyBackgroundColor);
+}
+/*            TOP Fixed row             */
+/* .TopFixedRow {
+    background-color: red;
+    width: 100%;
+    position: fixed;
+    height: var(--TopFixed2RowsHeight);
+    z-index: 1;
+    display: grid;
+    grid-template-columns: calc(var(--NavWidth) - 1px) 1fr var(--UserWidth);
+} */
+.TopFixed2Rows {
+    /* grid-row: 1 / span 2; */
+    /* background-color: red; */
+    width: 100%;
+    position: fixed;
+    height: var(--TopFixed2RowsHeight);
+    z-index: 1;
+    display: grid;
+    grid-template-columns: calc(var(--NavWidth) - 1px) 1fr var(--UserWidth);
+    color: var(--MenuTextColour);
+    /* border-bottom: 1px solid red; */
+}
+.TopFixedRow {
+    grid-column: 1 / span 3;
+    grid-row: 1 / span 2;
+    
+    width: 100%;
+    height: 100%;
+
+    z-index: 1;
+    display: grid;
+    grid-template-columns: calc(var(--NavWidth) - 1px) 1fr var(--UserWidth);
+}
+.BottomFixedRow{
+    grid-column: 1 / span 3;
+    grid-row: 3 / span 3;
+
+    display:flex;
+    width: 100%;
+    height: 100%;
+    background: var(--SecondTopFixedRowColour);
+    /* background: blue; */
+
+    /* padding-top: 1px; */
+    padding-left: 10px;
+    
+    border-top: 2px solid var(--LighterBorder);
+    border-bottom: 2px solid var(--LighterBorder);
+}
+
+
+/* https://colorlib.com/polygon/gentelella/index.html# */
+
+
+
+
+
+.LogoSection {
+    grid-column: 1 / span 1;
+    grid-row: 1/ span 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-family: 'Trocchi', serif;
+    font-size: 1.5em;
+    letter-spacing: 4px;
+    background-color: var(--TopFixedFirstRowColour);
+    text-shadow: 0 1px 1px rgb(218, 224, 224)
+}
+.Nada {
+    grid-column: 2 / span 1;
+    grid-row: 1/ span 1;
+    background-color: var(--TopFixedFirstRowColour);
+    display: flex;
+    align-items: center;
+}
+.UserSection {
+    grid-column: 3 / span 1;
+    grid-row: 1/ span 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--UserSectionColour);
+    box-shadow: inset 1px -1px var(--BorderColour);
+}
+
+/*            end TOP Fixed row             */
+
+
+
+
+                                /*       Global menu      */
+/* https://www.youtube.com/watch?v=T7ayE5AtRUA */
+
+ul#GlobalMenu {
+    display: flex;
+    align-items: center;
+
+    margin:0px;
+    padding: 0px;
+}
+
+ul#GlobalMenu ul{
+    background: var(--SecondTopFixedRowColour);
+    
+    border: 1px solid var(--LighterBorder);
+    border-top: 2px solid var(--LighterBorder);
+
+    position: absolute;
+    list-style-type: none;
+    padding: 0px;
+
+    /*visibility: hidden;*/
+
+    /*Musi byt pod visibility: ...*/
+    /* transition: visibility 0s linear 0.2s;   */
+    
+    top: -2px;      /*Tato hodnota bude jina pro ul.sub-d. Viz nize.*/
+    left: calc(var(--GMSubItemsWidth) + 40px); /*Tato hodnota bude jina pro ul.sub-d. Viz nize. (40px = 2x padding) */
+}
+ul#GlobalMenu ul.sub-d {
+    top: 37px;       /*ul.sub-d je ul primo pod hlavnim menu. Toto sub-menu je jine nez jeho vnitrni sub-menu.*/
+    left: -1px;
+}
+
+ul#GlobalMenu li {
+    padding-left: 20px;
+    padding-right: 20px;
+
+    display: flex;
+    align-items: center;
+
+    font-size: 1rem;
+    /* font-family: 'Open Sans', sans-serif; */
+
+    position: relative;
+    width: var(--GMSubItemsWidth);   /*Sirka vsech global menu items*/
+
+    min-height: 40px;
+    height: 100%;
+}
+
+ul#GlobalMenu > li {
+    min-height: 25px;
+    width: var(--GMItemsWidth);   /*Sirka (pouze) horizontalnich global menu items*/
+}
+
+ul#GlobalMenu li:hover > div > div
+{
+    color: var(--HighlightedMenuTextColour);
+}
+ul#GlobalMenu li:hover {
+    background: var(--HighlightedMenuItemColour);
+}
+
+/*Zobrazuji pouze 1. (diky '>') nasledujici ul.*/
+ul#GlobalMenu li:hover > div > ul {
+    visibility: visible;
+    /* transition: visibility 0s linear 0.1s; */
+}
+
+                                /*      END of Global menu      */
+
+
+
+.AllButFixed {
+    background-color: var(--GreyBackgroundColor);
+    position: absolute;
+    top: calc(var(--TopFixed2RowsHeight) + 4px);
+    
+    z-index: 0;
+    padding: 5px;
+    /*Defined in proper layout css:  Weight, Left, */
+}
+.Content{
+    background-color: var(--GreyBackgroundColor);
+    width: 100%;
+    height: 100%;
+}

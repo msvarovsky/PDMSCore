@@ -1,0 +1,37 @@
+/*            -TOP Fixed row             */
+
+.LeftFixedColumn {  /*Mozna pozdeji presunu do General.css*/
+    position: fixed;
+    background-color: var(--SecondTopFixedRowColour);
+    width: var(--NavWidth);
+    min-height: calc(100% - var(--TopFixed2RowsHeight));
+    /*z-index: 1;*/
+    z-index: 0;
+    top: calc(var(--TopFixed2RowsHeight) + 3px);
+    padding-top: 10px;
+}
+
+.AllButFixed {
+    /* background-color: cyan; */
+    left: var(--NavWidth);
+    width: calc(100% - var(--NavWidth) - 10px); /*10=2xPadding*/
+
+    display: grid;
+    grid-template-areas: "PageMenu" "PageContent";
+    grid-template-rows: 50px 1fr;
+}
+
+
+.PageMenu {
+    grid-area: PageMenu;
+    /* background-color: #ffff64; */
+
+}
+
+
+.PageContent {
+    grid-area: PageContent;
+    /*background-color: #8ca0ff;*/
+    /* height:100%; */
+    z-index: 0;
+}
