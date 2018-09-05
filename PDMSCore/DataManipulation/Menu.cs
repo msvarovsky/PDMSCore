@@ -241,6 +241,7 @@ namespace PDMSCore.DataManipulation
         public int ParentNavID { get; set; }
         public List<string> ChildrenNavIDs { get; set; }
         public byte[] Icon { get; set; }
+        public string Type { get; set; }
 
         public NavItemFromDB()
         {
@@ -292,8 +293,19 @@ namespace PDMSCore.DataManipulation
             }
             return null;
         }
+
+        public List<string> GetRootChildren(string RootString)
+        {
+            for (int i = 0; i < navs.Count; i++)
+            {
+                if (navs[i].Type == RootString)
+                    return navs[i].ChildrenNavIDs;
+            }
+            return null;
+        }
+
     }
-    
+
 
     public class Menu
     {   /*  1   1.1     1.1.1

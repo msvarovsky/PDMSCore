@@ -1,8 +1,10 @@
 ﻿using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using PDMSCore.BusinessObjects;
 using PDMSCore.DataManipulation;
 using PDMSCore.Models;
+using System.Web;
 
 namespace PDMSCore.Controllers
 {
@@ -14,10 +16,12 @@ namespace PDMSCore.Controllers
             ////return this.RedirectToAction("ShowProject", "Project");
             //Project pr = new Project(null);
 
-            Menu navigation = new Menu();
-            navigation.LoadNavigation(new GeneralSessionInfo(1, 1, "en"));
+            GeneralSessionInfo gsi = new GeneralSessionInfo(1, 1, "en");
+            ViewData["gsi"] = JsonConvert.SerializeObject(gsi);
 
-            
+            Menu navigation = new Menu();
+            navigation.LoadNavigation(gsi);
+
             return View(navigation);
         }
 

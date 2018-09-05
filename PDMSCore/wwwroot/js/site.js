@@ -8,6 +8,7 @@ $(document).ready(function () {
 
     console.log("site.js-ready");
     //OpenModal('myModal1', 'Hovno');
+    return;
 
     $('li ul').slideUp();
     $('.no-js li a.MainMenuLevel1').on("click", function () {

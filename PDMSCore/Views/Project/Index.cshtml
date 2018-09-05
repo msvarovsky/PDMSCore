@@ -8,37 +8,42 @@
 <div class="Section Content">
     <h1>ahojky2</h1>
     @*@for (int i = 0; i < Model.ToShow.Count; i++)
-    {
-        <div class="Panel @Model.ToShow[i].Size">
-            <div class="Panel-Header">
-                <div class="Panel-Header-Left">
-                    @Model.ToShow[i].Label
-                </div>
-                <div class="Panel-Header-Right">
-                    <div class="dropdown">
-                        <i class="fa fa-gear dropbtn" onclick="myFunction()" aria-hidden="true"></i>
-                        <div id="myDropdown" class="dropdown-content">
-                            <a href="#">Link 1-</a>
-                            <a href="#">Link 2-</a>
-                            <a href="#">Link 3-</a>
+        {
+            <div class="Panel @Model.ToShow[i].Size">
+                <div class="Panel-Header">
+                    <div class="Panel-Header-Left">
+                        @Model.ToShow[i].Label
+                    </div>
+                    <div class="Panel-Header-Right">
+                        <div class="dropdown">
+                            <i class="fa fa-gear dropbtn" onclick="myFunction()" aria-hidden="true"></i>
+                            <div id="myDropdown" class="dropdown-content">
+                                <a href="#">Link 1-</a>
+                                <a href="#">Link 2-</a>
+                                <a href="#">Link 3-</a>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="Panel-Body">
-                <form action="Index">
+                <div class="Panel-Body">
+                    <form action="Index">
 
-                    @for (int f = 0; f < Model.ToShow[i].Content.Count; f++)
-                    {
-                        @MSHelpers.Field(Model.ToShow[i].Content[f]);
-                    }
-                    <input type="submit" value="Index">
+                        @for (int f = 0; f < Model.ToShow[i].Content.Count; f++)
+                        {
+                            @MSHelpers.Field(Model.ToShow[i].Content[f]);
+                        }
+                        <input type="submit" value="Index">
 
-                </form>
+                    </form>
+                </div>
             </div>
-        </div>
-    }*@
+        }*@
 </div>
+
+@section SideMenu
+    {
+    SideMenu in project/index
+}
 
 
 <script type="text/javascript">

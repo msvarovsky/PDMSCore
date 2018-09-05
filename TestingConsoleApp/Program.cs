@@ -15,14 +15,20 @@ namespace TestingConsoleApp
         {
             Dictionary<string, StringValues> d = new Dictionary<string, Microsoft.Extensions.Primitives.StringValues>();
             FormCollection a = new FormCollection(d);
+            GeneralSessionInfo gsi = new GeneralSessionInfo(1, 1, "en");
+
+            GlobalMenu.RenderMenu(gsi);
+
+
+
+
 
 
             Menu navigation = new Menu();
             navigation.LoadNavigation(new GeneralSessionInfo(1, 1, "en"));
-
             navigation.HtmlText();
 
-            GeneralSessionInfo gsi = new GeneralSessionInfo(1, 1, "en");
+            
             Project pr = new Project(1);
             pr.SavePage(gsi, 1, a); // asi bych ProjectID a PageID mel dodat ze stranky jako hidden fields.
 

@@ -467,3 +467,25 @@ BEGIN
 	)
 END;
 
+---------------------------------------------
+
+
+
+
+exec GetGlobalMenu 1, 'en'
+----------------------------
+ALTER PROCEDURE GetGlobalMenu
+	@RetailerID int,
+	@LanguageID varchar(5)
+AS
+BEGIN
+	SELECT	n.NavID, l.Label, n.Icon, n.ChildrenNavIDs, n.[Type]
+	FROM	Navigation n
+	LEFT OUTER JOIN Labels l	ON (n.LabelID = l.LabelID AND l.LanguageID = @LanguageID )
+	WHERE	n.RetailerID = @RetailerID
+	AND		n.[Type] in ('gm','gm-root')
+END;
+
+
+
+

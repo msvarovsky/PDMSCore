@@ -1,8 +1,7 @@
 ﻿using PDMSCore.BusinessObjects;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
-using PDMSCore.DataManipulation;
-using System;
+using Newtonsoft.Json;
 
 namespace PDMSCore.Controllers
 {
@@ -19,6 +18,9 @@ namespace PDMSCore.Controllers
         [HttpGet]
         public ActionResult Index()
         {
+            GeneralSessionInfo gsi = new GeneralSessionInfo(1, 1, "en");
+            ViewData["gsi"] = JsonConvert.SerializeObject(gsi);
+
             //TempData.Add("a", "b");
             //p = new Project();
             return View();
