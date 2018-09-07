@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Primitives;
 using PDMSCore.BusinessObjects;
 using PDMSCore.DataManipulation;
+using PDMSCore.Models;
 using System;
 using System.Collections.Generic;
 using System.Web;
@@ -17,8 +18,8 @@ namespace TestingConsoleApp
             FormCollection a = new FormCollection(d);
             GeneralSessionInfo gsi = new GeneralSessionInfo(1, 1, "en");
 
-            GlobalMenu.RenderMenu(gsi);
-
+            Labels l = new Labels();
+            l.LoadLabelsFromDB();
 
 
 

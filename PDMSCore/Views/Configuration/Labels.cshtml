@@ -1,0 +1,28 @@
+﻿
+@{
+    ViewData["Title"] = "Labels";
+}
+@model PDMSCore.Models.Labels
+<h2>Labels</h2>
+
+
+@for (int i = 0; i < Model.list.Count; i++)
+{
+    @Model.list[i].Label.ToString();
+}
+
+<br>
+<hr>
+
+@*@await Html.PartialAsync("~/Views/ComplexControls/DataGridPartial.cshtml", "TBD")*@
+
+@await Html.PartialAsync("~/Views/ComplexControls/DataGridPartial.cshtml", Model.dgf )
+
+
+
+@*@await Html.PartialAsync("PartialPanel", @Model.Page.Panels.PanelList[i], new ViewDataDictionary(this.ViewData))*@
+
+
+
+
+

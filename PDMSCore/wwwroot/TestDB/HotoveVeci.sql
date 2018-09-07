@@ -534,3 +534,31 @@ BEGIN
 END;
 
 
+------------------------------------------------------------------------------------------
+exec GetLabels -1, '', -1
+----------------------------
+ALTER PROCEDURE GetLabels
+	@CompanyID int,
+	@LanguageID varchar(5),
+	@LabelID int
+AS
+BEGIN
+	SELECT	l.LabelID, l.LanguageID, l.Label, l.CompanyID
+	FROM	Labels l
+	WHERE	1=1
+	AND		
+	(		@CompanyID = -1		--To show all labels if the CompanyID is not provided
+			OR
+			NOT Exists	(		--To show Labels common for all the companies if there is no label for the specified company.
+					SELECT 1 
+					FROM	Labels ll
+					WHERE	ll.LabelID = l.LabelID
+					AND		ll.LanguageID = l.LanguageID
+					AND		ll.CompanyID = l.CompanyID
+						)
+			OR
+			l.CompanyID = @CompanyID	--To show all labels for the given Company
+	)
+	AND		(@LanguageID = '' OR l.LanguageID = @LanguageID)	-- To filter based on the LanguageID but only if provided.
+	AND		(@LabelID = -1 OR l.LabelID = @LabelID)				-- To filter based on the LabelID but only if provided.
+END;

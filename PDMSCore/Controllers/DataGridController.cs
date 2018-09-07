@@ -56,7 +56,8 @@ namespace PDMSCore.Controllers
         {
             var writer = new System.IO.StringWriter();
             content.WriteTo(writer, HtmlEncoder.Default);
-            return writer.ToString();
+            string ret = writer.ToString();
+            return ret.Trim();
         }
     }
 }

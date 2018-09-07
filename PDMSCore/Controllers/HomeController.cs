@@ -12,6 +12,8 @@ namespace PDMSCore.Controllers
     {
         public IActionResult Index()
         {
+            return this.RedirectToAction("Labels", "Configuration");
+
             //return this.RedirectToAction("CreateNewProject", "Project");
             ////return this.RedirectToAction("ShowProject", "Project");
             //Project pr = new Project(null);
@@ -23,6 +25,8 @@ namespace PDMSCore.Controllers
             navigation.LoadNavigation(gsi);
 
             return View(navigation);
+
+
         }
 
         public IActionResult About()

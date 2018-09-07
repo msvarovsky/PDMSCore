@@ -1,0 +1,280 @@
+﻿@model PDMSCore.DataManipulation.DataGridField2
+
+
+<script src="/js/jquery-3.3.1.min.js" defer></script>
+<script src="/js/jquery-ui.min.js" defer></script>
+
+<div class="TableWrapper">
+    <div class="tbl-header">
+        <table class="GridTable" id="dg-@Model.ID-h">
+            @*<table class="GridTable" id="IDGridTable-h">*@
+            <thead>@Model.HtmlTextHeaderRow()</thead>
+        </table>
+    </div>
+    @*Roturka*@
+    @*<div id="loader_container">
+            <div class="loader_div">
+                <div class="loader_div">
+                    <div class="loader_div">
+                        <div class="loader_div">
+                            <div class="loader_div">
+                                <div class="loader_div">
+                                    <div class="loader_div">
+                                        <div class="loader_div">
+                                            <div class="loader_div">
+                                                <div class="loader_div">
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>*@
+    <div class="tbl-content">
+        <table class="GridTable">
+            @*<tbody id="dg-@Model.ID-b">*@
+                @Model.HtmlTextTableBody()
+            @*</tbody>*@
+
+        </table>
+    </div>
+
+</div>
+
+<script>
+
+    var DataGridHeaderID, DataGridBodyID;
+
+    @*$(document).ready(function () {
+
+        console.log("DataGridPartial-DocumentReady");
+
+        //ReloadDataGrid("gridID", "any");
+        ReloadDataGrid();
+        document.getElementById("@Model.FocusControlID").focus();
+        //ResizeColumns();
+
+        DataGridHeaderID = 'dg-@Model.ID-h';
+        DataGridBodyID = 'dg-@Model.ID-b';
+
+
+    });*@
+
+    //http://jsfiddle.net/thrilleratplay/epcybL4v/
+    $(function () {
+        var thElm;
+        var startOffset;
+
+        Array.prototype.forEach.call(
+            document.querySelectorAll("table th"),
+            function (th)
+            {
+                th.style.position = 'relative';
+
+                var grip = document.createElement('div');
+                grip.innerHTML = "&nbsp;";
+                //grip.style.backgroundColor = 'red';
+                grip.style.zIndex = '2';
+                grip.style.top = 0;
+                grip.style.right = '-8px';
+                grip.style.bottom = 0;
+                grip.style.width = '15px';
+
+                grip.style.position = 'absolute';
+                grip.style.cursor = 'col-resize';
+                grip.addEventListener('mousedown', function (e) {
+                    console.log("mousedown:" + th);
+
+                    thElm = th;
+                    startOffset = th.offsetWidth - e.pageX;
+                });
+
+                th.appendChild(grip);
+            });
+
+        document.addEventListener('mousemove', function (e) {
+
+            if (thElm) {
+
+                //$(thElm).prev()[0].style.width = startOffset + e.pageX + 'px'; //Nakonec tohle nebylo nutne
+                thElm.style.width = startOffset + e.pageX + 'px';
+
+                console.log("mousemove");
+                ResizeColumns();
+            }
+        });
+
+        document.addEventListener('mouseup', function () {
+            thElm = undefined;
+        });
+    });
+
+    function ResizeColumns() {
+        console.log("ResizeColumns");
+        var $HeaderTable = $('#' + DataGridHeaderID);
+        var $BodyTable = $('#' + DataGridBodyID);
+        var $HeaderCells = $HeaderTable.find('thead tr:first').children();
+
+        var colWidths = $HeaderCells.map(function () {
+            return $(this).width();
+        }).get();
+
+        $BodyTable.find('tr').children().each(function (i, v) {
+            $(v).width(colWidths[i]);
+        });
+    }
+
+    $(window).on("load resize ", OnPageResize).resize();
+
+    function OnPageResize() {
+        //https://codepen.io/nikhil8krishnan/pen/WvYPvv?editors=1100
+        //  https://davidwalsh.name/detect-scrollbar-width
+
+        console.log("OnPageResize");
+
+        var scrollDiv = document.getElementsByClassName("tbl-content");
+        if (scrollDiv[0] != null) {
+            var scrollbarWidth = scrollDiv[0].offsetWidth - scrollDiv[0].clientWidth - 1;
+            $('.tbl-header').css({ 'padding-right': scrollbarWidth });
+        }
+        ResizeColumns();
+
+    };
+
+    //Nemuzu pouzit toto:  "$(".GridTable td").click(function () {"  na dynamicky generovany obsah.
+    $(document).on("click", '.GridTable td', function (event) {
+        $(this).parent().addClass('SingleSelected').siblings().removeClass('SingleSelected');
+        var value = $(this).find('td:first').html();
+        $('#ModalOk').removeAttr("disabled");
+        console.log("click: .GridTable td");
+    });
+
+    // Toto se Ajaxem neobnovuje a proto to muze zustat
+    $(".GridTable th").click(function () {
+        $(this).closest(".TableWrapper").find(".SingleSelected").removeClass('SingleSelected');
+        $('#ModalOk').attr("disabled", "");
+    });
+
+    $(document).on("dblclick", '.GridTable tr', function (event) {
+        $(this).addClass('SingleSelected').siblings().removeClass('SingleSelected');
+        var RowID = $(this).find('td:first').html();
+        OkButtonClicked(RowID);
+    });
+
+    function GetHeaderRowValuesFromID(TableID) {
+        //console.log("TableID = " + TableID);
+
+        var table = $("#" + TableID);
+        var HeaderRow = $(table).find("tr");
+        console.log("GetHeaderRowValuesFromID");
+
+        //var filtres = $(HeaderRow).find("[id^=filter]");
+        var filtres = $(HeaderRow).find(".filter");
+        //console.log(filtres);
+
+        var al = [];
+        for (var i = 0; i < filtres.length; i++) {
+            //al.push(filtres[i].value);
+            al[i] = filtres[i].value;
+
+        }
+        //for (var i = 0; i < al.length; i++) {
+        //    console.log(al[i]);
+        //}
+        return al;
+    };
+
+    //function ReloadDataGrid(DataGridID, returnFieldID) {
+    function ReloadDataGrid() {
+        console.log("ReloadDataGrid");
+        //var FilterValues = GetHeaderRowValues($(this).closest('table'));
+        var filterValues = GetHeaderRowValuesFromID(DataGridHeaderID);
+
+        try {
+            $('#loader_container').show();
+
+            $.ajax({
+                type: "GET",
+                //dataType: "json",  // Nesmi tu byt
+                url: "/DataGrid/GetDataGridContent/",
+                traditional: true,
+                data: {
+                    DataGridID: @Model.ID,
+                    ContentID: "TODO",
+                    FilterValues: filterValues,
+                },
+                contentType: "application/json; charset=utf-8",
+                success: function (partialViewResult) {
+                    console.log("ReloadDataGrid: success");
+                    $('#loader_container').hide();
+
+                    DataGridBodyID = "dg-"+@Model.ID+"-b";
+
+                    if (partialViewResult.length > 0)
+                        $("#" + DataGridBodyID).replaceWith(partialViewResult);
+
+                    OnPageResize();
+
+                    //if (GetTableRowCount(DataGridBodyID) == 1) {
+                    //    $('#' + DataGridBodyID).find('tr:first').addClass('SingleSelected');
+                    //    $('#ModalOk').removeAttr("disabled");
+                    //}
+                    //else
+                    //    $('#ModalOk').attr("disabled", "");
+                },
+                error: function (result) {
+                    console.log("ReloadDataGrid: error");
+                    $('#loader_container').hide();
+                    $("#" + DataGridBodyID).replaceWith("<span>DataGridPartialView: Ajax failed...</span>");
+                }
+            });
+        }
+        catch (err) {
+            console.log(err);
+            $('#loader_container').hide();
+        }
+    };
+
+    // Automaticke zvoleni radky v table po stisku Enter pokud je vyfiltrovana pouze jedina radka.
+    $('.filter').keyup(function (e) {
+        if (e.keyCode == 13) {
+            if (GetTableRowCount(DataGridBodyID) == 1) {
+                var OnlyRowInTable = $("#" + DataGridBodyID).find('tr:first');
+                if (OnlyRowInTable != null) {
+                    var RowID = $(OnlyRowInTable).find('td:first').html();
+                    OkButtonClicked(RowID);
+
+                }
+            }
+        }
+    });
+
+    function GetTableRowCount(tableID) {
+        var obj = document.getElementById(tableID).getElementsByTagName("tr");
+        if (obj != null) {
+            var rows = obj.length;
+            return rows;
+        }
+        return -1;
+    }
+
+    function OnDataGridFilterChange(FilterID) {
+        console.log("OnDataGridFilterChange");
+
+        //TODO: Pozdeji, pokud budu chtit aktualizovat datagrid pouze kdyz bude velikost filtru > X znaku.
+        //var value = $("#" + FilterID).val();
+        //if (value.length > 2) {
+        //    console.log(">2");
+        //    ReloadDataGrid('gridID-input', 'Hovno')
+        //}
+
+        //ReloadDataGrid('gridID-input', 'Hovno');
+        ReloadDataGrid();
+    };
+
+</script>

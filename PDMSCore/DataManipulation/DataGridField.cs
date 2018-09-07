@@ -19,7 +19,7 @@ namespace PDMSCore.DataManipulation
 
     public class DataGridField2 : Field
     {
-        //public int ID { get; set; }
+        public int ID { get; set; }
         public int nVisibleRows { get; set; }
         public string FocusControlID { get; set; }
         private List<TableRow2> Data;
@@ -28,6 +28,7 @@ namespace PDMSCore.DataManipulation
 
         public DataGridField2():base("TODO","GridTable","table", null)
         {
+            ID = DateTime.Now.Millisecond;
             HeaderLabels = null;
             Data = new List<TableRow2>();
             nVisibleRows = 5;
@@ -36,7 +37,7 @@ namespace PDMSCore.DataManipulation
         public static DataGridField2 GetTestData(int ID)
         {
             DataGridField2 d = new DataGridField2();
-            //d.ID = ID;
+            d.ID = ID;
             d.SetHeaderLabels("Jmeno", "Prijmeni", "Aktivni");
 
             TableRow2 tr = new TableRow2();
@@ -217,8 +218,8 @@ namespace PDMSCore.DataManipulation
         public TagBuilder HtmlTextTableBody()
         {
             TagBuilder tbTableBody = new TagBuilder("tbody");
-            //tbTableBody.Attributes.Add("id", "DataGridContent");
-            tbTableBody.Attributes.Add("id", "dg-" + this.HTMLFieldID + "-b");
+            //tbTableBody.Attributes.Add("id", "dg-" + this.HTMLFieldID + "-b");
+            tbTableBody.Attributes.Add("id", "dg-" + this.ID+ "-b");
 
             for (int i = 0; i < Data.Count; i++)
                 tbTableBody.InnerHtml.AppendHtml(Data[i].HtmlText());
