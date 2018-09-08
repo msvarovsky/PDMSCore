@@ -52,7 +52,7 @@ namespace PDMSCore.Controllers
             else
             {
                 ModalDialog md = new ModalDialog("en", "Test title");
-                DataGridField2 d = new DataGridField2();
+                DataGridField2 d = new DataGridField2("DGtest");
                 d.SetHeaderLabels("Jmeno", "Prijmeni", "Aktivni");
 
                 TableRow2 tr = new TableRow2();

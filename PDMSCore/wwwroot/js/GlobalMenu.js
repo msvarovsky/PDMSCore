@@ -2,10 +2,10 @@
 function OnGlobalMenuItemClick(target, TypeOfNavItem, URL, data) {
     event.stopPropagation();
 
-    console.log("OnGlobalMenuItemClick: URL = " + URL);
+    console.log("O nGlobalMenuItemClick: URL = " + URL);
 
     if (URL !== undefined && URL != "")
-        window.location.href = URL;
+        window.location.href = "/" + URL;
 
 
     return;

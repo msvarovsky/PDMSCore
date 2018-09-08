@@ -1,19 +1,18 @@
 ﻿@model PDMSCore.DataManipulation.DataGridField2
 
-
-<script src="/js/jquery-3.3.1.min.js" defer></script>
-<script src="/js/jquery-ui.min.js" defer></script>
-
-<div class="TableWrapper">
-    <div class="tbl-header">
-        <table class="GridTable" id="dg-@Model.ID-h">
-            @*<table class="GridTable" id="IDGridTable-h">*@
-            <thead>@Model.HtmlTextHeaderRow()</thead>
-        </table>
-    </div>
-    @*Roturka*@
-    @*<div id="loader_container">
-            <div class="loader_div">
+<form id="@Model.ID-save" method="post">
+    <div class="TableWrapper" id="@Model.ID">
+        <div>
+            Menu datagridu
+        </div>
+        <div class="tbl-header">
+            <table class="GridTable" id="@Model.HTMLHeaderID">
+                @*<table class="GridTable" id="IDGridTable-h">*@
+                <thead>@Model.HtmlTextHeaderRow()</thead>
+            </table>
+        </div>
+        @*Roturka*@
+        @*<div id="loader_container">
                 <div class="loader_div">
                     <div class="loader_div">
                         <div class="loader_div">
@@ -23,7 +22,9 @@
                                         <div class="loader_div">
                                             <div class="loader_div">
                                                 <div class="loader_div">
+                                                    <div class="loader_div">
 
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -33,37 +34,27 @@
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>*@
-    <div class="tbl-content">
-        <table class="GridTable">
-            @*<tbody id="dg-@Model.ID-b">*@
+            </div>*@
+        <div class="tbl-content">
+            <table class="GridTable">
+                @*<tbody id="dg-@Model.ID-b">*@
                 @Model.HtmlTextTableBody()
-            @*</tbody>*@
+                @*</tbody>*@
 
-        </table>
+            </table>
+        </div>
     </div>
-
-</div>
+</form>
 
 <script>
 
-    var DataGridHeaderID, DataGridBodyID;
 
-    @*$(document).ready(function () {
-
-        console.log("DataGridPartial-DocumentReady");
-
-        //ReloadDataGrid("gridID", "any");
-        ReloadDataGrid();
+    $(document).ready(function () {
+        console.log("Ready");
         document.getElementById("@Model.FocusControlID").focus();
-        //ResizeColumns();
 
-        DataGridHeaderID = 'dg-@Model.ID-h';
-        DataGridBodyID = 'dg-@Model.ID-b';
-
-
-    });*@
+        document.getElementById("@Model.ID-save").submit();
+    });
 
     //http://jsfiddle.net/thrilleratplay/epcybL4v/
     $(function () {
@@ -72,8 +63,7 @@
 
         Array.prototype.forEach.call(
             document.querySelectorAll("table th"),
-            function (th)
-            {
+            function (th) {
                 th.style.position = 'relative';
 
                 var grip = document.createElement('div');
@@ -114,18 +104,19 @@
         });
     });
 
-    function ResizeColumns() {
+    function ResizeColumns()
+    {
         console.log("ResizeColumns");
-        var $HeaderTable = $('#' + DataGridHeaderID);
-        var $BodyTable = $('#' + DataGridBodyID);
+        var $HeaderTable = $('#' + "@Model.HTMLHeaderID");
+        var $BodyTable = $('#' + "@Model.HTMLBodyID");
         var $HeaderCells = $HeaderTable.find('thead tr:first').children();
 
         var colWidths = $HeaderCells.map(function () {
-            return $(this).width();
+        return $(this).width();
         }).get();
 
         $BodyTable.find('tr').children().each(function (i, v) {
-            $(v).width(colWidths[i]);
+        $(v).width(colWidths[i]);
         });
     }
 
@@ -138,12 +129,12 @@
         console.log("OnPageResize");
 
         var scrollDiv = document.getElementsByClassName("tbl-content");
-        if (scrollDiv[0] != null) {
+        if (scrollDiv[0] != null)
+        {
             var scrollbarWidth = scrollDiv[0].offsetWidth - scrollDiv[0].clientWidth - 1;
             $('.tbl-header').css({ 'padding-right': scrollbarWidth });
         }
         ResizeColumns();
-
     };
 
     //Nemuzu pouzit toto:  "$(".GridTable td").click(function () {"  na dynamicky generovany obsah.
@@ -166,7 +157,8 @@
         OkButtonClicked(RowID);
     });
 
-    function GetHeaderRowValuesFromID(TableID) {
+    function GetHeaderRowValuesFromID(TableID)
+    {
         //console.log("TableID = " + TableID);
 
         var table = $("#" + TableID);
@@ -179,8 +171,8 @@
 
         var al = [];
         for (var i = 0; i < filtres.length; i++) {
-            //al.push(filtres[i].value);
-            al[i] = filtres[i].value;
+        //al.push(filtres[i].value);
+        al[i] = filtres[i].value;
 
         }
         //for (var i = 0; i < al.length; i++) {
@@ -193,30 +185,35 @@
     function ReloadDataGrid() {
         console.log("ReloadDataGrid");
         //var FilterValues = GetHeaderRowValues($(this).closest('table'));
-        var filterValues = GetHeaderRowValuesFromID(DataGridHeaderID);
+        //var filterValues = GetHeaderRowValuesFromID(DataGridHeaderID);
 
-        try {
+        var filterValues = GetHeaderRowValuesFromID("@Model.HTMLHeaderID");
+        var TargetURL = "/" + "@Model.CallingControllerAndAction" +"/";
+
+        try
+        {
             $('#loader_container').show();
-
             $.ajax({
                 type: "GET",
                 //dataType: "json",  // Nesmi tu byt
-                url: "/DataGrid/GetDataGridContent/",
+
+                url: TargetURL,
+                //url: "/DataGrid/GetDataGridContent/",
                 traditional: true,
-                data: {
-                    DataGridID: @Model.ID,
-                    ContentID: "TODO",
+                data:
+                {
+                    DataGridID: "@Model.ID",
+                    ContentID: "@Model.CallingControllerAndActionData",
                     FilterValues: filterValues,
                 },
                 contentType: "application/json; charset=utf-8",
-                success: function (partialViewResult) {
+                success: function (partialViewResult)
+                {
                     console.log("ReloadDataGrid: success");
                     $('#loader_container').hide();
 
-                    DataGridBodyID = "dg-"+@Model.ID+"-b";
-
                     if (partialViewResult.length > 0)
-                        $("#" + DataGridBodyID).replaceWith(partialViewResult);
+                        $("#" + "@Model.HTMLBodyID").replaceWith(partialViewResult);
 
                     OnPageResize();
 
@@ -227,10 +224,11 @@
                     //else
                     //    $('#ModalOk').attr("disabled", "");
                 },
-                error: function (result) {
+                error: function (result)
+                {
                     console.log("ReloadDataGrid: error");
                     $('#loader_container').hide();
-                    $("#" + DataGridBodyID).replaceWith("<span>DataGridPartialView: Ajax failed...</span>");
+                    $("#" + @Model.HTMLBodyID).replaceWith("<span>DataGridPartialView: Ajax failed...</span>");
                 }
             });
         }
@@ -243,12 +241,11 @@
     // Automaticke zvoleni radky v table po stisku Enter pokud je vyfiltrovana pouze jedina radka.
     $('.filter').keyup(function (e) {
         if (e.keyCode == 13) {
-            if (GetTableRowCount(DataGridBodyID) == 1) {
-                var OnlyRowInTable = $("#" + DataGridBodyID).find('tr:first');
+            if (GetTableRowCount(@Model.HTMLBodyID) == 1) {
+                var OnlyRowInTable = $("#" + @Model.HTMLBodyID).find('tr:first');
                 if (OnlyRowInTable != null) {
                     var RowID = $(OnlyRowInTable).find('td:first').html();
                     OkButtonClicked(RowID);
-
                 }
             }
         }

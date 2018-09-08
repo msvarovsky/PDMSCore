@@ -1,6 +1,8 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Html;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using System.Web;
 
@@ -24,7 +26,15 @@ namespace PDMSCore.DataManipulation
             val += ")";
             return new KeyValuePair<string, string>(JSEvent, val);
         }
-        
+
+        public static string GetString(IHtmlContent content)
+        {
+            var writer = new System.IO.StringWriter();
+            content.WriteTo(writer, HtmlEncoder.Default);
+            string ret = writer.ToString();
+            return ret.Trim();
+        }
+
 
     }
 }

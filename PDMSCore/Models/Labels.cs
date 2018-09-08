@@ -1,11 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Extensions.Primitives;
 using PDMSCore.DataManipulation;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace PDMSCore.Models
 {
@@ -24,15 +24,17 @@ namespace PDMSCore.Models
     }
     public class Labels
     {
-        public DataGridField2 dgf { get; set; }
-        public List<LabelItem> list { get; set; } = new List<LabelItem>();
+        public DataGridField2 DataGrid { get; set; }
+        //public List<LabelItem> list { get; set; } = new List<LabelItem>();
+        public string ID { get; set; }
 
-        public Labels()
+        public Labels(string ID)
         {
-            dgf = DataGridField2.GetTestData(1);
+            this.ID = ID;
+            //list = new List<LabelItem>();
         }
 
-        public bool LoadLabelsFromDB(int CompanyID = -1, string LanguageID = "", int LabelID = -1)
+        public Labels LoadLabelsFromDB(int CompanyID = -1, string LanguageID = "", int LabelID = -1)
         {
             using (SqlConnection con = new SqlConnection(DBUtil.GetSqlConnectionString()))
             {
@@ -58,33 +60,82 @@ namespace PDMSCore.Models
                     ret.Add(new LabelTextAreaField("1", "Exception in LoadNavigation(..)", eee.ToString()));
                 }
             }
-            return false;
+            return this;
         }
+
+        
 
         private void ProcessLabels(DataTable dt)
         {
-            list = new List<LabelItem>();
-            for (int r = 0; r < dt.Rows.Count; r++)
-            {
-                int LabelID = DBUtil.GetInt(dt.Rows[r], 0);
-                string LanguageID = DBUtil.GetString(dt.Rows[r], 1);
-                string Label = DBUtil.GetString(dt.Rows[r], 2);
-                int CompanyID = DBUtil.GetInt(dt.Rows[r], 3);
+            //list = new List<LabelItem>();
+            //for (int r = 0; r < dt.Rows.Count; r++)
+            //{
+            //    int LabelID = DBUtil.GetInt(dt.Rows[r], 0);
+            //    string LanguageID = DBUtil.GetString(dt.Rows[r], 1);
+            //    string Label = DBUtil.GetString(dt.Rows[r], 2);
+            //    int CompanyID = DBUtil.GetInt(dt.Rows[r], 3);
 
-                LabelItem li = new LabelItem() { ID = LabelID, Language = LanguageID, Label = Label, CompanyID = CompanyID };
-                list.Add(li);
-            }
+            //    LabelItem li = new LabelItem() { ID = LabelID, Language = LanguageID, Label = Label, CompanyID = CompanyID };
+            //    list.Add(li);
+            //}
+
+            if (ID == null || ID == "")
+                DataGrid = new DataGridField2("Dg" + DateTime.Now.Millisecond,dt);
+            else
+                DataGrid = new DataGridField2("Dg" + ID, dt);
         }
-
+       
         public TagBuilder HtmlText()
         {
-            
-
-
             return null;
         }
 
+        public void Save(IFormCollection fc)
+        {
+            using (SqlConnection con = new SqlConnection(DBUtil.GetSqlConnectionString()))
+            {
+                SaveDifferences(fc);
+            }
+
+            return;
+        }
+
+        private void SaveDifferences(IFormCollection fc)
+        {
+            for (int r = 0; r < DataGrid.RowCount; r++)
+            {
+                TableRow2 tr = DataGrid.GetRow(r);
+                for (int c = 0; c < tr.Cells.Count; c++)
+                {
+                    string HTMLId = tr.Cells[c].HTMLFieldID;
+                    StringValues NewValue = new StringValues();
+                    if (fc.TryGetValue(HTMLId, out NewValue))
+                    {
+                        if (tr.Cells[c].GetValue() == NewValue.ToString())
+                            continue;
+                        else
+                        {   //  Zmena hodnoty. TODO
+
+                        }
+
+                    }
+                    else
+                    {
+
+                    }
+
+
+
+
+                }
+
+
+            }
+
+
+        }
 
 
     }
+
 }

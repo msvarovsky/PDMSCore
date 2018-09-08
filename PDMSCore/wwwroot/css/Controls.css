@@ -250,6 +250,7 @@ HeaderSearch input {
 .Cell {
     padding-right: var(--CellRightLeftPadding);
     padding-left: var(--CellRightLeftPadding);
+    background-color: inherit;
 }
 
 .HeadCell {
@@ -263,6 +264,15 @@ HeaderSearch input {
 
 .tbDataGrid {
     border: 0px solid #000000;
+    width: 100%;
+}
+
+.DGCellTB {
+    border-style: none;
+    background-color: red;
+    background-color: inherit;
+
+    /*width: 50px;*/
     width: 100%;
 }
 

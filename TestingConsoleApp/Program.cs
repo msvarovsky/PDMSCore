@@ -18,7 +18,7 @@ namespace TestingConsoleApp
             FormCollection a = new FormCollection(d);
             GeneralSessionInfo gsi = new GeneralSessionInfo(1, 1, "en");
 
-            Labels l = new Labels();
+            Labels l = new Labels("");
             l.LoadLabelsFromDB();
 
 

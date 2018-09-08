@@ -49,15 +49,8 @@ namespace PDMSCore.Controllers
 
 
 
-            return Content(GetString(d.HtmlTextTableBody()));
+            return Content(WebStuffHelper.GetString(d.HtmlTextTableBody()));
         }
 
-        public static string GetString(IHtmlContent content)
-        {
-            var writer = new System.IO.StringWriter();
-            content.WriteTo(writer, HtmlEncoder.Default);
-            string ret = writer.ToString();
-            return ret.Trim();
-        }
     }
 }

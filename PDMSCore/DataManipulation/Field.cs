@@ -69,9 +69,8 @@ namespace PDMSCore.DataManipulation
         public string TypeAttribute { get; set; }
         //public string ParentID { get; set; }
         public string ParentDBID { get; set; }
+        public string CssStyle { get; set; }
 
-
-        //public Field(string ParentID, string DBFieldID, string HTMLFieldID, string HtmlTag, string VisibleText)
         public Field(string DBFieldID, string HTMLFieldID, string HtmlTag, string VisibleText)
         {
             //this.ParentID = ParentID;
@@ -100,6 +99,9 @@ namespace PDMSCore.DataManipulation
                     tb.Attributes.Add("id", HTMLFieldID);
                     //tb.Attributes.Add("id", ParentID + "-" + HTMLFieldID);
 
+                if (CssStyle != null)
+                    tb.Attributes.Add("style", CssStyle);
+
                 if (ValueAttribute != null)
                     tb.Attributes.Add("value", ValueAttribute);
 
@@ -115,7 +117,7 @@ namespace PDMSCore.DataManipulation
             return tb;
         }
 
-        public string GetValue()
+        public virtual string GetValue()
         {
             return VisibleText;
         }
@@ -264,6 +266,12 @@ namespace PDMSCore.DataManipulation
             tb.InnerHtml.AppendHtml(HtmlLabel);
             return tb;
         }
+
+        public override string GetValue()
+        {
+            return HtmlLabel;
+        }
+
     }
 
     public class TextAreaField : Field, IHtmlElement, IDBSaveable
@@ -398,6 +406,11 @@ namespace PDMSCore.DataManipulation
                 " AND ProjectID = " + UpdateInfo.ProjectID +
                 " AND FieldID = " + UpdateInfo.FieldID;
             return ret + ";";
+        }
+
+        public override string GetValue()
+        {
+            return Text;
         }
 
     }

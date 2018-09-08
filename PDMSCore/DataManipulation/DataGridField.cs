@@ -2,6 +2,7 @@
 using PDMSCore.DataManipulation;
 using System;
 using System.Collections.Generic;
+using System.Data;
 
 namespace PDMSCore.DataManipulation
 {
@@ -19,25 +20,83 @@ namespace PDMSCore.DataManipulation
 
     public class DataGridField2 : Field
     {
-        public int ID { get; set; }
+        public string ID { get; set; }
         public int nVisibleRows { get; set; }
         public string FocusControlID { get; set; }
         private List<TableRow2> Data;
         private string[] HeaderLabels;
         private int[] MinColumnWidtg;
+        public string CallingControllerAndAction { get; set; }
+        public string CallingControllerAndActionData { get; set; }
+        public string HTMLHeaderID{ get { return ID + "-h"; } }
+        public string HTMLBodyID { get { return ID + "-b"; } }
+        public int RowCount { get { return Data.Count; } }
 
-        public DataGridField2():base("TODO","GridTable","table", null)
+        public DataGridField2(string ID):base("TODO","GridTable","table", null)
         {
-            ID = DateTime.Now.Millisecond;
+            Init(ID);
+        }
+
+        public DataGridField2(string ID, DataTable dt) : base("TODO", "GridTable", "table", null)
+        {
+            Init(ID);
+            SetHeaderLabels(GetColumnToStringArray(dt));
+            SetDataLabels(dt);
+        }
+
+        private void Init(string ID)
+        {
+            this.ID = ID;
             HeaderLabels = null;
             Data = new List<TableRow2>();
             nVisibleRows = 5;
         }
 
+        private string[] GetColumnToStringArray(DataTable dt)
+        {
+            string[] ret = new string[dt.Columns.Count];
+            for (int i = 0; i < dt.Columns.Count; i++)
+                ret[i] = dt.Columns[i].Caption;
+            return ret;
+        }
+
+        public TableRow2 GetRow(int row)
+        {
+            return Data[row];
+        }
+
+        public string Get(int row, int column)
+        {
+            return Data[row].Cells[column].GetValue();
+        }
+
+        private void SetDataLabels(DataTable dt)
+        {
+            for (int r = 0; r < dt.Rows.Count; r++)
+            {
+                TableRow2 tr = SetDataLabelsRow(r, dt.Rows[r]);
+                AddDataRow(tr, r);
+            }
+        }
+
+        private TableRow2 SetDataLabelsRow(int r, DataRow dr)
+        {
+            TableRow2 tr = new TableRow2();
+            for (int c = 0; c < dr.ItemArray.Length; c++)
+            {
+                TextBoxField tb = new TextBoxField(ID + "-r" + r + "c" + c, "dbfieldid", "DGCellTB", dr.ItemArray[c].ToString().Trim());
+                //tb.CssStyle = "border-style: none; background-color: inherit;";
+                tr.AddColumnCell(tb);
+            }
+
+            return tr;
+        }
+
+
         public static DataGridField2 GetTestData(int ID)
         {
-            DataGridField2 d = new DataGridField2();
-            d.ID = ID;
+            DataGridField2 d = new DataGridField2("test");
+            d.ID = ID.ToString();
             d.SetHeaderLabels("Jmeno", "Prijmeni", "Aktivni");
 
             TableRow2 tr = new TableRow2();
@@ -215,11 +274,11 @@ namespace PDMSCore.DataManipulation
             return tbTr;
         }
 
-        public TagBuilder HtmlTextTableBody()
+        public TagBuilder HtmlTextTableBody(object filters=null)
         {
             TagBuilder tbTableBody = new TagBuilder("tbody");
             //tbTableBody.Attributes.Add("id", "dg-" + this.HTMLFieldID + "-b");
-            tbTableBody.Attributes.Add("id", "dg-" + this.ID+ "-b");
+            tbTableBody.Attributes.Add("id", this.HTMLBodyID);
 
             for (int i = 0; i < Data.Count; i++)
                 tbTableBody.InnerHtml.AppendHtml(Data[i].HtmlText());
