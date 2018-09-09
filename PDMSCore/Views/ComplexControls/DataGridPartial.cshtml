@@ -3,7 +3,8 @@
 <form id="@Model.ID-save" method="post">
     <div class="TableWrapper" id="@Model.ID">
         <div>
-            Menu datagridu
+            <button><i class="fa fa-save"></i> Save</button>
+
         </div>
         <div class="tbl-header">
             <table class="GridTable" id="@Model.HTMLHeaderID">
@@ -53,7 +54,7 @@
         console.log("Ready");
         document.getElementById("@Model.FocusControlID").focus();
 
-        document.getElementById("@Model.ID-save").submit();
+        @*document.getElementById("@Model.ID-save").submit();*@
     });
 
     //http://jsfiddle.net/thrilleratplay/epcybL4v/

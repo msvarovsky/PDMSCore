@@ -79,10 +79,18 @@ namespace PDMSCore.Models
             //    list.Add(li);
             //}
 
+            bool[] ColumnReadOnly = new bool[4]; // All false by default.
+            ColumnReadOnly[0] = true;  //LabelID
+            ColumnReadOnly[1] = true;  //LanguageID
+
+
+
+
             if (ID == null || ID == "")
-                DataGrid = new DataGridField2("Dg" + DateTime.Now.Millisecond,dt);
+                DataGrid = new DataGridField2("Dg" + DateTime.Now.Millisecond, dt, ColumnReadOnly);
             else
-                DataGrid = new DataGridField2("Dg" + ID, dt);
+                DataGrid = new DataGridField2("Dg" + ID, dt, ColumnReadOnly);
+            
         }
        
         public TagBuilder HtmlText()
@@ -111,10 +119,13 @@ namespace PDMSCore.Models
                     StringValues NewValue = new StringValues();
                     if (fc.TryGetValue(HTMLId, out NewValue))
                     {
+                        if (DataGrid.ColumnReadOnly[c])
+                            continue;
                         if (tr.Cells[c].GetValue() == NewValue.ToString())
                             continue;
                         else
                         {   //  Zmena hodnoty. TODO
+
 
                         }
 
@@ -124,17 +135,11 @@ namespace PDMSCore.Models
 
                     }
 
-
-
-
                 }
-
 
             }
 
-
         }
-
 
     }
 

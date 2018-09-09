@@ -31,21 +31,27 @@ namespace PDMSCore.DataManipulation
         public string HTMLHeaderID{ get { return ID + "-h"; } }
         public string HTMLBodyID { get { return ID + "-b"; } }
         public int RowCount { get { return Data.Count; } }
+        public bool[] ColumnReadOnly { get; set; }
 
         public DataGridField2(string ID):base("TODO","GridTable","table", null)
         {
             Init(ID);
         }
 
-        public DataGridField2(string ID, DataTable dt) : base("TODO", "GridTable", "table", null)
+        public DataGridField2(string ID, DataTable dt, bool[] ColumnReadOnly) : base("TODO", "GridTable", "table", null)
         {
-            Init(ID);
+            Init(ID, ColumnReadOnly);
             SetHeaderLabels(GetColumnToStringArray(dt));
             SetDataLabels(dt);
         }
 
-        private void Init(string ID)
+        private void Init(string ID, bool[] ColumnReadOnly = null)
         {
+            this.ColumnReadOnly = new bool[ColumnReadOnly.Length];
+            for (int i = 0; i < ColumnReadOnly.Length; i++)
+                this.ColumnReadOnly[i] = ColumnReadOnly[i];
+            
+
             this.ID = ID;
             HeaderLabels = null;
             Data = new List<TableRow2>();
@@ -82,16 +88,19 @@ namespace PDMSCore.DataManipulation
         private TableRow2 SetDataLabelsRow(int r, DataRow dr)
         {
             TableRow2 tr = new TableRow2();
+            Field f;
             for (int c = 0; c < dr.ItemArray.Length; c++)
             {
-                TextBoxField tb = new TextBoxField(ID + "-r" + r + "c" + c, "dbfieldid", "DGCellTB", dr.ItemArray[c].ToString().Trim());
+                if (ColumnReadOnly != null && ColumnReadOnly.Length > c && ColumnReadOnly[c]) 
+                    f = new LabelField(dr.ItemArray[c].ToString().Trim());
+                else
+                    f = new TextBoxField(ID + "-r" + r + "c" + c, "dbfieldid", "DGCellTB", dr.ItemArray[c].ToString().Trim());
                 //tb.CssStyle = "border-style: none; background-color: inherit;";
-                tr.AddColumnCell(tb);
+                tr.AddColumnCell(f);
             }
 
             return tr;
         }
-
 
         public static DataGridField2 GetTestData(int ID)
         {
@@ -170,9 +179,13 @@ namespace PDMSCore.DataManipulation
             HeaderLabels = a;
             FocusControlID = "filter-" + HeaderLabels[0];
             MinColumnWidtg = new int[a.Length];
+            ColumnReadOnly = new bool[a.Length];
 
             for (int i = 0; i < a.Length; i++)
+            {
                 MinColumnWidtg[i] = HeaderLabels[i].Length * 5;
+                ColumnReadOnly[i] = false;
+            }
         }
 
         public bool AddDataRow(TableRow2 tr, int? id = null)
