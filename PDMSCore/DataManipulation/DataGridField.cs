@@ -1,8 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Extensions.Primitives;
 using PDMSCore.DataManipulation;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Text;
+using static PDMSCore.DataManipulation.WebStuffHelper;
 
 namespace PDMSCore.DataManipulation
 {
@@ -18,43 +21,61 @@ namespace PDMSCore.DataManipulation
         CheckBox
     }
 
-    public class DataGridField2 : Field
+    public class TableColumn
+    {
+        public string Label { get; set; }
+        public bool ReadOnly { get; set; } 
+        public int MinColumnWidtg { get; set; }
+        public bool Visible { get; set; } = true;
+
+        public TableColumn(string Label, bool ReadOnly = false)
+        {
+            this.Label = Label;
+            this.ReadOnly = ReadOnly;
+        }
+
+    }
+
+    public class DataGridField : Field
     {
         public string ID { get; set; }
         public int nVisibleRows { get; set; }
         public string FocusControlID { get; set; }
-        private List<TableRow2> Data;
-        private string[] HeaderLabels;
-        private int[] MinColumnWidtg;
+        private DataTable SourceData { get; set; }
+        public int DbTableUniqueIDColumnNumber { get; set; }
+
+        public List<TableColumn> Columns;
+        private List<TableRow> Data;
+        public string CallingController { get; set; }
+        public string ControllerAddAction { get; set; }
         public string CallingControllerAndAction { get; set; }
         public string CallingControllerAndActionData { get; set; }
         public string HTMLHeaderID{ get { return ID + "-h"; } }
         public string HTMLBodyID { get { return ID + "-b"; } }
         public int RowCount { get { return Data.Count; } }
-        public bool[] ColumnReadOnly { get; set; }
 
-        public DataGridField2(string ID):base("TODO","GridTable","table", null)
+        public DataGridField(string ID):base("TODO","GridTable","table", null)
         {
             Init(ID);
         }
-
-        public DataGridField2(string ID, DataTable dt, bool[] ColumnReadOnly) : base("TODO", "GridTable", "table", null)
+        public DataGridField(string ID, DataTable dt) : base("TODO", "GridTable", "table", null)
         {
-            Init(ID, ColumnReadOnly);
-            SetHeaderLabels(GetColumnToStringArray(dt));
-            SetDataLabels(dt);
+            Init(ID);
+            SetHeader(dt);
+            SourceData = dt;
+            //SetData(dt);
         }
 
-        private void Init(string ID, bool[] ColumnReadOnly = null)
+        private void Init(string ID)
         {
-            this.ColumnReadOnly = new bool[ColumnReadOnly.Length];
-            for (int i = 0; i < ColumnReadOnly.Length; i++)
-                this.ColumnReadOnly[i] = ColumnReadOnly[i];
+            //this.ColumnReadOnly = new bool[ColumnReadOnly.Length];
+            //for (int i = 0; i < ColumnReadOnly.Length; i++)
+            //    this.ColumnReadOnly[i] = ColumnReadOnly[i];
             
-
             this.ID = ID;
-            HeaderLabels = null;
-            Data = new List<TableRow2>();
+            //HeaderLabels = null;
+            Columns = new List<TableColumn>();
+            Data = new List<TableRow>();
             nVisibleRows = 5;
         }
 
@@ -66,9 +87,14 @@ namespace PDMSCore.DataManipulation
             return ret;
         }
 
-        public TableRow2 GetRow(int row)
+        public TableRow GetRow(int row)
         {
             return Data[row];
+        }
+
+        public Field GetRandom()
+        {
+            return null;
         }
 
         public string Get(int row, int column)
@@ -76,93 +102,127 @@ namespace PDMSCore.DataManipulation
             return Data[row].Cells[column].GetValue();
         }
 
-        private void SetDataLabels(DataTable dt)
+        public List<DBTableUpdateTrio> GetDifferences(Dictionary<string, string> CliendDG)
         {
-            for (int r = 0; r < dt.Rows.Count; r++)
+            List<DBTableUpdateTrio> ret = new List<DBTableUpdateTrio>();
+
+            StringBuilder sb = new StringBuilder();
+            for (int r = 0; r < RowCount; r++)
             {
-                TableRow2 tr = SetDataLabelsRow(r, dt.Rows[r]);
+                TableRow tr = GetRow(r);
+                for (int c = 0; c < tr.Cells.Count; c++)
+                {
+                    if (!Columns[c].ReadOnly)
+                    {
+                        string HTMLId = tr.Cells[c].HTMLFieldID;
+                        string NewValue = "";
+                        if (CliendDG.TryGetValue(HTMLId, out NewValue))
+                        {
+                            if (tr.Cells[c].GetValue() == NewValue.ToString())
+                                continue;
+                            else
+                            {
+                                KeyValuePair<string, string> UpdatingValue = new KeyValuePair<string, string>(Columns[c].Label, NewValue);
+
+                                int id = -1;
+                                if (Int32.TryParse(tr.Cells[DbTableUniqueIDColumnNumber].GetValue(), out id))
+                                {
+                                    DBTableUpdateTrio u = new DBTableUpdateTrio(id, UpdatingValue);
+                                    ret.Add(u);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return ret;
+        }
+
+        public void SetData()
+        {
+            for (int r = 0; r < SourceData.Rows.Count; r++)
+            {
+                TableRow tr = SetDataLabelsRow(r, SourceData.Rows[r]);
                 AddDataRow(tr, r);
             }
         }
 
-        private TableRow2 SetDataLabelsRow(int r, DataRow dr)
+        private TableRow SetDataLabelsRow(int r, DataRow dr)
         {
-            TableRow2 tr = new TableRow2();
+            TableRow tr = new TableRow();
             Field f;
             for (int c = 0; c < dr.ItemArray.Length; c++)
             {
-                if (ColumnReadOnly != null && ColumnReadOnly.Length > c && ColumnReadOnly[c]) 
+                if (Columns[c].ReadOnly)
                     f = new LabelField(dr.ItemArray[c].ToString().Trim());
                 else
                     f = new TextBoxField(ID + "-r" + r + "c" + c, "dbfieldid", "DGCellTB", dr.ItemArray[c].ToString().Trim());
-                //tb.CssStyle = "border-style: none; background-color: inherit;";
                 tr.AddColumnCell(f);
             }
-
             return tr;
         }
 
-        public static DataGridField2 GetTestData(int ID)
+        public static DataGridField GetTestData(int ID)
         {
-            DataGridField2 d = new DataGridField2("test");
+            DataGridField d = new DataGridField("test");
             d.ID = ID.ToString();
             d.SetHeaderLabels("Jmeno", "Prijmeni", "Aktivni");
 
-            TableRow2 tr = new TableRow2();
+            TableRow tr = new TableRow();
             tr.AddColumnCell(new LabelField("Martin-" + DateTime.Now.Second));
             tr.AddColumnCell(new LabelField("Svarovsky"));
             tr.AddColumnCell(new CheckBoxField("", "", "", false, false));
             d.AddDataRow(tr, 1);
 
-            tr = new TableRow2();
+            tr = new TableRow();
             tr.AddColumnCell(new LabelField("Martin-" + DateTime.Now.Second));
             tr.AddColumnCell(new LabelField("SpatnePrijmeni"));
             tr.AddColumnCell(new CheckBoxField("", "", "", false, false));
             d.AddDataRow(tr);
 
-            tr = new TableRow2();
+            tr = new TableRow();
             tr.AddColumnCell(new LabelField("Cecile-" + DateTime.Now.Second));
             tr.AddColumnCell(new LabelField("Svarovska"));
             tr.AddColumnCell(new CheckBoxField("", "", "", false, false));
             d.AddDataRow(tr);
 
-            tr = new TableRow2();
+            tr = new TableRow();
             tr.AddColumnCell(new LabelField("Jitka-" + DateTime.Now.Second));
             tr.AddColumnCell(new LabelField("Svarovska"));
             tr.AddColumnCell(new CheckBoxField("", "", "", false, false));
             d.AddDataRow(tr);
 
-            tr = new TableRow2();
+            tr = new TableRow();
             tr.AddColumnCell(new LabelField("Astrid-" + DateTime.Now.Second));
             tr.AddColumnCell(new LabelField("Svarovska"));
             tr.AddColumnCell(new CheckBoxField("", "", "", false, false));
             d.AddDataRow(tr);
 
-            tr = new TableRow2();
+            tr = new TableRow();
             tr.AddColumnCell(new LabelField("Lubos-" + DateTime.Now.Second));
             tr.AddColumnCell(new LabelField("Svarovsky"));
             tr.AddColumnCell(new CheckBoxField("", "", "", false, false));
             d.AddDataRow(tr);
 
-            tr = new TableRow2();
+            tr = new TableRow();
             tr.AddColumnCell(new LabelField("Dominique-" + DateTime.Now.Second));
             tr.AddColumnCell(new LabelField("Champagne"));
             tr.AddColumnCell(new CheckBoxField("", "", "", false, false));
             d.AddDataRow(tr);
 
-            tr = new TableRow2();
+            tr = new TableRow();
             tr.AddColumnCell(new LabelField("Nadine-" + DateTime.Now.Second));
             tr.AddColumnCell(new LabelField("Champagne"));
             tr.AddColumnCell(new CheckBoxField("", "", "", false, false));
             d.AddDataRow(tr);
 
-            tr = new TableRow2();
+            tr = new TableRow();
             tr.AddColumnCell(new LabelField("Thomas-" + DateTime.Now.Second));
             tr.AddColumnCell(new LabelField("Champagne"));
             tr.AddColumnCell(new CheckBoxField("", "", "", false, false));
             d.AddDataRow(tr);
 
-            tr = new TableRow2();
+            tr = new TableRow();
             tr.AddColumnCell(new LabelField("Noemie-" + DateTime.Now.Second));
             tr.AddColumnCell(new LabelField("JeNeSaisPas"));
             tr.AddColumnCell(new CheckBoxField("", "", "", false, false));
@@ -174,23 +234,25 @@ namespace PDMSCore.DataManipulation
             return d;
         }
 
-        public void SetHeaderLabels(params string[] a)
+        public void SetHeader(DataTable dt)
         {
-            HeaderLabels = a;
-            FocusControlID = "filter-" + HeaderLabels[0];
-            MinColumnWidtg = new int[a.Length];
-            ColumnReadOnly = new bool[a.Length];
-
-            for (int i = 0; i < a.Length; i++)
+            string[] HeaderLabels = GetColumnToStringArray(dt);
+            SetHeaderLabels(HeaderLabels);
+        }
+        public void SetHeaderLabels(params string[] HeaderLabels)
+        {
+            for (int c = 0; c < HeaderLabels.Length; c++)
             {
-                MinColumnWidtg[i] = HeaderLabels[i].Length * 5;
-                ColumnReadOnly[i] = false;
+                TableColumn tc = new TableColumn(HeaderLabels[c]);
+                Columns.Add(tc);
             }
+            FocusControlID = "filter-" + Columns[0].Label;
+            return;
         }
 
-        public bool AddDataRow(TableRow2 tr, int? id = null)
+        public bool AddDataRow(TableRow tr, int? id = null)
         {
-            if (HeaderLabels == null)
+            if (Columns == null)
                 throw new Exception("Table header labels are not defined.");
 
             tr.ID = (id == null) ? Data.Count+1 : (int)id;
@@ -210,7 +272,6 @@ namespace PDMSCore.DataManipulation
                 ret[i] = f[i].ToLower();
             }
 
-
             return ret;
         }
 
@@ -224,7 +285,7 @@ namespace PDMSCore.DataManipulation
             {
                 if (!Data[r].DoesRowComplyWithFilters(filters, ft))
                 {
-                    Data.RemoveAt(r);
+                    Data.RemoveAt(r);   //  TODO: Toto je mozna velice casove narocne. Take bych nehodici se polozky oznacit jako deactive a potom je nepouzivat.
                     r--;
                 }
             }
@@ -232,7 +293,7 @@ namespace PDMSCore.DataManipulation
 
         public TagBuilder HtmlTextHeaderRow()
         {
-            TableRow2 tr = Data[0];
+            TableRow tr = Data[0];
 
             TagBuilder tbTr = new TagBuilder("tr");
 
@@ -240,48 +301,53 @@ namespace PDMSCore.DataManipulation
             tbID.Attributes.Add("style", "display:none");
             tbTr.InnerHtml.AppendHtml(tbID);
 
-            for (int i = 0; i < tr.Cells.Count; i++)
+            for (int c = 0; c < tr.Cells.Count; c++)
             {
                 TagBuilder tbTh = new TagBuilder("th");
                 TagBuilder tbDiv = new TagBuilder("div");
                 tbDiv.AddCssClass("HeadCell");
                 TagBuilder tbHl = new TagBuilder("HeaderLabel");
-                TagBuilder tbHs = new TagBuilder("HeaderSearch");
 
                 string colID;
-                if (i > HeaderLabels.Length)
+                if (c > Columns.Count)
                     colID = "{Not defined}";
                 else
-                    colID = HeaderLabels[i];
+                    colID = Columns[c].Label;
 
                 tbHl.InnerHtml.AppendHtml(colID);
 
-                if (tr.Cells[i].GetType() == typeof(CheckBoxField))
+                if (!Columns[c].Visible)
                 {
-                    DropDownListBox ddf = new DropDownListBox("todo","filter-ddf-1", 1);
-                    ddf.jsOnInputFunction = "OnDataGridFilterChange()";
-                    ddf.Add("", "(All)");
-                    ddf.Add("1", "Yes");
-                    ddf.Add("-1", "No");
-                    ddf.Classes.Add("filter");
-
-                    tbHs.InnerHtml.AppendHtml(ddf.BuildHtmlTag());
+                    tbTh.Attributes.Add("style", "display:none");
                 }
                 else
-                {
-                    TagBuilder tbInput = new TagBuilder("input");
-                    tbInput.Attributes.Add("type", "text");
-                    tbInput.Attributes.Add("placeholder", "...");
-                    tbInput.Attributes.Add("id", "filter-" + colID);
-                    tbInput.Attributes.Add("oninput", "OnDataGridFilterChange(\'filter-" + colID + "\')");
-                    tbInput.AddCssClass("filter");
-
-                    tbHs.InnerHtml.AppendHtml(tbInput);
+                {   //  Pouze kdyz se sloupec zobrazuje, tak potrebuju vsechno toto. Jinak ne.
+                    TagBuilder tbHs = new TagBuilder("HeaderSearch");
+                    if (tr.Cells[c].GetType() == typeof(CheckBoxField))
+                    {
+                        DropDownListBox ddf = new DropDownListBox("todo", "filter-ddf-1", 1);
+                        ddf.jsOnInputFunction = "OnDataGridFilterChange()";
+                        ddf.Add("", "(All)");
+                        ddf.Add("1", "Yes");
+                        ddf.Add("-1", "No");
+                        ddf.Classes.Add("filter");
+                        tbHs.InnerHtml.AppendHtml(ddf.BuildHtmlTag());
+                    }
+                    else
+                    {
+                        TagBuilder tbInput = new TagBuilder("input");
+                        tbInput.Attributes.Add("type", "text");
+                        tbInput.Attributes.Add("placeholder", "...");
+                        tbInput.Attributes.Add("id", "filter-" + colID);
+                        tbInput.Attributes.Add("oninput", "OnDataGridFilterChange(\'filter-" + colID + "\')");
+                        tbInput.AddCssClass("filter");
+                        tbHs.InnerHtml.AppendHtml(tbInput);
+                    }
+                    tbDiv.InnerHtml.AppendHtml(tbHs);
                 }
-                tbDiv.InnerHtml.AppendHtml(tbHl);
-                tbDiv.InnerHtml.AppendHtml(tbHs);
-                tbTh.InnerHtml.AppendHtml(tbDiv);
 
+                tbDiv.InnerHtml.AppendHtml(tbHl);
+                tbTh.InnerHtml.AppendHtml(tbDiv);
                 tbTr.InnerHtml.AppendHtml(tbTh);
             }
             return tbTr;
@@ -294,7 +360,7 @@ namespace PDMSCore.DataManipulation
             tbTableBody.Attributes.Add("id", this.HTMLBodyID);
 
             for (int i = 0; i < Data.Count; i++)
-                tbTableBody.InnerHtml.AppendHtml(Data[i].HtmlText());
+                tbTableBody.InnerHtml.AppendHtml(Data[i].HtmlText(Columns));
 
             return tbTableBody;
         }
@@ -318,17 +384,12 @@ namespace PDMSCore.DataManipulation
             return tb;
         }
 
-        //public override string GetValue()
-        //{
-        //    return "";
-        //}
-
         public string GetPresentableStringFromID(string id)
         {
             int iid;
             if (Int32.TryParse(id, out iid))
             {
-                TableRow2 tr2 = Data[iid - 1];
+                TableRow tr2 = Data[iid - 1];
                 return tr2.Cells[0].GetValue() + " " + tr2.Cells[1].GetValue();
             }
             return null;
@@ -342,12 +403,12 @@ namespace PDMSCore.DataManipulation
         ContainWithAsterisks
     }
 
-    public class TableRow2: IHtmlTag
+    public class TableRow: IHtmlTag
     {
         public List<Field> Cells { get; set; }
         public int ID { get; set; }
 
-        public TableRow2()
+        public TableRow()
         {
             Cells = new List<Field>();
         }
@@ -377,6 +438,10 @@ namespace PDMSCore.DataManipulation
 
         public TagBuilder HtmlText()
         {
+            return HtmlText(null);
+        }
+        public TagBuilder HtmlText(List<TableColumn> Columns)
+        {
             TagBuilder tbTr = new TagBuilder("tr");
 
             TagBuilder tbID = new TagBuilder("td");
@@ -385,15 +450,19 @@ namespace PDMSCore.DataManipulation
 
             tbTr.InnerHtml.AppendHtml(tbID);
 
-
-            for (int i = 0; i < Cells.Count; i++)
+            for (int c = 0; c < Cells.Count; c++)
             {
                 TagBuilder tbTd = new TagBuilder("td");
                 TagBuilder tbDiv = new TagBuilder("div");
                 tbDiv.AddCssClass("Cell");
 
-                tbDiv.InnerHtml.AppendHtml(((IHtmlElement)Cells[i]).BuildHtmlTag());
+                tbDiv.InnerHtml.AppendHtml(((IHtmlElement)Cells[c]).BuildHtmlTag());
                 tbTd.InnerHtml.AppendHtml(tbDiv);
+
+
+                if (!Columns[c].Visible)    //  Other then the below, there's nothing to do in order to minimize the amounth of data transfered.
+                    tbTd.Attributes.Add("style", "display:none");
+
                 tbTr.InnerHtml.AppendHtml(tbTd);
             }
             return tbTr;
@@ -412,9 +481,9 @@ namespace PDMSCore.DataManipulation
         //    return n;
         //}
 
-        public TableRow2 MakeCopy()
+        public TableRow MakeCopy()
         {
-            TableRow2 n = new TableRow2();
+            TableRow n = new TableRow();
             n.ID = this.ID;
             n.Cells = new List<Field>();
 
@@ -456,135 +525,9 @@ namespace PDMSCore.DataManipulation
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public class DataGridField : Field, IHtmlElement
-    {
-        private TableRow HeaderRow;
-        private List<TableRow> DataRow;
-
-        public DataGridField():base("TODO","GridTable","table", null)
-        {
-            DataRow = new List<TableRow>();
-        }
-
-        public void SetHeaderRow(TableRow NewRow)
-        {
-            HeaderRow = NewRow;
-        }
-        public void AddDataRow(TableRow NewRow)
-        {
-            DataRow.Add(NewRow);
-        }
-
-        public static DataGridField GetRandom(string type="")
-        {
-            DataGridField n = new DataGridField();
-            if (type == "")
-            {
-                int ColumnCount = 3;
-                n.SetHeaderRow(TableRow.GetRandomHeaderRow(ColumnCount));
-                for (int i = 0; i < 5; i++)
-                    n.AddDataRow(TableRow.GetRandomDataRow(ColumnCount));
-            }
-            else if (type == "users")
-            {
-                int ColumnCount = 3;
-                n.SetHeaderRow(TableRow.GetRandomHeaderRow(ColumnCount));
-                for (int i = 0; i < 5; i++)
-                    n.AddDataRow(TableRow.GetRandomDataRow(ColumnCount));
-
-            }
-
-            return n;
-        }
-
-        public TagBuilder BuildHtmlTag()
-        {
-            TagBuilder tb = base.BuildBaseHtmlTag();
-            tb.Attributes.Add("id", "GridTable");
-            tb.AddCssClass("GridTable");
-            tb.InnerHtml.AppendHtml(HeaderRow.HtmlText());
-
-            for (int i = 0; i < DataRow.Count; i++)
-                tb.InnerHtml.AppendHtml(DataRow[i].HtmlText());
-
-            return tb;
-        }
-
-    }
-
-    public class TableRow : IHtmlTag
-    {
-        private List<TableColumn> Columns;
-
-        public TableRow()
-        {
-            Columns = new List<TableColumn>();
-        }
-
-        public void AddColumn(TableColumn NewColumn)
-        {
-            Columns.Add(NewColumn);
-        }
-
-        public static TableRow GetRandomHeaderRow(int count)
-        {
-            TableRow n = new TableRow();
-            for (int i = 0; i < count; i++)
-            {
-                TableColumn t = new TableColumn(RowType.Header, new TableCell(RowType.Header, new LabelField("NameID-" + i), "NameID-" + i));
-                n.AddColumn(t);
-            }
-            return n;
-        }
-        public static TableRow GetRandomDataRow(int count)
-        {
-            TableRow n = new TableRow();
-            for (int i = 0; i < count; i++)
-            {
-                TableColumn t = new TableColumn(RowType.Data, new TableCell(RowType.Data, new TextBoxField("NameID-" + i, "TableTextBoxData", "NameID-" + i), "NameID-" + i));
-                n.AddColumn(t);
-            }
-            return n;
-        }
-
-        public TagBuilder HtmlText()
-        {
-            TagBuilder tb = new TagBuilder("tr");
-            for (int i = 0; i < Columns.Count; i++)
-                tb.InnerHtml.AppendHtml(Columns[i].HtmlText());
-            return tb;
-        }
-    }
-
-    public class TableColumn : IHtmlTag
-    {
-        public TableCell Cell;
-        private RowType TableRowType;
-
-        public TableColumn(RowType type, TableCell Cell = null)
-        {
-            TableRowType = type;
-            this.Cell = Cell;
-        }
-
-        public TagBuilder HtmlText()
-        {
-            TagBuilder tb;
-            if (TableRowType == RowType.Header)
-                tb = new TagBuilder("th");
-            else if (TableRowType == RowType.Data)
-                tb = new TagBuilder("td");
-            else
-                return null;
 
 
-            if (Cell != null)
-                tb.InnerHtml.AppendHtml(this.Cell.HtmlText());
-            else
-                tb.InnerHtml.AppendHtml("Not defined.");
-            return tb;
-        }
-    }
+    
 
     public class TableCell : IHtmlTag
     {

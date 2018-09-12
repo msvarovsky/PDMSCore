@@ -1,11 +1,12 @@
-﻿@model PDMSCore.DataManipulation.DataGridField2
+﻿@model PDMSCore.DataManipulation.DataGridField
 
 <form id="@Model.ID-save" method="post">
     <div class="TableWrapper" id="@Model.ID">
         <div>
-            <button><i class="fa fa-save"></i> Save</button>
-
+            <button><i class="fa fa-save" ></i> Save</button>
+            <button  type="button" onclick="AddRowModal()"><i class="fa fa-plus"></i> Add</button>
         </div>
+        
         <div class="tbl-header">
             <table class="GridTable" id="@Model.HTMLHeaderID">
                 @*<table class="GridTable" id="IDGridTable-h">*@
@@ -47,7 +48,69 @@
     </div>
 </form>
 
+<div id="@Model.ID-AddRowModal" class="Modal" style="display: none;">
+    <div class="ModalBody">
+        @*<div class="ModalTitle">Title</div>
+        <div class="ModalDescription">
+            When you are defining a string you must start and end with a single or double quote. What happens when you need a literal quote: " or ' inside of your string? In JavaScript, you can escape a quote from considering it as an end of string quote by placing a backslash ( \ ) in front of the quote.
+        </div>
+        <hr />
+        <div class="ModalContent">
+            <p>...</p>
+        </div>
+
+        <div class="ModalBottom">
+            <input type="button" class="CancelBtn" value="Cancel" />
+            <input type="button" class="OkBtn" value="Tlacitko OK" />
+        </div>*@
+    </div>
+</div>
+
 <script>
+
+   
+     $("#@Model.ID-save").on("submit", function (event) {
+        console.log("AjaxSave");
+        var $this = $(this);
+        var frmValues = $this.serialize();
+        $.ajax({
+            type: $this.attr('method'),
+            url: "/Configuration/AjaxSave/",
+            data: { formcontent: frmValues },
+            success: function (partialViewResult)
+            {
+                $("#para").text("Serialized! Input String is " + frmValues);
+            },
+            fail: function ()
+            {
+                $("#para").text("An error occured");
+            }
+        });
+        event.preventDefault();
+    });
+
+
+    function AddRowModal() {
+        console.log("AddRowModal");
+        var TargetURL = "/" + "@Model.CallingController" + "/" +  "@Model.ControllerAddAction/";
+
+        $.ajax({
+            url: TargetURL,
+            type: "GET",
+            data: { DataGridID: "@Model.ID"},
+            success: function (partialViewResult) {
+                if (partialViewResult.length > 0) {
+                    $("#" + "@Model.ID-AddRowModal").html(partialViewResult);
+                }
+            },
+            error: function (result) {
+                $("#" + dialogTagID).html("<div class=\"ModalBody\">\r\n<span class=\"CloseModal\">&times;</span>\r\n<p>Ajax failed...</p>\r\n</div>");
+                console.log("AddRowModal-error");
+            }
+        });
+
+        document.getElementById("@Model.ID-AddRowModal").style.display = "block";
+    };
 
 
     $(document).ready(function () {
@@ -124,7 +187,7 @@
     $(window).on("load resize ", OnPageResize).resize();
 
     function OnPageResize() {
-        //https://codepen.io/nikhil8krishnan/pen/WvYPvv?editors=1100
+        //  https://codepen.io/nikhil8krishnan/pen/WvYPvv?editors=1100
         //  https://davidwalsh.name/detect-scrollbar-width
 
         console.log("OnPageResize");
@@ -181,6 +244,11 @@
         //}
         return al;
     };
+
+   
+
+
+
 
     //function ReloadDataGrid(DataGridID, returnFieldID) {
     function ReloadDataGrid() {

@@ -60,6 +60,7 @@ namespace PDMSCore.DataManipulation
     public class Field
     {
         public bool Disabled { get; set; }
+        public bool Visible { get; set; } = true;
         public string NameAttribute { get; set; }
         public string DBFieldID { get; set; }
         public string HTMLFieldID { get; set; }
@@ -102,6 +103,8 @@ namespace PDMSCore.DataManipulation
                 if (CssStyle != null)
                     tb.Attributes.Add("style", CssStyle);
 
+                
+
                 if (ValueAttribute != null)
                     tb.Attributes.Add("value", ValueAttribute);
 
@@ -113,6 +116,8 @@ namespace PDMSCore.DataManipulation
 
                 if (this.Disabled)
                     tb.Attributes.Add("disabled", "");   //  TODO: Overit jestli ten 2. parametr muze byt prazdny.
+                if (!Visible)
+                    tb.Attributes.Add("hidden", "");
             }
             return tb;
         }
@@ -218,8 +223,9 @@ namespace PDMSCore.DataManipulation
 
         public static Field GetRandom(string id)
         {
-            LabelDataGridField n = new LabelDataGridField("Grid", DataGridField.GetRandom());
-            return n;
+            //LabelDataGridField n = new LabelDataGridField("Grid", DataGridField2.GetRandom());
+            //return n;
+            return null;
         }
 
         public TagBuilder BuildHtmlTag()

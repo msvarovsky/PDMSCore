@@ -26,14 +26,14 @@ namespace PDMSCore.Controllers
             List<Field> r = new List<Field>();
             if (sp == "sp_Users")
             {
-                r.Add(DataGridField2.GetTestData(0));
+                r.Add(DataGridField.GetTestData(0));
             }
             else
             {
                 r.Add(new LabelTextBoxField("TODO",id++, "Testovaci LabelField", ""));
                 r.Add(new LabelTextBoxField("TODO", id++, "Testovaci LabelField 2", ""));
                 r.Add(new LabelTextBoxField("TODO", id++, "Testovaci LabelField 3", ""));
-                r.Add(DataGridField2.GetTestData(id++));
+                r.Add(DataGridField.GetTestData(id++));
             }
             return r;
         }
@@ -52,10 +52,10 @@ namespace PDMSCore.Controllers
             else
             {
                 ModalDialog md = new ModalDialog("en", "Test title");
-                DataGridField2 d = new DataGridField2("DGtest");
+                DataGridField d = new DataGridField("DGtest");
                 d.SetHeaderLabels("Jmeno", "Prijmeni", "Aktivni");
 
-                TableRow2 tr = new TableRow2();
+                TableRow tr = new TableRow();
                 tr.AddColumnCell(new LabelField("Jmeno"));
                 tr.AddColumnCell(new LabelField("Prijmeni"));
                 //tr.AddColumnCell(new CheckBoxField("", "", true, new WebTagAttributes(true, "")));

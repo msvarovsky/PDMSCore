@@ -33,7 +33,7 @@ namespace PDMSCore.Controllers
         [HttpGet]
         public ActionResult ReturnFromModalFieldUpdate(string FieldIDToLookUp)
         {
-            DataGridField2 dgf = DataGridField2.GetTestData(1);
+            DataGridField dgf = DataGridField.GetTestData(1);
             string ret = dgf.GetPresentableStringFromID(FieldIDToLookUp);
             return this.Json(ret);
         }

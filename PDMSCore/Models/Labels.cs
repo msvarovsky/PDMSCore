@@ -6,6 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Text;
+using static PDMSCore.DataManipulation.WebStuffHelper;
 
 namespace PDMSCore.Models
 {
@@ -24,7 +26,7 @@ namespace PDMSCore.Models
     }
     public class Labels
     {
-        public DataGridField2 DataGrid { get; set; }
+        public DataGridField DataGrid { get; set; }
         //public List<LabelItem> list { get; set; } = new List<LabelItem>();
         public string ID { get; set; }
 
@@ -63,34 +65,23 @@ namespace PDMSCore.Models
             return this;
         }
 
-        
-
         private void ProcessLabels(DataTable dt)
         {
-            //list = new List<LabelItem>();
-            //for (int r = 0; r < dt.Rows.Count; r++)
-            //{
-            //    int LabelID = DBUtil.GetInt(dt.Rows[r], 0);
-            //    string LanguageID = DBUtil.GetString(dt.Rows[r], 1);
-            //    string Label = DBUtil.GetString(dt.Rows[r], 2);
-            //    int CompanyID = DBUtil.GetInt(dt.Rows[r], 3);
-
-            //    LabelItem li = new LabelItem() { ID = LabelID, Language = LanguageID, Label = Label, CompanyID = CompanyID };
-            //    list.Add(li);
-            //}
-
-            bool[] ColumnReadOnly = new bool[4]; // All false by default.
-            ColumnReadOnly[0] = true;  //LabelID
-            ColumnReadOnly[1] = true;  //LanguageID
-
-
-
-
             if (ID == null || ID == "")
-                DataGrid = new DataGridField2("Dg" + DateTime.Now.Millisecond, dt, ColumnReadOnly);
+                DataGrid = new DataGridField("Dg" + DateTime.Now.Millisecond, dt);
             else
-                DataGrid = new DataGridField2("Dg" + ID, dt, ColumnReadOnly);
+                DataGrid = new DataGridField(ID, dt);
+
+            DataGrid.DbTableUniqueIDColumnNumber = 0;
+            DataGrid.Columns[0].ReadOnly = true;
+            DataGrid.Columns[0].Visible = false;
+
+
+            DataGrid.Columns[1].ReadOnly = true;
+            DataGrid.Columns[2].ReadOnly = true;
             
+
+            DataGrid.SetData();
         }
        
         public TagBuilder HtmlText()
@@ -98,49 +89,103 @@ namespace PDMSCore.Models
             return null;
         }
 
-        public void Save(IFormCollection fc)
+        public TagBuilder AddLabelDialogHtml()
         {
-            using (SqlConnection con = new SqlConnection(DBUtil.GetSqlConnectionString()))
+            LoadLabelsFromDB();
+            TagBuilder tbDiv = new TagBuilder("div");
+
+            for (int c = 0; c < DataGrid.Columns.Count; c++)
             {
-                SaveDifferences(fc);
+                LabelTextBoxField t = new LabelTextBoxField("ParentID", -1, DataGrid.Columns[c].Label, "");
+                tbDiv.InnerHtml.AppendHtml(t.BuildHtmlTag());
             }
 
+            TagBuilder tbRet = WebStuffHelper.ModalDialog(ID, "Add new row", "Description to label row add.", tbDiv,true);
+
+            return tbRet;
+        }
+
+        public void Save(Dictionary<string, string> ClientDG)
+        {
+            List<DBTableUpdateTrio> differences = DataGrid.GetDifferences(ClientDG);
+
+
+            string SQL = GetUpdateSQL(differences);
+            if (SQL.Length != 0)
+            {
+                using (SqlConnection con = new SqlConnection(DBUtil.GetSqlConnectionString()))
+                {
+                    con.Open();
+                    DBUtil.RunSQLQuery(con, SQL);
+                }
+            }
+            return;
+        }
+        private string GetUpdateSQL(List<DBTableUpdateTrio> differences)
+        {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < differences.Count; i++)
+            {
+                string UpdateSQL =  "UPDATE Labels" +
+                                    " SET " + differences[i].newValue.Key + " = '" + differences[i].newValue.Value + "'" +
+                                    " WHERE " + DataGrid.Columns[DataGrid.DbTableUniqueIDColumnNumber].Label + " = " + differences[i].IDOfRowToBeUpdated + ";";
+                sb.AppendLine(UpdateSQL);
+            }
+            return sb.ToString();
+        }
+
+
+
+
+        public void Save(IFormCollection fc)
+        {
+            string SQL = GetDifferences(fc);
+            if (SQL.Length != 0)
+            {
+                using (SqlConnection con = new SqlConnection(DBUtil.GetSqlConnectionString()))
+                {
+                    con.Open();
+                    DBUtil.RunSQLQuery(con, SQL);
+                }
+            }
             return;
         }
 
-        private void SaveDifferences(IFormCollection fc)
+        private string GetDifferences(IFormCollection fc)
         {
+            StringBuilder sb = new StringBuilder();
             for (int r = 0; r < DataGrid.RowCount; r++)
             {
-                TableRow2 tr = DataGrid.GetRow(r);
+                TableRow tr = DataGrid.GetRow(r);
                 for (int c = 0; c < tr.Cells.Count; c++)
                 {
-                    string HTMLId = tr.Cells[c].HTMLFieldID;
-                    StringValues NewValue = new StringValues();
-                    if (fc.TryGetValue(HTMLId, out NewValue))
+                    if (!DataGrid.Columns[c].ReadOnly)
                     {
-                        if (DataGrid.ColumnReadOnly[c])
-                            continue;
-                        if (tr.Cells[c].GetValue() == NewValue.ToString())
-                            continue;
-                        else
-                        {   //  Zmena hodnoty. TODO
-
+                        string HTMLId = tr.Cells[c].HTMLFieldID;
+                        StringValues NewValue = new StringValues();
+                        if (fc.TryGetValue(HTMLId, out NewValue))
+                        {
+                            if (tr.Cells[c].GetValue() == NewValue.ToString())
+                                continue;
+                            else
+                            {   //  Zmena hodnoty. TODO
+                                string UpdateSQL = "UPDATE Labels" +
+                                            " SET " + DataGrid.Columns[c].Label + " = '" + NewValue + "'" +
+                                            " WHERE LabelID = " + tr.Cells[0].GetValue() +
+                                            " AND LanguageID = '" + tr.Cells[1].GetValue() + "';";
+                                sb.AppendLine(UpdateSQL);
+                            }
 
                         }
+                        else
+                        {
 
+                        }
                     }
-                    else
-                    {
-
-                    }
-
                 }
-
             }
-
+            return sb.ToString();
         }
-
     }
 
 }

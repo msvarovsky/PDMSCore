@@ -45,6 +45,32 @@ namespace PDMSCore.DataManipulation
             return -1;
         }
 
+        public static int RunSQLQuery(SqlConnection con, string sql)
+        {
+            try
+            {
+                using (SqlCommand cmd = new SqlCommand(sql, con))
+                {
+                    /*begin tran
+                    GRANT SELECT ON Labels TO[martin]
+                    GRANT UPDATE ON Labels TO[martin]
+                    exec sp_table_privileges[Labels]
+                    rollback    */
+
+                    int rows = cmd.ExecuteNonQuery();
+                    return rows;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.Out.WriteLine(e.ToString());
+            }
+            finally
+            {
+            }
+            return -1;
+        }
+
         public static string GetSqlConnectionString()
         {
             string cd = Directory.GetCurrentDirectory();

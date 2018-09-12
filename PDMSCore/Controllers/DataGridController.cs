@@ -42,7 +42,7 @@ namespace PDMSCore.Controllers
             d.AddDataRow(tr.MakeCopy());*/
 
             int id = Int32.Parse(DataGridID);
-            DataGridField2 d = DataGridField2.GetTestData(id);
+            DataGridField d = DataGridField.GetTestData(id);
             d.ApplyFilters(FilterValues, FilteringType.StartWith);
 
             //System.Threading.Thread.Sleep(2000);

@@ -521,6 +521,11 @@ END;
 
 
 
+UPDATE Labels SET Label = 'Project name3' WHERE LabelID = 1 AND LanguageID = 'en';
+SELECT *	FROM Labels ;
+------------------------------------------------------------
+
+
 
 
 
