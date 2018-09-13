@@ -85,6 +85,8 @@ namespace PDMSCore.Controllers
         public ContentResult AddLabel(string DataGridID)                                          //  AddLabel
         {
             Labels l = new Labels(DataGridID);
+            
+
             return Content(WebStuffHelper.GetString(l.AddLabelDialogHtml()));
         }
 

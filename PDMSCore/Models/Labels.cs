@@ -33,7 +33,8 @@ namespace PDMSCore.Models
         public Labels(string ID)
         {
             this.ID = ID;
-            //list = new List<LabelItem>();
+            
+
         }
 
         public Labels LoadLabelsFromDB(int CompanyID = -1, string LanguageID = "", int LabelID = -1)
@@ -75,13 +76,21 @@ namespace PDMSCore.Models
             DataGrid.DbTableUniqueIDColumnNumber = 0;
             DataGrid.Columns[0].ReadOnly = true;
             DataGrid.Columns[0].Visible = false;
-
+            DataGrid.Columns[0].Type = ColumnType.Text;
 
             DataGrid.Columns[1].ReadOnly = true;
-            DataGrid.Columns[2].ReadOnly = true;
-            
+            DataGrid.Columns[1].Type = ColumnType.Text;
 
-            DataGrid.SetData();
+            DataGrid.Columns[2].ReadOnly = true;
+            DataGrid.Columns[2].Type = ColumnType.Text;
+
+            DataGrid.Columns[3].Type = ColumnType.Text;
+
+
+            //DataGrid.SetData();
+
+            //DataGrid.AddRowDialog = new ModalDialog("TODO: en", "TODO: Add new label");
+            //DataGrid.AddRowDialog.AddField
         }
        
         public TagBuilder HtmlText()

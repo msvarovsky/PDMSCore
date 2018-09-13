@@ -1,12 +1,14 @@
 ﻿@model PDMSCore.DataManipulation.DataGridField
 
-<form id="@Model.ID-save" method="post">
+@*<form id="@Model.ID-save" method="post">*@
+<form id="@Model.ID-Form">
     <div class="TableWrapper" id="@Model.ID">
         <div>
-            <button><i class="fa fa-save" ></i> Save</button>
-            <button  type="button" onclick="AddRowModal()"><i class="fa fa-plus"></i> Add</button>
+            <button id="@Model.ID-SaveMenuBtn" style="width:100px;"><i class="fa fa-save"></i> Save</button>
+            <button type="button" id="@Model.ID-SavedMenuBtn" style="width:100px; background-color: limegreen; border-color: limegreen; display: none;"><i class="fa fa-save"></i> Saved</button>
+            <button type="button" onclick="AddRowModal()"><i class="fa fa-plus"></i> Add</button>
         </div>
-        
+
         <div class="tbl-header">
             <table class="GridTable" id="@Model.HTMLHeaderID">
                 @*<table class="GridTable" id="IDGridTable-h">*@
@@ -67,28 +69,41 @@
 </div>
 
 <script>
-
-   
-     $("#@Model.ID-save").on("submit", function (event) {
+     @*$("#@Model.ID-save").on("submit", function (event) {*@
+    $("#@Model.ID-SaveMenuBtn").on("click", function (event) {
         console.log("AjaxSave");
-        var $this = $(this);
-        var frmValues = $this.serialize();
+        var frmValues = $("#@Model.ID-Form").serialize();
         $.ajax({
-            type: $this.attr('method'),
+            type: "POST",
             url: "/Configuration/AjaxSave/",
             data: { formcontent: frmValues },
             success: function (partialViewResult)
             {
-                $("#para").text("Serialized! Input String is " + frmValues);
+                console.log("AjaxSave:Success");
+
+                ElementHideShow("@Model.ID-SaveMenuBtn", "@Model.ID-SavedMenuBtn", 'h')
+                setTimeout(ElementHideShow, 2000, "@Model.ID-SaveMenuBtn", "@Model.ID-SavedMenuBtn", 's');
             },
             fail: function ()
             {
-                $("#para").text("An error occured");
+                console.log("AjaxSave:Fail");
             }
         });
         event.preventDefault();
     });
 
+    function ElementHideShow(ElementIDSave, ElementIDSaved, HideOrShow) {
+        console.log("DelayedElementHideShow");
+        if (HideOrShow == 's') {
+            $("#" + ElementIDSave).show();
+            $("#" + ElementIDSaved).hide();
+        }
+        else {
+            $("#" + ElementIDSave).hide();
+            $("#" + ElementIDSaved).show();
+        }
+
+    }
 
     function AddRowModal() {
         console.log("AddRowModal");
@@ -101,6 +116,7 @@
             success: function (partialViewResult) {
                 if (partialViewResult.length > 0) {
                     $("#" + "@Model.ID-AddRowModal").html(partialViewResult);
+                    
                 }
             },
             error: function (result) {
@@ -112,12 +128,11 @@
         document.getElementById("@Model.ID-AddRowModal").style.display = "block";
     };
 
+   
 
     $(document).ready(function () {
         console.log("Ready");
-        document.getElementById("@Model.FocusControlID").focus();
-
-        @*document.getElementById("@Model.ID-save").submit();*@
+        @*document.getElementById("@Model.FocusControlID").focus();*@
     });
 
     //http://jsfiddle.net/thrilleratplay/epcybL4v/

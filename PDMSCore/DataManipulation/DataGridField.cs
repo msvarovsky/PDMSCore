@@ -16,7 +16,7 @@ namespace PDMSCore.DataManipulation
     }
     public enum ColumnType
     {
-        Label,
+        Unknown,
         Text,
         CheckBox
     }
@@ -27,6 +27,8 @@ namespace PDMSCore.DataManipulation
         public bool ReadOnly { get; set; } 
         public int MinColumnWidtg { get; set; }
         public bool Visible { get; set; } = true;
+        public ColumnType Type { get; set; } = ColumnType.Unknown;
+
 
         public TableColumn(string Label, bool ReadOnly = false)
         {
@@ -43,16 +45,17 @@ namespace PDMSCore.DataManipulation
         public string FocusControlID { get; set; }
         private DataTable SourceData { get; set; }
         public int DbTableUniqueIDColumnNumber { get; set; }
-
+        public ModalDialog AddRowDialog { get; set; }
         public List<TableColumn> Columns;
-        private List<TableRow> Data;
+        //private List<TableRow> Data;
         public string CallingController { get; set; }
         public string ControllerAddAction { get; set; }
         public string CallingControllerAndAction { get; set; }
         public string CallingControllerAndActionData { get; set; }
         public string HTMLHeaderID{ get { return ID + "-h"; } }
         public string HTMLBodyID { get { return ID + "-b"; } }
-        public int RowCount { get { return Data.Count; } }
+        //public int RowCount { get { return Data.Count; } }
+        public int RowCount { get { return SourceData.Rows.Count; } }
 
         public DataGridField(string ID):base("TODO","GridTable","table", null)
         {
@@ -61,11 +64,11 @@ namespace PDMSCore.DataManipulation
         public DataGridField(string ID, DataTable dt) : base("TODO", "GridTable", "table", null)
         {
             Init(ID);
-            SetHeader(dt);
+            //SetHeader(dt);
             SourceData = dt;
             //SetData(dt);
+            GetColumnInfo();
         }
-
         private void Init(string ID)
         {
             //this.ColumnReadOnly = new bool[ColumnReadOnly.Length];
@@ -75,8 +78,15 @@ namespace PDMSCore.DataManipulation
             this.ID = ID;
             //HeaderLabels = null;
             Columns = new List<TableColumn>();
-            Data = new List<TableRow>();
+            //Data = new List<TableRow>();
             nVisibleRows = 5;
+        }
+
+        private void GetColumnInfo()
+        {
+            Columns = new List<TableColumn>();
+            for (int i = 0; i < SourceData.Columns.Count; i++)
+                Columns.Add(new TableColumn(SourceData.Columns[i].Caption));
         }
 
         private string[] GetColumnToStringArray(DataTable dt)
@@ -87,9 +97,10 @@ namespace PDMSCore.DataManipulation
             return ret;
         }
 
-        public TableRow GetRow(int row)
+        public DataRow GetRow(int row)
         {
-            return Data[row];
+            //return Data[row];
+            return SourceData.Rows[row];
         }
 
         public Field GetRandom()
@@ -99,7 +110,7 @@ namespace PDMSCore.DataManipulation
 
         public string Get(int row, int column)
         {
-            return Data[row].Cells[column].GetValue();
+            return SourceData.Rows[row].ItemArray[column].ToString();   //  TODO: ToString je spatne. Mel bych take myslet na Checkbox,... .
         }
 
         public List<DBTableUpdateTrio> GetDifferences(Dictionary<string, string> CliendDG)
@@ -109,7 +120,9 @@ namespace PDMSCore.DataManipulation
             StringBuilder sb = new StringBuilder();
             for (int r = 0; r < RowCount; r++)
             {
-                TableRow tr = GetRow(r);
+                //TableRow tr = GetRow(r);
+                DataRow dr = SourceData.Rows[r];
+
                 for (int c = 0; c < tr.Cells.Count; c++)
                 {
                     if (!Columns[c].ReadOnly)
@@ -250,14 +263,15 @@ namespace PDMSCore.DataManipulation
             return;
         }
 
-        public bool AddDataRow(TableRow tr, int? id = null)
+        //public bool AddDataRow(TableRow tr, int? id = null)
+        public bool AddDataRow(DataRow dr, int? id = null)
         {
             if (Columns == null)
                 throw new Exception("Table header labels are not defined.");
 
-            tr.ID = (id == null) ? Data.Count+1 : (int)id;
+            //tr.ID = (id == null) ? RowCount+1 : (int)id;
 
-            Data.Add(tr);
+            SourceData.Rows.Add(dr);
             return true;
         }
 
@@ -275,76 +289,173 @@ namespace PDMSCore.DataManipulation
             return ret;
         }
 
-        public void ApplyFilters(string[] filters, FilteringType ft )
+        //public void ApplyFilters(string[] filters, FilteringType ft )
+        //{
+        //    if (filters.Length == 0)
+        //        return;
+        //    filters = ToLowerCase(filters);
+
+        //    for (int r = 0; r < Data.Count; r++)
+        //    {
+        //        if (!Data[r].DoesRowComplyWithFilters(filters, ft))
+        //        {
+        //            Data.RemoveAt(r);   //  TODO: Toto je mozna velice casove narocne. Take bych nehodici se polozky oznacit jako deactive a potom je nepouzivat.
+        //            r--;
+        //        }
+        //    }
+        //}
+        public void ApplyFilters(string[] filters, FilteringType ft)
         {
             if (filters.Length == 0)
                 return;
             filters = ToLowerCase(filters);
 
-            for (int r = 0; r < Data.Count; r++)
+            for (int r = 0; r < SourceData.Rows.Count; r++)
             {
-                if (!Data[r].DoesRowComplyWithFilters(filters, ft))
+                if (!DoesRowComplyWithFilters(SourceData.Rows[r], filters, ft))
                 {
-                    Data.RemoveAt(r);   //  TODO: Toto je mozna velice casove narocne. Take bych nehodici se polozky oznacit jako deactive a potom je nepouzivat.
+                    SourceData.Rows.RemoveAt(r);    //  TODO: Toto je mozna velice casove narocne. Take bych nehodici se polozky oznacit jako deactive a potom je nepouzivat.
                     r--;
                 }
             }
         }
+        public bool DoesRowComplyWithFilters(DataRow dr, string[] filter, FilteringType ft)
+        {
+            if (ft == FilteringType.StartWith)
+            {
+                for (int c = 0; c < dr.ItemArray.Length; c++)
+                {
+                    if (filter[c] == null || filter[c] == "")
+                        continue;
+                    else
+                    {
+                        switch (Columns[c].Type)
+                        {
+                            case ColumnType.Unknown:
+                            case ColumnType.Text:
+                                if (dr.ItemArray[c].ToString().IndexOf(filter[c]) != 0)
+                                    return false;
+                                break;
+                            case ColumnType.CheckBox:
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
+            }
+            return true;
+        }
 
+        //public TagBuilder HtmlTextHeaderRow()
+        //{
+        //    TableRow tr = Data[0];
+
+        //    TagBuilder tbTr = new TagBuilder("tr");
+
+        //    TagBuilder tbID = new TagBuilder("th");
+        //    tbID.Attributes.Add("style", "display:none");
+        //    tbTr.InnerHtml.AppendHtml(tbID);
+
+        //    for (int c = 0; c < tr.Cells.Count; c++)
+        //    {
+        //        TagBuilder tbTh = new TagBuilder("th");
+        //        TagBuilder tbDiv = new TagBuilder("div");
+        //        tbDiv.AddCssClass("HeadCell");
+        //        TagBuilder tbHl = new TagBuilder("HeaderLabel");
+
+        //        string colID;
+        //        if (c > Columns.Count)
+        //            colID = "{Not defined}";
+        //        else
+        //            colID = Columns[c].Label;
+
+        //        tbHl.InnerHtml.AppendHtml(colID);
+
+        //        if (!Columns[c].Visible)
+        //        {
+        //            tbTh.Attributes.Add("style", "display:none");
+        //        }
+
+        //        //  Pouze kdyz se sloupec zobrazuje, tak potrebuju vsechno toto. Jinak ne.
+        //        //  UPDATE: Tak nakonec tam toto take necham, i kdyz ty sloupce budou schovane. Filtrovani pouziva "filter-..." atribut a bez toho tagu ho nenajde.
+        //        TagBuilder tbHs = new TagBuilder("HeaderSearch");
+        //        if (tr.Cells[c].GetType() == typeof(CheckBoxField))
+        //        {
+        //            DropDownListBox ddf = new DropDownListBox("todo", "filter-ddf-1", 1);
+        //            ddf.jsOnInputFunction = "OnDataGridFilterChange()";
+        //            ddf.Add("", "(All)");
+        //            ddf.Add("1", "Yes");
+        //            ddf.Add("-1", "No");
+        //            ddf.Classes.Add("filter");
+        //            tbHs.InnerHtml.AppendHtml(ddf.BuildHtmlTag());
+        //        }
+        //        else
+        //        {
+        //            TagBuilder tbInput = new TagBuilder("input");
+        //            tbInput.Attributes.Add("type", "text");
+        //            tbInput.Attributes.Add("placeholder", "...");
+        //            tbInput.Attributes.Add("id", "filter-" + colID);
+        //            tbInput.Attributes.Add("oninput", "OnDataGridFilterChange(\'filter-" + colID + "\')");
+        //            tbInput.AddCssClass("filter");
+        //            tbHs.InnerHtml.AppendHtml(tbInput);
+        //        }
+        //        tbDiv.InnerHtml.AppendHtml(tbHs);
+        //        ////////
+
+        //        tbDiv.InnerHtml.AppendHtml(tbHl);
+        //        tbTh.InnerHtml.AppendHtml(tbDiv);
+        //        tbTr.InnerHtml.AppendHtml(tbTh);
+        //    }
+        //    return tbTr;
+        //}
         public TagBuilder HtmlTextHeaderRow()
         {
-            TableRow tr = Data[0];
+            //TableRow tr = Data[0];
 
             TagBuilder tbTr = new TagBuilder("tr");
-
             TagBuilder tbID = new TagBuilder("th");
             tbID.Attributes.Add("style", "display:none");
             tbTr.InnerHtml.AppendHtml(tbID);
 
-            for (int c = 0; c < tr.Cells.Count; c++)
+            for (int c = 0; c < Columns.Count; c++)
             {
                 TagBuilder tbTh = new TagBuilder("th");
                 TagBuilder tbDiv = new TagBuilder("div");
                 tbDiv.AddCssClass("HeadCell");
                 TagBuilder tbHl = new TagBuilder("HeaderLabel");
-
-                string colID;
-                if (c > Columns.Count)
-                    colID = "{Not defined}";
-                else
-                    colID = Columns[c].Label;
-
-                tbHl.InnerHtml.AppendHtml(colID);
+                tbHl.InnerHtml.AppendHtml(Columns[c].Label);
 
                 if (!Columns[c].Visible)
                 {
                     tbTh.Attributes.Add("style", "display:none");
                 }
-                else
-                {   //  Pouze kdyz se sloupec zobrazuje, tak potrebuju vsechno toto. Jinak ne.
-                    TagBuilder tbHs = new TagBuilder("HeaderSearch");
-                    if (tr.Cells[c].GetType() == typeof(CheckBoxField))
-                    {
-                        DropDownListBox ddf = new DropDownListBox("todo", "filter-ddf-1", 1);
-                        ddf.jsOnInputFunction = "OnDataGridFilterChange()";
-                        ddf.Add("", "(All)");
-                        ddf.Add("1", "Yes");
-                        ddf.Add("-1", "No");
-                        ddf.Classes.Add("filter");
-                        tbHs.InnerHtml.AppendHtml(ddf.BuildHtmlTag());
-                    }
-                    else
-                    {
-                        TagBuilder tbInput = new TagBuilder("input");
-                        tbInput.Attributes.Add("type", "text");
-                        tbInput.Attributes.Add("placeholder", "...");
-                        tbInput.Attributes.Add("id", "filter-" + colID);
-                        tbInput.Attributes.Add("oninput", "OnDataGridFilterChange(\'filter-" + colID + "\')");
-                        tbInput.AddCssClass("filter");
-                        tbHs.InnerHtml.AppendHtml(tbInput);
-                    }
-                    tbDiv.InnerHtml.AppendHtml(tbHs);
+
+                //  Pouze kdyz se sloupec zobrazuje, tak potrebuju vsechno toto. Jinak ne.
+                //  UPDATE: Tak nakonec tam toto take necham, i kdyz ty sloupce budou schovane. Filtrovani pouziva "filter-..." atribut a bez toho tagu ho nenajde.
+                TagBuilder tbHs = new TagBuilder("HeaderSearch");
+                if (Columns[c].Type == ColumnType.CheckBox)
+                {
+                    DropDownListBox ddf = new DropDownListBox("todo", "filter-ddf-1", 1);
+                    ddf.jsOnInputFunction = "OnDataGridFilterChange()";
+                    ddf.Add("", "(All)");
+                    ddf.Add("1", "Yes");
+                    ddf.Add("-1", "No");
+                    ddf.Classes.Add("filter");
+                    tbHs.InnerHtml.AppendHtml(ddf.BuildHtmlTag());
                 }
+                else
+                {
+                    TagBuilder tbInput = new TagBuilder("input");
+                    tbInput.Attributes.Add("type", "text");
+                    tbInput.Attributes.Add("placeholder", "...");
+                    tbInput.Attributes.Add("id", "filter-" + Columns[c].Label);
+                    tbInput.Attributes.Add("oninput", "OnDataGridFilterChange(\'filter-" + Columns[c].Label + "\')");
+                    tbInput.AddCssClass("filter");
+                    tbHs.InnerHtml.AppendHtml(tbInput);
+                }
+                tbDiv.InnerHtml.AppendHtml(tbHs);
+                ////////
 
                 tbDiv.InnerHtml.AppendHtml(tbHl);
                 tbTh.InnerHtml.AppendHtml(tbDiv);
@@ -353,16 +464,76 @@ namespace PDMSCore.DataManipulation
             return tbTr;
         }
 
-        public TagBuilder HtmlTextTableBody(object filters=null)
+        //public TagBuilder HtmlTextTableBody(object filters=null)
+        //{
+        //    TagBuilder tbTableBody = new TagBuilder("tbody");
+        //    //tbTableBody.Attributes.Add("id", "dg-" + this.HTMLFieldID + "-b");
+        //    tbTableBody.Attributes.Add("id", this.HTMLBodyID);
+
+        //    for (int i = 0; i < Data.Count; i++)
+        //        tbTableBody.InnerHtml.AppendHtml(Data[i].HtmlText(Columns));
+
+        //    return tbTableBody;
+        //}
+        public TagBuilder HtmlTextTableBody(object filters = null)
         {
             TagBuilder tbTableBody = new TagBuilder("tbody");
-            //tbTableBody.Attributes.Add("id", "dg-" + this.HTMLFieldID + "-b");
             tbTableBody.Attributes.Add("id", this.HTMLBodyID);
 
-            for (int i = 0; i < Data.Count; i++)
-                tbTableBody.InnerHtml.AppendHtml(Data[i].HtmlText(Columns));
+            for (int r = 0; r < SourceData.Rows.Count; r++)
+                tbTableBody.InnerHtml.AppendHtml(HtmlTextOfTableBodyRow(SourceData.Rows[r], r));
 
             return tbTableBody;
+        }
+        private TagBuilder HtmlTextOfTableBodyRow(DataRow dr, int r)
+        {
+            TagBuilder tbTr = new TagBuilder("tr");
+            TagBuilder tbID = new TagBuilder("td");
+            tbID.Attributes.Add("style", "display:none");
+            tbID.InnerHtml.AppendHtml(ID.ToString());
+
+            tbTr.InnerHtml.AppendHtml(tbID);
+
+            for (int c = 0; c < dr.ItemArray.Length; c++)
+            {
+                TagBuilder tbTd = new TagBuilder("td");
+                TagBuilder tbDiv = new TagBuilder("div");
+                tbDiv.AddCssClass("Cell");
+                string CellID = ID + "-r" + r + "c" + c;
+
+                Field f = new Field("","","","");
+                if (Columns[c].ReadOnly)
+                    if (Columns[c].Type == ColumnType.CheckBox)
+                        f = new CheckBoxField("", CellID, "", dr.ItemArray[c].ToString().Trim() == "TRUE" ? true : false, false);
+                    else
+                        f = new LabelField(dr.ItemArray[c].ToString().Trim());
+                else
+                {
+                    switch (Columns[c].Type)
+                    {
+                        case ColumnType.Unknown:
+                        case ColumnType.Text:
+                            f = new TextBoxField(CellID, "dbfieldid", "DGCellTB", dr.ItemArray[c].ToString().Trim());
+                            break;
+                        case ColumnType.CheckBox:
+                            f = new CheckBoxField("", CellID, "", dr.ItemArray[c].ToString().Trim() == "TRUE" ? true : false, false);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
+                tbDiv.InnerHtml.AppendHtml(((IHtmlElement)f).BuildHtmlTag());
+                //tbDiv.InnerHtml.AppendHtml(((IHtmlElement)Cells[c]).BuildHtmlTag());
+
+                tbTd.InnerHtml.AppendHtml(tbDiv);
+
+                if (!Columns[c].Visible)    //  Other then the below, there's nothing to do in order to minimize the amounth of data transfered.
+                    tbTd.Attributes.Add("style", "display:none");
+
+                tbTr.InnerHtml.AppendHtml(tbTd);
+            }
+            return tbTr;
         }
 
         public TagBuilder BuildHtmlTag()
@@ -376,8 +547,9 @@ namespace PDMSCore.DataManipulation
             TagBuilder tbDiv = new TagBuilder("div");
             tbDiv.Attributes.Add("id", "GridTableContent");
 
-            for (int i = 0; i < Data.Count; i++)
-                tbDiv.InnerHtml.AppendHtml(Data[i].HtmlText());
+            tbDiv.InnerHtml.AppendHtml(HtmlTextTableBody());
+            //for (int i = 0; i < Data.Count; i++)
+            //    tbDiv.InnerHtml.AppendHtml(Data[i].HtmlText());
 
             tb.InnerHtml.AppendHtml(tbDiv);
 
@@ -419,6 +591,7 @@ namespace PDMSCore.DataManipulation
             {
                 for (int c = 0; c < Cells.Count; c++)
                 {
+
                     if (filter[c] == null || filter[c] == "")
                         continue;
                     else
@@ -467,19 +640,6 @@ namespace PDMSCore.DataManipulation
             }
             return tbTr;
         }
-
-        //public TableRow2 MakeCopy()
-        //{
-        //    TableRow2 n = new TableRow2();
-        //    n.ID = this.ID;
-        //    Field[] fs = this.Cells.ToArray();
-
-        //    n.Cells = new List<IHtmlElement>();
-        //    for (int i = 0; i < fs.Length; i++)
-        //        n.Cells.Add(fs[i]);
-
-        //    return n;
-        //}
 
         public TableRow MakeCopy()
         {

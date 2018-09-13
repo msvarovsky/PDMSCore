@@ -41,6 +41,9 @@ namespace PDMSCore.DataManipulation
         {
             Dictionary<string, string> ret = new Dictionary<string, string>();
             string dec;
+            if (s == null)
+                return ret;
+
             string[] al = s.Split('&');
 
             for (int i = 0; i < al.Length; i++)
