@@ -33,8 +33,6 @@ namespace PDMSCore.Models
         public Labels(string ID)
         {
             this.ID = ID;
-            
-
         }
 
         public Labels LoadLabelsFromDB(int CompanyID = -1, string LanguageID = "", int LabelID = -1)
@@ -87,8 +85,10 @@ namespace PDMSCore.Models
             DataGrid.Columns[3].Type = ColumnType.Text;
 
 
+
             //DataGrid.SetData();
 
+            DataGrid.InitAddDialog();
             //DataGrid.AddRowDialog = new ModalDialog("TODO: en", "TODO: Add new label");
             //DataGrid.AddRowDialog.AddField
         }
@@ -102,22 +102,22 @@ namespace PDMSCore.Models
         {
             LoadLabelsFromDB();
             TagBuilder tbDiv = new TagBuilder("div");
+            return DataGrid.AddRowDialog.BuildDialogContent();
 
-            for (int c = 0; c < DataGrid.Columns.Count; c++)
-            {
-                LabelTextBoxField t = new LabelTextBoxField("ParentID", -1, DataGrid.Columns[c].Label, "");
-                tbDiv.InnerHtml.AppendHtml(t.BuildHtmlTag());
-            }
+            //for (int c = 0; c < DataGrid.Columns.Count; c++)
+            //{
+            //    LabelTextBoxField t = new LabelTextBoxField("ParentID", -1, DataGrid.Columns[c].Label, "");
+            //    tbDiv.InnerHtml.AppendHtml(t.BuildHtmlTag());
+            //}
 
-            TagBuilder tbRet = WebStuffHelper.ModalDialog(ID, "Add new row", "Description to label row add.", tbDiv,true);
+            //TagBuilder tbRet = WebStuffHelper.ModalDialog(ID, "Add new row", "Description to label row add.", tbDiv,true);
 
-            return tbRet;
+            //return tbRet;
         }
 
         public void Save(Dictionary<string, string> ClientDG)
         {
             List<DBTableUpdateTrio> differences = DataGrid.GetDifferences(ClientDG);
-
 
             string SQL = GetUpdateSQL(differences);
             if (SQL.Length != 0)
@@ -143,58 +143,56 @@ namespace PDMSCore.Models
             return sb.ToString();
         }
 
+        //public void Save(IFormCollection fc)
+        //{
+        //    //string SQL = GetDifferences(fc);
+        //    string SQL = "";
+        //    if (SQL.Length != 0)
+        //    {
+        //        using (SqlConnection con = new SqlConnection(DBUtil.GetSqlConnectionString()))
+        //        {
+        //            con.Open();
+        //            DBUtil.RunSQLQuery(con, SQL);
+        //        }
+        //    }
+        //    return;
+        //}
 
+        //private string GetDifferences(IFormCollection fc)
+        //{
+        //    StringBuilder sb = new StringBuilder();
+        //    for (int r = 0; r < DataGrid.RowCount; r++)
+        //    {
+        //        TableRow tr = DataGrid.GetRow(r);
+        //        for (int c = 0; c < tr.Cells.Count; c++)
+        //        {
+        //            if (!DataGrid.Columns[c].ReadOnly)
+        //            {
+        //                string HTMLId = tr.Cells[c].HTMLFieldID;
+        //                StringValues NewValue = new StringValues();
+        //                if (fc.TryGetValue(HTMLId, out NewValue))
+        //                {
+        //                    if (tr.Cells[c].GetValue() == NewValue.ToString())
+        //                        continue;
+        //                    else
+        //                    {   //  Zmena hodnoty. TODO
+        //                        string UpdateSQL = "UPDATE Labels" +
+        //                                    " SET " + DataGrid.Columns[c].Label + " = '" + NewValue + "'" +
+        //                                    " WHERE LabelID = " + tr.Cells[0].GetValue() +
+        //                                    " AND LanguageID = '" + tr.Cells[1].GetValue() + "';";
+        //                        sb.AppendLine(UpdateSQL);
+        //                    }
 
+        //                }
+        //                else
+        //                {
 
-        public void Save(IFormCollection fc)
-        {
-            string SQL = GetDifferences(fc);
-            if (SQL.Length != 0)
-            {
-                using (SqlConnection con = new SqlConnection(DBUtil.GetSqlConnectionString()))
-                {
-                    con.Open();
-                    DBUtil.RunSQLQuery(con, SQL);
-                }
-            }
-            return;
-        }
-
-        private string GetDifferences(IFormCollection fc)
-        {
-            StringBuilder sb = new StringBuilder();
-            for (int r = 0; r < DataGrid.RowCount; r++)
-            {
-                TableRow tr = DataGrid.GetRow(r);
-                for (int c = 0; c < tr.Cells.Count; c++)
-                {
-                    if (!DataGrid.Columns[c].ReadOnly)
-                    {
-                        string HTMLId = tr.Cells[c].HTMLFieldID;
-                        StringValues NewValue = new StringValues();
-                        if (fc.TryGetValue(HTMLId, out NewValue))
-                        {
-                            if (tr.Cells[c].GetValue() == NewValue.ToString())
-                                continue;
-                            else
-                            {   //  Zmena hodnoty. TODO
-                                string UpdateSQL = "UPDATE Labels" +
-                                            " SET " + DataGrid.Columns[c].Label + " = '" + NewValue + "'" +
-                                            " WHERE LabelID = " + tr.Cells[0].GetValue() +
-                                            " AND LanguageID = '" + tr.Cells[1].GetValue() + "';";
-                                sb.AppendLine(UpdateSQL);
-                            }
-
-                        }
-                        else
-                        {
-
-                        }
-                    }
-                }
-            }
-            return sb.ToString();
-        }
+        //                }
+        //            }
+        //        }
+        //    }
+        //    return sb.ToString();
+        //}
     }
 
 }

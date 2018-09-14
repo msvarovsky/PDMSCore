@@ -11,11 +11,10 @@ namespace PDMSCore.Controllers
     {
         public ActionResult NewModal(string DialogID, string TagIDOfReturnedID, string TagIDOfReturnedLabel, string ContentReference)
         {
-            ModalDialog md = new ModalDialog("en", "Test title");
+            ModalDialog md = new ModalDialog(DialogID + "-D", "en", "Test title");
             md.Fields = GetFieldsFromDB(ContentReference);
             md.TagIDOfReturnedID = TagIDOfReturnedID;
             md.TagIDOfReturnedLabel = TagIDOfReturnedLabel;
-            md.ModalDialogID = DialogID;
 
             return PartialView("NewModal", md);
         }
@@ -42,7 +41,7 @@ namespace PDMSCore.Controllers
         {
             if (DialogType == "ModalDataGrid")
             {
-                ModalDialog md = new ModalDialog("en", "Test title");
+                ModalDialog md = new ModalDialog(DialogID + "-D", "en", "Test title");
                 md.TagIDOfReturnedID = TagIDOfReturnedID;
                 md.TagIDOfReturnedLabel = TagIDOfReturnedLabel;
                 md.ModalDialogID = DialogID;
@@ -51,7 +50,7 @@ namespace PDMSCore.Controllers
             }
             else
             {
-                ModalDialog md = new ModalDialog("en", "Test title");
+                ModalDialog md = new ModalDialog(DialogID + "-D", "en", "Test title");
                 DataGridField d = new DataGridField("DGtest");
                 d.SetHeaderLabels("Jmeno", "Prijmeni", "Aktivni");
 
@@ -61,9 +60,9 @@ namespace PDMSCore.Controllers
                 //tr.AddColumnCell(new CheckBoxField("", "", true, new WebTagAttributes(true, "")));
                 tr.AddColumnCell(new CheckBoxField("", "", "", false, false));
 
-                d.AddDataRow(tr, 1);
-                d.AddDataRow(tr.MakeCopy());
-                d.AddDataRow(tr.MakeCopy());
+                //d.AddDataRow(tr, 1);
+                //d.AddDataRow(tr.MakeCopy());
+                //d.AddDataRow(tr.MakeCopy());
 
                 md.AddField(d);
                 md.TagIDOfReturnedID = TagIDOfReturnedID;
@@ -75,5 +74,7 @@ namespace PDMSCore.Controllers
                 return PartialView("ModalPartial", md);
             }
         }
+
+     
     }
 }

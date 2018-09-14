@@ -1,6 +1,6 @@
 ﻿@model PDMSCore.DataManipulation.ModalDialog
 
-<div class="ModalBody">
+<div class="ModalBody" id="@Model.ID">
     <div class="ModalTitle">
         @Model.Title
     </div>
@@ -8,19 +8,14 @@
         @Model.Description
     </div>
     <hr />
-    <div class="ModalContent">
+    <div class="ModalContent" id="@Model.ID-C">
         <form id="NewDialog-noIDneeded" method="post">
-            @for (int f = 0; f < Model.Fields.Count; f++)
+            
+            @Model.BuildDialogContent()
+            @*@for (int f = 0; f < Model.Fields.Count; f++)
             {
-                if (@Model.Fields[f].GetType() == typeof(PDMSCore.DataManipulation.DataGridField))
-                {
-                    @await Html.PartialAsync("~/Views/DataGrid/DataGridPartial.cshtml", (PDMSCore.DataManipulation.DataGridField)@Model.Fields[f] /*To be changed*/);
-                }
-                else
-                {
-                        @*@Model.Fields[f].HtmlText();*@
-                }
-            }
+                ((PDMSCore.DataManipulation.IHtmlElement)((PDMSCore.DataManipulation.Field)Model.Fields[f])).BuildHtmlTag();
+            }*@
         </form>
 
     </div>

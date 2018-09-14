@@ -14,11 +14,6 @@ namespace PDMSCore.Controllers
 {
     public class ConfigurationController : Controller
     {
-        //public IActionResult Index()
-        //{
-        //    return View();
-        //}
-
         [HttpGet]
         public ActionResult Index()
         {
@@ -44,24 +39,22 @@ namespace PDMSCore.Controllers
         [HttpPost]
         public ActionResult Labels(IFormCollection fc, string tra="")       //  Save
         {
-            string ComplexID="";
-            if (fc.Keys.Count > 0)
-            {
-                foreach (string key in fc.Keys)
-                {
-                    ComplexID = key;
-                    break;
-                }
-                int s = ComplexID.IndexOf("-");
-                string NormalID = ComplexID.Substring(0, s);
+            //string ComplexID="";
+            //if (fc.Keys.Count > 0)
+            //{
+            //    foreach (string key in fc.Keys)
+            //    {
+            //        ComplexID = key;
+            //        break;
+            //    }
+            //    int s = ComplexID.IndexOf("-");
+            //    string NormalID = ComplexID.Substring(0, s);
 
-                Labels l = GetLabels(NormalID);
-                l.Save(fc);
-            }
+            //    Labels l = GetLabels(NormalID);
+            //    l.Save(fc);
+            //}
             return this.RedirectToAction("Labels");
         }
-
-
         public ContentResult AjaxSave(string formcontent)
         {
             Dictionary<string, string> decoded = DecodeJsonFormData(formcontent);
@@ -85,12 +78,8 @@ namespace PDMSCore.Controllers
         public ContentResult AddLabel(string DataGridID)                                          //  AddLabel
         {
             Labels l = new Labels(DataGridID);
-            
-
             return Content(WebStuffHelper.GetString(l.AddLabelDialogHtml()));
         }
-
-
 
         private Labels GetLabels(string ID="")
         {
@@ -102,8 +91,6 @@ namespace PDMSCore.Controllers
 
             return l;
         }
-
-        
 
         public ContentResult RefreshData(string DataGridID, string ContentID, string[] FilterValues)
         {

@@ -44,7 +44,7 @@ namespace PDMSCore.DataManipulation
         public int nVisibleRows { get; set; }
         public string FocusControlID { get; set; }
         private DataTable SourceData { get; set; }
-        public int DbTableUniqueIDColumnNumber { get; set; }
+        public int DbTableUniqueIDColumnNumber { get; set; } = -1;
         public ModalDialog AddRowDialog { get; set; }
         public List<TableColumn> Columns;
         //private List<TableRow> Data;
@@ -68,6 +68,8 @@ namespace PDMSCore.DataManipulation
             SourceData = dt;
             //SetData(dt);
             GetColumnInfo();
+
+            
         }
         private void Init(string ID)
         {
@@ -80,6 +82,38 @@ namespace PDMSCore.DataManipulation
             Columns = new List<TableColumn>();
             //Data = new List<TableRow>();
             nVisibleRows = 5;
+        }
+
+        public void InitAddDialog()
+        {
+            AddRowDialog = new ModalDialog(ID + "-AD", "", "Titulek");
+
+            for (int c = 0; c < Columns.Count; c++)
+            {
+                if (c != DbTableUniqueIDColumnNumber)
+                {
+                    string CellID = ID + "-AD" + "c" + c;
+                    Field f=null;
+
+                    switch (Columns[c].Type)
+                    {
+                        case ColumnType.Unknown:
+                        case ColumnType.Text:
+                            f = new LabelTextBoxField("", CellID, Columns[c].Label, "");
+                            break;
+                        case ColumnType.CheckBox:
+                            f = new LabelCheckBoxFields("", ID + "AD" + CellID,Columns[c].Label);
+                            ((LabelCheckBoxFields)f).CheckBoxes = new MultiSelectionControl(GroupControlType.CheckBoxes, "", ID + "AD" + CellID + "G");
+                            break;
+                        default:
+                            break;
+                    }
+                    if (f != null) 
+                        AddRowDialog.Fields.Add(f);
+                }
+            }
+
+
         }
 
         private void GetColumnInfo()
@@ -113,34 +147,59 @@ namespace PDMSCore.DataManipulation
             return SourceData.Rows[row].ItemArray[column].ToString();   //  TODO: ToString je spatne. Mel bych take myslet na Checkbox,... .
         }
 
+        private Field CreateFieldFromSourceData(int r, int c)
+        {
+            string CellID = ID + "-r" + r + "c" + c;
+            Field f = new Field("", "", "", "");
+            if (Columns[c].ReadOnly)
+                if (Columns[c].Type == ColumnType.CheckBox)
+                    f = new CheckBoxField("", CellID, "", SourceData.Rows[r].ItemArray[c].ToString().Trim() == "TRUE" ? true : false, false);
+                else
+                    f = new LabelField(SourceData.Rows[r].ItemArray[c].ToString().Trim());
+            else
+            {
+                switch (Columns[c].Type)
+                {
+                    case ColumnType.Unknown:
+                    case ColumnType.Text:
+                        f = new TextBoxField(CellID, "dbfieldid", "DGCellTB", SourceData.Rows[r].ItemArray[c].ToString().Trim());
+                        break;
+                    case ColumnType.CheckBox:
+                        f = new CheckBoxField("", CellID, "", SourceData.Rows[r].ItemArray[c].ToString().Trim() == "TRUE" ? true : false, false);
+                        break;
+                    default:
+                        break;
+                }
+            }
+            string DBFieldID = SourceData.Rows[r].ItemArray[DbTableUniqueIDColumnNumber].ToString();
+            f.DBFieldID = DBFieldID;
+
+            return f;
+        }
+
         public List<DBTableUpdateTrio> GetDifferences(Dictionary<string, string> CliendDG)
         {
             List<DBTableUpdateTrio> ret = new List<DBTableUpdateTrio>();
+            int DBFieldID = -1;
+            string NewClientValue = "";
 
-            StringBuilder sb = new StringBuilder();
             for (int r = 0; r < RowCount; r++)
             {
-                //TableRow tr = GetRow(r);
-                DataRow dr = SourceData.Rows[r];
-
-                for (int c = 0; c < tr.Cells.Count; c++)
+                for (int c = 0; c < SourceData.Rows[r].ItemArray.Length; c++)
                 {
                     if (!Columns[c].ReadOnly)
                     {
-                        string HTMLId = tr.Cells[c].HTMLFieldID;
-                        string NewValue = "";
-                        if (CliendDG.TryGetValue(HTMLId, out NewValue))
+                        Field f = CreateFieldFromSourceData(r, c);
+                        if (CliendDG.TryGetValue(f.HTMLFieldID, out NewClientValue))
                         {
-                            if (tr.Cells[c].GetValue() == NewValue.ToString())
+                            if (f.GetValue() == NewClientValue.ToString())
                                 continue;
                             else
                             {
-                                KeyValuePair<string, string> UpdatingValue = new KeyValuePair<string, string>(Columns[c].Label, NewValue);
-
-                                int id = -1;
-                                if (Int32.TryParse(tr.Cells[DbTableUniqueIDColumnNumber].GetValue(), out id))
+                                KeyValuePair<string, string> UpdatingValue = new KeyValuePair<string, string>(Columns[c].Label, NewClientValue);
+                                if (Int32.TryParse(f.DBFieldID, out DBFieldID))
                                 {
-                                    DBTableUpdateTrio u = new DBTableUpdateTrio(id, UpdatingValue);
+                                    DBTableUpdateTrio u = new DBTableUpdateTrio(DBFieldID, UpdatingValue);
                                     ret.Add(u);
                                 }
                             }
@@ -156,7 +215,8 @@ namespace PDMSCore.DataManipulation
             for (int r = 0; r < SourceData.Rows.Count; r++)
             {
                 TableRow tr = SetDataLabelsRow(r, SourceData.Rows[r]);
-                AddDataRow(tr, r);
+                //AddDataRow(tr, r);
+                AddDataRow(SourceData.Rows[r], r);
             }
         }
 
@@ -181,68 +241,67 @@ namespace PDMSCore.DataManipulation
             d.ID = ID.ToString();
             d.SetHeaderLabels("Jmeno", "Prijmeni", "Aktivni");
 
-            TableRow tr = new TableRow();
-            tr.AddColumnCell(new LabelField("Martin-" + DateTime.Now.Second));
-            tr.AddColumnCell(new LabelField("Svarovsky"));
-            tr.AddColumnCell(new CheckBoxField("", "", "", false, false));
-            d.AddDataRow(tr, 1);
 
-            tr = new TableRow();
-            tr.AddColumnCell(new LabelField("Martin-" + DateTime.Now.Second));
-            tr.AddColumnCell(new LabelField("SpatnePrijmeni"));
-            tr.AddColumnCell(new CheckBoxField("", "", "", false, false));
-            d.AddDataRow(tr);
+            //TableRow tr = new TableRow();
+            //tr.AddColumnCell(new LabelField("Martin-" + DateTime.Now.Second));
+            //tr.AddColumnCell(new LabelField("Svarovsky"));
+            //tr.AddColumnCell(new CheckBoxField("", "", "", false, false));
+            //d.AddDataRow(tr, 1);
 
-            tr = new TableRow();
-            tr.AddColumnCell(new LabelField("Cecile-" + DateTime.Now.Second));
-            tr.AddColumnCell(new LabelField("Svarovska"));
-            tr.AddColumnCell(new CheckBoxField("", "", "", false, false));
-            d.AddDataRow(tr);
+            //tr = new TableRow();
+            //tr.AddColumnCell(new LabelField("Martin-" + DateTime.Now.Second));
+            //tr.AddColumnCell(new LabelField("SpatnePrijmeni"));
+            //tr.AddColumnCell(new CheckBoxField("", "", "", false, false));
+            //d.AddDataRow(tr);
 
-            tr = new TableRow();
-            tr.AddColumnCell(new LabelField("Jitka-" + DateTime.Now.Second));
-            tr.AddColumnCell(new LabelField("Svarovska"));
-            tr.AddColumnCell(new CheckBoxField("", "", "", false, false));
-            d.AddDataRow(tr);
+            //tr = new TableRow();
+            //tr.AddColumnCell(new LabelField("Cecile-" + DateTime.Now.Second));
+            //tr.AddColumnCell(new LabelField("Svarovska"));
+            //tr.AddColumnCell(new CheckBoxField("", "", "", false, false));
+            //d.AddDataRow(tr);
 
-            tr = new TableRow();
-            tr.AddColumnCell(new LabelField("Astrid-" + DateTime.Now.Second));
-            tr.AddColumnCell(new LabelField("Svarovska"));
-            tr.AddColumnCell(new CheckBoxField("", "", "", false, false));
-            d.AddDataRow(tr);
+            //tr = new TableRow();
+            //tr.AddColumnCell(new LabelField("Jitka-" + DateTime.Now.Second));
+            //tr.AddColumnCell(new LabelField("Svarovska"));
+            //tr.AddColumnCell(new CheckBoxField("", "", "", false, false));
+            //d.AddDataRow(tr);
 
-            tr = new TableRow();
-            tr.AddColumnCell(new LabelField("Lubos-" + DateTime.Now.Second));
-            tr.AddColumnCell(new LabelField("Svarovsky"));
-            tr.AddColumnCell(new CheckBoxField("", "", "", false, false));
-            d.AddDataRow(tr);
+            //tr = new TableRow();
+            //tr.AddColumnCell(new LabelField("Astrid-" + DateTime.Now.Second));
+            //tr.AddColumnCell(new LabelField("Svarovska"));
+            //tr.AddColumnCell(new CheckBoxField("", "", "", false, false));
+            //d.AddDataRow(tr);
 
-            tr = new TableRow();
-            tr.AddColumnCell(new LabelField("Dominique-" + DateTime.Now.Second));
-            tr.AddColumnCell(new LabelField("Champagne"));
-            tr.AddColumnCell(new CheckBoxField("", "", "", false, false));
-            d.AddDataRow(tr);
+            //tr = new TableRow();
+            //tr.AddColumnCell(new LabelField("Lubos-" + DateTime.Now.Second));
+            //tr.AddColumnCell(new LabelField("Svarovsky"));
+            //tr.AddColumnCell(new CheckBoxField("", "", "", false, false));
+            //d.AddDataRow(tr);
 
-            tr = new TableRow();
-            tr.AddColumnCell(new LabelField("Nadine-" + DateTime.Now.Second));
-            tr.AddColumnCell(new LabelField("Champagne"));
-            tr.AddColumnCell(new CheckBoxField("", "", "", false, false));
-            d.AddDataRow(tr);
+            //tr = new TableRow();
+            //tr.AddColumnCell(new LabelField("Dominique-" + DateTime.Now.Second));
+            //tr.AddColumnCell(new LabelField("Champagne"));
+            //tr.AddColumnCell(new CheckBoxField("", "", "", false, false));
+            //d.AddDataRow(tr);
 
-            tr = new TableRow();
-            tr.AddColumnCell(new LabelField("Thomas-" + DateTime.Now.Second));
-            tr.AddColumnCell(new LabelField("Champagne"));
-            tr.AddColumnCell(new CheckBoxField("", "", "", false, false));
-            d.AddDataRow(tr);
+            //tr = new TableRow();
+            //tr.AddColumnCell(new LabelField("Nadine-" + DateTime.Now.Second));
+            //tr.AddColumnCell(new LabelField("Champagne"));
+            //tr.AddColumnCell(new CheckBoxField("", "", "", false, false));
+            //d.AddDataRow(tr);
 
-            tr = new TableRow();
-            tr.AddColumnCell(new LabelField("Noemie-" + DateTime.Now.Second));
-            tr.AddColumnCell(new LabelField("JeNeSaisPas"));
-            tr.AddColumnCell(new CheckBoxField("", "", "", false, false));
-            d.AddDataRow(tr);
+            //tr = new TableRow();
+            //tr.AddColumnCell(new LabelField("Thomas-" + DateTime.Now.Second));
+            //tr.AddColumnCell(new LabelField("Champagne"));
+            //tr.AddColumnCell(new CheckBoxField("", "", "", false, false));
+            //d.AddDataRow(tr);
 
-            /*d.AddDataRow(tr.MakeCopy());
-            d.AddDataRow(tr.MakeCopy());*/
+            //tr = new TableRow();
+            //tr.AddColumnCell(new LabelField("Noemie-" + DateTime.Now.Second));
+            //tr.AddColumnCell(new LabelField("JeNeSaisPas"));
+            //tr.AddColumnCell(new CheckBoxField("", "", "", false, false));
+            //d.AddDataRow(tr);
+
 
             return d;
         }
@@ -499,9 +558,12 @@ namespace PDMSCore.DataManipulation
                 TagBuilder tbTd = new TagBuilder("td");
                 TagBuilder tbDiv = new TagBuilder("div");
                 tbDiv.AddCssClass("Cell");
-                string CellID = ID + "-r" + r + "c" + c;
 
-                Field f = new Field("","","","");
+                Field f = CreateFieldFromSourceData(r, c);
+
+                /*string CellID = ID + "-r" + r + "c" + c;
+
+                Field f = new Field("", "", "", "");
                 if (Columns[c].ReadOnly)
                     if (Columns[c].Type == ColumnType.CheckBox)
                         f = new CheckBoxField("", CellID, "", dr.ItemArray[c].ToString().Trim() == "TRUE" ? true : false, false);
@@ -521,7 +583,7 @@ namespace PDMSCore.DataManipulation
                         default:
                             break;
                     }
-                }
+                }*/
 
                 tbDiv.InnerHtml.AppendHtml(((IHtmlElement)f).BuildHtmlTag());
                 //tbDiv.InnerHtml.AppendHtml(((IHtmlElement)Cells[c]).BuildHtmlTag());
@@ -556,16 +618,16 @@ namespace PDMSCore.DataManipulation
             return tb;
         }
 
-        public string GetPresentableStringFromID(string id)
-        {
-            int iid;
-            if (Int32.TryParse(id, out iid))
-            {
-                TableRow tr2 = Data[iid - 1];
-                return tr2.Cells[0].GetValue() + " " + tr2.Cells[1].GetValue();
-            }
-            return null;
-        }
+        //public string GetPresentableStringFromID(string id)
+        //{
+        //    int iid;
+        //    if (Int32.TryParse(id, out iid))
+        //    {
+        //        TableRow tr2 = Data[iid - 1];
+        //        return tr2.Cells[0].GetValue() + " " + tr2.Cells[1].GetValue();
+        //    }
+        //    return null;
+        //}
     }
 
     public enum FilteringType

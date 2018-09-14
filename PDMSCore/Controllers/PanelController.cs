@@ -34,7 +34,8 @@ namespace PDMSCore.Controllers
         public ActionResult ReturnFromModalFieldUpdate(string FieldIDToLookUp)
         {
             DataGridField dgf = DataGridField.GetTestData(1);
-            string ret = dgf.GetPresentableStringFromID(FieldIDToLookUp);
+            //string ret = dgf.GetPresentableStringFromID(FieldIDToLookUp);
+            string ret = "TODO";
             return this.Json(ret);
         }
 
