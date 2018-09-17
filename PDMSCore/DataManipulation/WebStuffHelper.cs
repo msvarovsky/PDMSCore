@@ -55,6 +55,28 @@ namespace PDMSCore.DataManipulation
 
             return ret;
         }
+        public static Dictionary<string, string> GetRidOfParentID(Dictionary<string, string> s)
+        {
+            Dictionary<string, string> ret = new Dictionary<string, string>();
+            string first = "";
+            int off = -1;
+            if (s.Count > 1)
+            {
+                first = s.First().Key;
+                off = first.IndexOf('-')+1;
+            }
+
+            foreach (var item in s.Keys)
+            {
+                string Key = item.ToString();
+                string Val = s[item];
+
+                Key = item.ToString().Substring(off);
+                ret.Add(Key, Val);
+
+            }
+            return ret;
+        }
 
         public class DBTableUpdateTrio
         {
@@ -70,81 +92,32 @@ namespace PDMSCore.DataManipulation
 
 
 
-        public static TagBuilder ModalDialog(string ID, string Title, string descr, TagBuilder content, bool visible )
-        {
-            /*
-<div id = "@Model.ID-AddModal" class="Modal" style="display: none;">
-    <div class="ModalBody" id="@Model.ID-Add">
-        <div class="ModalTitle">Title</div>
-        <div class="ModalDescription"> Modal Descr. ...</div>
-        <hr />
-        <div class="ModalContent">
-            <p>...</p>
-        </div>
-        <div class="ModalBottom">
-            <input type = "button" class="CancelBtn" value="Cancel" />
-            <input type = "button" class="OkBtn" value="Tlacitko OK" />
-        </div>
-    </div>
-</div>
-            */
+        //public static TagBuilder ModalDialog(string ID, string Title, string descr, TagBuilder content, bool visible )
+        //{
+        //    TagBuilder tb = new TagBuilder("div");
+        //    tb.Attributes.Add("id", ID + "-Add");
+        //    tb.AddCssClass("ModalBody");
 
-            TagBuilder tb = new TagBuilder("div");
-            tb.Attributes.Add("id", ID + "-Add");
-            tb.AddCssClass("ModalBody");
-
-            StringBuilder sb = new StringBuilder();
+        //    StringBuilder sb = new StringBuilder();
             
-            sb.AppendLine("<div class=\"ModalTitle\">" + Title + "</div>");
-            sb.AppendLine("<div class=\"ModalDescription\">" + descr + "</div>");
-            sb.AppendLine("<hr />");
-            TagBuilder tbModalContent = new TagBuilder("div");
-            tbModalContent.AddCssClass("ModalContent");
+        //    sb.AppendLine("<div class=\"ModalTitle\">" + Title + "</div>");
+        //    sb.AppendLine("<div class=\"ModalDescription\">" + descr + "</div>");
+        //    sb.AppendLine("<hr />");
+        //    TagBuilder tbModalContent = new TagBuilder("div");
+        //    tbModalContent.AddCssClass("ModalContent");
 
-            tbModalContent.InnerHtml.AppendHtml(content);
-            sb.AppendLine(WebStuffHelper.GetString(tbModalContent));
+        //    tbModalContent.InnerHtml.AppendHtml(content);
+        //    sb.AppendLine(WebStuffHelper.GetString(tbModalContent));
 
-            sb.AppendLine("<div class=\"ModalBottom\">");
-            sb.AppendLine("<input type = \"button\" class=\"CancelBtn\" value=\"Cancel\" />");
-            sb.AppendLine("<input type = \"button\" class=\"OkBtn\" value=\"Tlacitko OK\" />");
-            sb.AppendLine("</div>");
-            //sb.AppendLine("</div>");
+        //    sb.AppendLine("<div class=\"ModalBottom\">");
+        //    sb.AppendLine("<input type = \"button\" class=\"CancelBtn\" value=\"Cancel\" />");
+        //    sb.AppendLine("<input type = \"button\" class=\"OkBtn\" value=\"Tlacitko OK\" />");
+        //    sb.AppendLine("</div>");
 
-            tb.InnerHtml.AppendHtml(sb.ToString());
+        //    tb.InnerHtml.AppendHtml(sb.ToString());
 
-
-
-            //TagBuilder tb = new TagBuilder("div");
-            //tb.Attributes.Add("id", ID + "-AddModal");
-            //tb.AddCssClass("Modal");
-
-            //if (visible)
-            //    tb.Attributes.Add("style", "display:block");
-            //else
-            //    tb.Attributes.Add("style", "display:none");
-
-
-            //StringBuilder sb = new StringBuilder();
-            //sb.AppendLine("<div class=\"ModalBody\" id=\"" + ID + "-Add\">");
-            //sb.AppendLine("<div class=\"ModalTitle\">" + Title + "</div>");
-            //sb.AppendLine("<div class=\"ModalDescription\">" + descr + "</div>");
-            //sb.AppendLine("<hr />");
-            //TagBuilder tbModalContent = new TagBuilder("div");
-            //tbModalContent.AddCssClass("ModalContent");
-
-            //tbModalContent.InnerHtml.AppendHtml(content);
-            //sb.AppendLine(WebStuffHelper.GetString(tbModalContent));
-
-            //sb.AppendLine("<div class=\"ModalBottom\">");
-            //sb.AppendLine("<input type = \"button\" class=\"CancelBtn\" value=\"Cancel\" />");
-            //sb.AppendLine("<input type = \"button\" class=\"OkBtn\" value=\"Tlacitko OK\" />");
-            //sb.AppendLine("</div>");
-            //sb.AppendLine("</div>");
-
-            //tb.InnerHtml.AppendHtml(sb.ToString());
-
-            return tb;
-        }
+        //    return tb;
+        //}
 
     }
 }

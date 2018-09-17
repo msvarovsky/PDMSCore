@@ -527,6 +527,34 @@ SELECT *	FROM Labels ;
 
 
 
+INSERT INTO Labels l (LanguageID, Label, CompanyID)
+VALUES
+
+SELECT	* FROM	Labels
+begin tran
+	DECLARE @NewLanguageID int;
+	SET		@NewLanguageID = 999;
+
+	INSERT INTO	Labels (LabelID, LanguageID)
+	SELECT	@NewLanguageID, 'cs'
+
+	SELECT	* FROM	Labels
+rollback
+
+
+exec SuggestNewLabels
+----------------------------
+ALTER PROCEDURE SuggestNewLabels
+AS
+BEGIN
+	DECLARE @NewLanguageID int;
+	SELECT	@NewLanguageID = MAX(LabelID) +1
+	FROM	Labels;
+
+	SELECT	distinct l.LanguageID as 'LanguageID', @NewLanguageID as 'NewLabelID'
+	FROM	Labels l
+END
+
 
 
 

@@ -16,9 +16,8 @@ namespace PDMSCore.DataManipulation
         }
         public static int GetInt(DataRow dr, int column)
         {
-            int? FieldID = dr.ItemArray[0] == null ? (int?)null : (int)dr.ItemArray[0];
-
-            if (dr.ItemArray[column] == System.DBNull.Value)
+            //int? FieldID = dr.ItemArray[0] == null ? (int?)null : (int)dr.ItemArray[0];
+            if (dr == null || dr.ItemArray.Length < column || dr.ItemArray[column] == System.DBNull.Value)
                 return -1;
             return (int)dr.ItemArray[column];
         }
@@ -52,6 +51,7 @@ namespace PDMSCore.DataManipulation
                 using (SqlCommand cmd = new SqlCommand(sql, con))
                 {
                     /*begin tran
+                    GRANT INSERT ON Labels TO[martin]
                     GRANT SELECT ON Labels TO[martin]
                     GRANT UPDATE ON Labels TO[martin]
                     exec sp_table_privileges[Labels]

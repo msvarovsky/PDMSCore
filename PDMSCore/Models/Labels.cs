@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.Extensions.Primitives;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using PDMSCore.DataManipulation;
 using System;
 using System.Collections.Generic;
@@ -27,7 +25,6 @@ namespace PDMSCore.Models
     public class Labels
     {
         public DataGridField DataGrid { get; set; }
-        //public List<LabelItem> list { get; set; } = new List<LabelItem>();
         public string ID { get; set; }
 
         public Labels(string ID)
@@ -64,12 +61,79 @@ namespace PDMSCore.Models
             return this;
         }
 
+        public TagBuilder GetNewLabelSuggestions()
+        {
+            using (SqlConnection con = new SqlConnection(DBUtil.GetSqlConnectionString()))
+            {
+                con.Open();
+                DataTable table = new DataTable();
+                SqlDataAdapter sqlDataAdapter;
+
+                List<Field> ret = new List<Field>();
+                SqlCommand sql = new SqlCommand("SuggestNewLabels", con);
+                sql.CommandType = CommandType.StoredProcedure;
+
+                try
+                {
+                    sqlDataAdapter = new SqlDataAdapter(sql);
+                    sqlDataAdapter.Fill(table);
+                    return ProcessNewLabelSuggestions(table);
+                }
+                catch (Exception eee)
+                {
+                    ret.Add(new LabelTextAreaField("1", "Exception in LoadNavigation(..)", eee.ToString()));
+                }
+            }
+            return null;
+        }
+
+        private TagBuilder ProcessNewLabelSuggestions(DataTable dt)
+        {
+            if (dt.Rows.Count > 1)
+            {
+                int NewSuggestedLabelID = DBUtil.GetInt(dt.Rows[0], 1);
+                LabelTextBoxField lb = new LabelTextBoxField(ID, "NewLabelID", "Suggested LabelID", NewSuggestedLabelID.ToString());
+                DataGrid.AddRowDialog.AddField(lb);
+
+                LabelCheckBoxFields lcb = new LabelCheckBoxFields(ID, "NameID", "Available languages");
+                for (int r = 0; r < dt.Rows.Count; r++)
+                {
+                    string LangID = DBUtil.GetString(dt.Rows[r], 0);
+                    lcb.CheckBoxes.AddItem(LangID, LangID, true);
+                }
+                if (lcb.CheckBoxes.Count > 0)
+                    DataGrid.AddRowDialog.AddField(lcb);
+            }
+
+            return DataGrid.AddRowDialog.BuildDialogContent();
+
+            //TagBuilder tb = new TagBuilder("div");
+            //if (dt.Rows.Count > 1)
+            //{
+            //    int NewSuggestedLabelID = DBUtil.GetInt(dt.Rows[0], 1);
+            //    LabelTextBoxField lb = new LabelTextBoxField(ID, "NewLabelID", "Suggested LabelID", NewSuggestedLabelID.ToString());
+            //    tb.InnerHtml.AppendHtml(lb.BuildHtmlTag());
+
+            //    LabelCheckBoxFields lcb = new LabelCheckBoxFields(ID, "NameID", "Available languages");
+            //    for (int r = 0; r < dt.Rows.Count; r++)
+            //    {
+            //        string LangID = DBUtil.GetString(dt.Rows[r], 0);
+            //        lcb.CheckBoxes.AddItem(LangID, LangID, true);
+            //    }
+            //    if (lcb.CheckBoxes.Count > 0)
+            //        tb.InnerHtml.AppendHtml(lcb.BuildHtmlTag());
+            //}
+            //return tb;
+        }
+
         private void ProcessLabels(DataTable dt)
         {
             if (ID == null || ID == "")
                 DataGrid = new DataGridField("Dg" + DateTime.Now.Millisecond, dt);
             else
                 DataGrid = new DataGridField(ID, dt);
+            DataGrid.ParentControllerAndAction = "Configuration/LabelAction";
+
 
             DataGrid.DbTableUniqueIDColumnNumber = 0;
             DataGrid.Columns[0].ReadOnly = true;
@@ -84,13 +148,7 @@ namespace PDMSCore.Models
 
             DataGrid.Columns[3].Type = ColumnType.Text;
 
-
-
-            //DataGrid.SetData();
-
             DataGrid.InitAddDialog();
-            //DataGrid.AddRowDialog = new ModalDialog("TODO: en", "TODO: Add new label");
-            //DataGrid.AddRowDialog.AddField
         }
        
         public TagBuilder HtmlText()
@@ -113,6 +171,70 @@ namespace PDMSCore.Models
             //TagBuilder tbRet = WebStuffHelper.ModalDialog(ID, "Add new row", "Description to label row add.", tbDiv,true);
 
             //return tbRet;
+        }
+
+
+        public string OnControllerAction(string ID, string What, string Data)
+        {
+            string ret = "";
+            if (What == "TryToAdd")
+            {
+                string StrignData = (string)Data;
+                Dictionary<string, string> decoded = WebStuffHelper.DecodeJsonFormData(StrignData);
+                Dictionary<string, string> dd = WebStuffHelper.GetRidOfParentID(decoded);
+                //////////////////////////////////////////////////////////////////////////////////////////
+                string SQL;
+                int off;
+                string NewLabelID = dd["fNewLabelID"];
+                List<string> LanguageIDs = new List<string>();
+                StringBuilder sb = new StringBuilder();
+
+                foreach (KeyValuePair<string, string> entry in dd)
+                {
+                    if (entry.Key == "fNewLabelID")
+                        NewLabelID = dd["fNewLabelID"];
+                    else
+                    {
+                        off = entry.Key.IndexOf("-o");
+                        LanguageIDs.Add(entry.Key.Substring(off + 2));
+                    }
+                }
+                for (int i = 0; i < LanguageIDs.Count; i++)
+                    sb.AppendLine("INSERT INTO Labels (LabelID, LanguageID) SELECT " + NewLabelID + ", '" + LanguageIDs[i] + "';");
+                //////////////////////////////////////////////////////////////////////////////////////////
+                SQL = sb.ToString();
+                if (SQL.Length != 0)
+                {
+                    using (SqlConnection con = new SqlConnection(DBUtil.GetSqlConnectionString()))
+                    {
+                        con.Open();
+                        int r = -1;
+                        r = DBUtil.RunSQLQuery(con, SQL);
+                        if (r == -1)
+                            ret = "Could not insert requested labels.";
+                        else
+                            ret = "ok";
+                    }
+                }
+            }
+            else if (What == "AddRowModal")
+            {
+                return WebStuffHelper.GetString(GetNewLabelSuggestions());
+            }
+            else if (What == "RefreshData")
+            {
+                string[] FilterValues = Data.Split('&');
+                DataGrid.ApplyFilters(FilterValues, FilteringType.StartWith);
+                return WebStuffHelper.GetString(DataGrid.HtmlTextTableBody());
+            }
+            else if (What == "AjaxSave")
+            {
+                Dictionary<string, string> decoded = DecodeJsonFormData(Data);
+                Save(decoded);
+                ret = "ok";
+
+            }
+            return ret;
         }
 
         public void Save(Dictionary<string, string> ClientDG)

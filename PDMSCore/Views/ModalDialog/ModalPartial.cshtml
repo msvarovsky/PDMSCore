@@ -1,6 +1,6 @@
 ﻿@model PDMSCore.DataManipulation.ModalDialog
 
-<div class="ModalBody" id="@Model.ID">
+<div class="ModalBody" id="@Model.ID-Body">
     <div class="ModalTitle">
         @Model.Title
     </div>
@@ -8,21 +8,23 @@
         @Model.Description
     </div>
     <hr />
-    <div class="ModalContent" id="@Model.ID-C">
-        <form id="NewDialog-noIDneeded" method="post">
-            
+    <form id="@Model.ID-Body-Form">
+        <div class="ModalContent" id="@Model.ID-Body-Form-C">
+
+
             @Model.BuildDialogContent()
             @*@for (int f = 0; f < Model.Fields.Count; f++)
             {
                 ((PDMSCore.DataManipulation.IHtmlElement)((PDMSCore.DataManipulation.Field)Model.Fields[f])).BuildHtmlTag();
             }*@
-        </form>
 
-    </div>
+
+        </div>
+    </form>
     <p />
     <div class="ModalBottom">
-        <input type="button" id="ModalCancel" class="CancelBtn" value=@Model.CancelButtonLabel />
-        <input type="button" id="ModalOk" class="OkBtn" disabled value=@Model.OkButtonLabel />
+        <input type="button" id="@Model.ID-Cancel" class="CancelBtn" value=@Model.CancelButtonLabel />
+        <input type="button" id="@Model.ID-Ok" class="OkBtn" value=@Model.OkButtonLabel />
     </div>
 </div>
 
@@ -38,13 +40,46 @@
         CloseModal();
     });
 
-    $('.OkBtn').click(function () {
+    //$('.OkBtn').click(function () {
+    //    console.log(".OkBtn");
+    //    OkButtonClicked(null);
+    //});
+
+    $("#@Model.ID-Ok").click(function () {
         console.log(".OkBtn");
-        OkButtonClicked(null);
+
+        var TargetURL = "/" + "@Model.ParentControllerAndAction" + "/";
+
+        var frmValues = $("#@Model.ID-Body-Form").serialize();
+
+        $.ajax({
+            url: TargetURL,
+            type: "GET",
+            data: { ID: "@Model.ID", What: "TryToAdd", Data: frmValues},
+            success: function (partialViewResult) {
+                if (partialViewResult == "ok") {
+                    document.getElementById("@Model.ID").style.display = "none";
+                    @Model.OnOk;
+                }
+                else { 
+                    alert(partialViewResult);
+
+                    //$("#" + dialogTagID).html("<div class=\"ModalBody\">\r\n<span class=\"CloseModal\">&times;</span>\r\n<p>SQL failed</p>\r\n</div>");
+                    console.log("SQL-error");
+                }
+            },
+            error: function (result) {
+                //$("#" + dialogTagID).html("<div class=\"ModalBody\">\r\n<span class=\"CloseModal\">&times;</span>\r\n<p>Ajax failed...</p>\r\n</div>");
+                alert(result);
+                console.log("AddRowModal-ok-error");
+            }
+        });
+
+        //document.getElementById("@Model.ID-AddRowModal").style.display = "block";
     });
 
     function OkButtonClicked(RowID) {
-        //TODO: Toto je vola nekolikrat pri dvojkliku. Musim se na to nekdy podivat a zajistit, ze se to spousti pouze jednou.
+        //TODO: Toto se vola nekolikrat pri dvojkliku. Musim se na to nekdy podivat a zajistit, ze se to spousti pouze jednou.
         var ReturnFieldID = document.getElementById("@Model.TagIDOfReturnedID");
         if ("@Model.ModalDialogID" != "") {
             var selectedRow = $("#@Model.ModalDialogID").find('.SingleSelected');

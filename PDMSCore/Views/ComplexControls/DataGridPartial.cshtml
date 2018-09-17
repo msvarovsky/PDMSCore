@@ -39,7 +39,7 @@
                     </div>
                 </div>
             </div>*@
-        <div class="tbl-content">
+        <div id="@Model.ID-c" class="tbl-content">
             <table class="GridTable">
                 @*<tbody id="dg-@Model.ID-b">*@
                 @Model.HtmlTextTableBody()
@@ -50,9 +50,12 @@
     </div>
 </form>
 
-<div id="@Model.ID-AddRowModal" class="Modal" style="display: none;">
-    @await Html.PartialAsync("~/Views/ModalDialog/ModalPartial.cshtml", Model.AddRowDialog);
-</div>
+@if (Model.AddRowDialog != null)
+{
+    <div id="@Model.ID-AddRowModal" class="Modal" style="display: none;">
+        @await Html.PartialAsync("~/Views/ModalDialog/ModalPartial.cshtml", Model.AddRowDialog)
+    </div>
+}
 
 @*<div id="@Model.ID-AddRowModal" class="Modal" style="display: none;">
     <div class="ModalBody">
@@ -60,23 +63,29 @@
 </div>*@
 
 <script>
-     @*$("#@Model.ID-save").on("submit", function (event) {*@
     $("#@Model.ID-SaveMenuBtn").on("click", function (event) {
         console.log("AjaxSave");
         var frmValues = $("#@Model.ID-Form").serialize();
         $.ajax({
             type: "POST",
-            url: "/Configuration/AjaxSave/",
-            data: { formcontent: frmValues },
+            url: "/" + "@Model.ParentControllerAndAction" + "/",
+            data: { ID: "@Model.ID", What: "AjaxSave", Data: frmValues },
+
             success: function (partialViewResult)
             {
-                console.log("AjaxSave:Success");
-
-                ElementHideShow("@Model.ID-SaveMenuBtn", "@Model.ID-SavedMenuBtn", 'h')
-                setTimeout(ElementHideShow, 2000, "@Model.ID-SaveMenuBtn", "@Model.ID-SavedMenuBtn", 's');
+                if (partialViewResult == "ok") {
+                    console.log("AjaxSave:Success");
+                    ElementHideShow("@Model.ID-SaveMenuBtn", "@Model.ID-SavedMenuBtn", 'h')
+                    setTimeout(ElementHideShow, 2000, "@Model.ID-SaveMenuBtn", "@Model.ID-SavedMenuBtn", 's');
+                    
+                }
+                else {
+                    //TODO
+                }
             },
             fail: function ()
             {
+                alert("AjaxSave:Fail");
                 console.log("AjaxSave:Fail");
             }
         });
@@ -93,20 +102,21 @@
             $("#" + ElementIDSave).hide();
             $("#" + ElementIDSaved).show();
         }
-
     }
 
     function AddRowModal() {
         console.log("AddRowModal");
-        var TargetURL = "/" + "@Model.CallingController" + "/" +  "@Model.ControllerAddAction/";
+        var TargetURL = "/" + "@Model.ParentControllerAndAction" + "/";
 
         $.ajax({
             url: TargetURL,
             type: "GET",
-            data: { DataGridID: "@Model.ID"},
+            //data: { DataGridID: "@Model.ID"},
+            data: { ID: "@Model.ID", What: "AddRowModal", Data: ""},
+
             success: function (partialViewResult) {
                 if (partialViewResult.length > 0) {
-                    $("#" + "@Model.AddRowDialog.ID-C").html(partialViewResult);
+                    $("#" + "@Model.ID-AddRowModal-Body-Form-C").html(partialViewResult);
                     
                 }
             },
@@ -115,18 +125,27 @@
                 console.log("AddRowModal-error");
             }
         });
-
-
-
         document.getElementById("@Model.ID-AddRowModal").style.display = "block";
     };
 
-   
+
 
     $(document).ready(function () {
         console.log("Ready");
         @*document.getElementById("@Model.FocusControlID").focus();*@
     });
+
+
+    function ScrollTableToBottom()
+    {
+        var hc = $('#@Model.ID-c').height();
+        var hb = $('#@Model.ID-b').height();
+
+        var h = Math.max(hc, hb);
+        console.log("height:" + h);
+
+        $('#@Model.ID-c').scrollTop(h);
+    }
 
     //http://jsfiddle.net/thrilleratplay/epcybL4v/
     $(function () {
@@ -231,41 +250,38 @@
 
     function GetHeaderRowValuesFromID(TableID)
     {
-        //console.log("TableID = " + TableID);
-
+        console.log("GetHeaderRowValuesFromID");
         var table = $("#" + TableID);
         var HeaderRow = $(table).find("tr");
         console.log("GetHeaderRowValuesFromID");
 
-        //var filtres = $(HeaderRow).find("[id^=filter]");
         var filtres = $(HeaderRow).find(".filter");
-        //console.log(filtres);
 
+        var str = "";
         var al = [];
-        for (var i = 0; i < filtres.length; i++) {
-        //al.push(filtres[i].value);
-        al[i] = filtres[i].value;
-
+        for (var i = 0; i < filtres.length; i++)
+        {
+            al[i] = filtres[i].value;
+            str = str + filtres[i].value + "&";
         }
+
         //for (var i = 0; i < al.length; i++) {
         //    console.log(al[i]);
         //}
-        return al;
+        //return al;
+        return str;
     };
 
-   
-
-
-
-
+    function ReloadDataGridAndScrollToBottom() {
+        ReloadDataGrid();
+        setTimeout(ScrollTableToBottom, 300);
+    }
     //function ReloadDataGrid(DataGridID, returnFieldID) {
     function ReloadDataGrid() {
         console.log("ReloadDataGrid");
-        //var FilterValues = GetHeaderRowValues($(this).closest('table'));
-        //var filterValues = GetHeaderRowValuesFromID(DataGridHeaderID);
 
         var filterValues = GetHeaderRowValuesFromID("@Model.HTMLHeaderID");
-        var TargetURL = "/" + "@Model.CallingControllerAndAction" +"/";
+        var TargetURL = "/" + "@Model.ParentControllerAndAction" + "/";
 
         try
         {
@@ -279,9 +295,9 @@
                 traditional: true,
                 data:
                 {
-                    DataGridID: "@Model.ID",
-                    ContentID: "@Model.CallingControllerAndActionData",
-                    FilterValues: filterValues,
+                    ID: "@Model.ID",
+                    What: "RefreshData",
+                    Data: filterValues,
                 },
                 contentType: "application/json; charset=utf-8",
                 success: function (partialViewResult)

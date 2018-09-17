@@ -608,3 +608,18 @@ eldID
  ORDER BY [PredecessorFieldID]  
 END;
 ------------------------------------------------------------------------------------------------------------------------
+
+
+exec SuggestNewLabels
+----------------------------
+ALTER PROCEDURE SuggestNewLabels
+AS
+BEGIN
+	DECLARE @NewLanguageID int;
+	SELECT	@NewLanguageID = MAX(LabelID) +1
+	FROM	Labels;
+
+	SELECT	distinct l.LanguageID as 'LanguageID', @NewLanguageID as 'NewLabelID'
+	FROM	Labels l
+END
+------------------------------------------------------------------------------------------------------------------------

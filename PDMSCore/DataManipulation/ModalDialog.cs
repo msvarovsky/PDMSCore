@@ -17,6 +17,8 @@ namespace PDMSCore.DataManipulation
         public string TagIDOfReturnedID { get; set; }
         public string TagIDOfReturnedLabel { get; set; }
         public string ModalDialogID { get; set; }
+        public string ParentControllerAndAction { get; set; }
+        public string OnOk { get; set; }
 
         public ModalDialog(string ID)
         {

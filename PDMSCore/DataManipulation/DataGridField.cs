@@ -48,10 +48,7 @@ namespace PDMSCore.DataManipulation
         public ModalDialog AddRowDialog { get; set; }
         public List<TableColumn> Columns;
         //private List<TableRow> Data;
-        public string CallingController { get; set; }
-        public string ControllerAddAction { get; set; }
-        public string CallingControllerAndAction { get; set; }
-        public string CallingControllerAndActionData { get; set; }
+        public string ParentControllerAndAction { get; set; }
         public string HTMLHeaderID{ get { return ID + "-h"; } }
         public string HTMLBodyID { get { return ID + "-b"; } }
         //public int RowCount { get { return Data.Count; } }
@@ -68,8 +65,6 @@ namespace PDMSCore.DataManipulation
             SourceData = dt;
             //SetData(dt);
             GetColumnInfo();
-
-            
         }
         private void Init(string ID)
         {
@@ -86,32 +81,34 @@ namespace PDMSCore.DataManipulation
 
         public void InitAddDialog()
         {
-            AddRowDialog = new ModalDialog(ID + "-AD", "", "Titulek");
+            AddRowDialog = new ModalDialog(ID + "-AddRowModal", "", "Titulek");
+            AddRowDialog.ParentControllerAndAction = this.ParentControllerAndAction;
+            AddRowDialog.OnOk = "ReloadDataGridAndScrollToBottom()";
 
-            for (int c = 0; c < Columns.Count; c++)
-            {
-                if (c != DbTableUniqueIDColumnNumber)
-                {
-                    string CellID = ID + "-AD" + "c" + c;
-                    Field f=null;
+            //for (int c = 0; c < Columns.Count; c++)
+            //{
+            //    if (c != DbTableUniqueIDColumnNumber)
+            //    {
+            //        string CellID = ID + "-AddRowModal" + "c" + c;
+            //        Field f=null;
 
-                    switch (Columns[c].Type)
-                    {
-                        case ColumnType.Unknown:
-                        case ColumnType.Text:
-                            f = new LabelTextBoxField("", CellID, Columns[c].Label, "");
-                            break;
-                        case ColumnType.CheckBox:
-                            f = new LabelCheckBoxFields("", ID + "AD" + CellID,Columns[c].Label);
-                            ((LabelCheckBoxFields)f).CheckBoxes = new MultiSelectionControl(GroupControlType.CheckBoxes, "", ID + "AD" + CellID + "G");
-                            break;
-                        default:
-                            break;
-                    }
-                    if (f != null) 
-                        AddRowDialog.Fields.Add(f);
-                }
-            }
+            //        switch (Columns[c].Type)
+            //        {
+            //            case ColumnType.Unknown:
+            //            case ColumnType.Text:
+            //                f = new LabelTextBoxField("", CellID, Columns[c].Label, "");
+            //                break;
+            //            case ColumnType.CheckBox:
+            //                f = new LabelCheckBoxFields("", ID + "AD" + CellID,Columns[c].Label);
+            //                ((LabelCheckBoxFields)f).CheckBoxes = new MultiSelectionControl(GroupControlType.CheckBoxes, "", ID + "AD" + CellID + "G");
+            //                break;
+            //            default:
+            //                break;
+            //        }
+            //        if (f != null) 
+            //            AddRowDialog.Fields.Add(f);
+            //    }
+            //}
 
 
         }
@@ -392,7 +389,7 @@ namespace PDMSCore.DataManipulation
                         {
                             case ColumnType.Unknown:
                             case ColumnType.Text:
-                                if (dr.ItemArray[c].ToString().IndexOf(filter[c]) != 0)
+                                if (dr.ItemArray[c].ToString().ToLower().IndexOf(filter[c]) != 0)
                                     return false;
                                 break;
                             case ColumnType.CheckBox:
