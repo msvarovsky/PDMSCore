@@ -6,7 +6,12 @@
         <div>
             <button id="@Model.ID-SaveMenuBtn" style="width:100px;"><i class="fa fa-save"></i> Save</button>
             <button type="button" id="@Model.ID-SavedMenuBtn" style="width:100px; background-color: limegreen; border-color: limegreen; display: none;"><i class="fa fa-save"></i> Saved</button>
-            <button type="button" onclick="AddRowModal()"><i class="fa fa-plus"></i> Add</button>
+            <button type="button" onclick="AddRowModal(100)"><i class="fa fa-plus"></i> Add</button>
+
+            <button type="button" title="New label"><img src="~/images/Plus2-24x24.png" alt="Save" /></button>
+            <button type="button" title="Save!!!" disabled><img src="~/images/Save-24x24.png" alt="Save" /></button>
+
+            <img src="~/images/Delete24x24.png" alt="Sample Photo" />
         </div>
 
         <div class="tbl-header">
@@ -117,7 +122,6 @@
             success: function (partialViewResult) {
                 if (partialViewResult.length > 0) {
                     $("#" + "@Model.ID-AddRowModal-Body-Form-C").html(partialViewResult);
-                    
                 }
             },
             error: function (result) {

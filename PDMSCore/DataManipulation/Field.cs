@@ -70,6 +70,7 @@ namespace PDMSCore.DataManipulation
         public string TypeAttribute { get; set; }
         //public string ParentID { get; set; }
         public string ParentDBID { get; set; }
+        public string Tooltip { get; set; }
         public string CssStyle { get; set; }
 
         public Field(string DBFieldID, string HTMLFieldID, string HtmlTag, string VisibleText)
@@ -103,7 +104,8 @@ namespace PDMSCore.DataManipulation
                 if (CssStyle != null)
                     tb.Attributes.Add("style", CssStyle);
 
-                
+                if (Tooltip != null)
+                    tb.Attributes.Add("title", Tooltip);
 
                 if (ValueAttribute != null)
                     tb.Attributes.Add("value", ValueAttribute);
@@ -239,6 +241,55 @@ namespace PDMSCore.DataManipulation
         public override List<Field> GetDBFields()
         {
             return null;
+        }
+    }
+
+    public class ButtonField : Field, IHtmlElement
+    {
+        public ButtonField(string ID, string VisibleText, string CssStyle) : base("", ID, "button", VisibleText)
+        {
+            base.CssStyle = CssStyle;
+        }
+
+        public TagBuilder BuildHtmlTag()
+        {
+            TagBuilder tb = base.BuildBaseHtmlTag();
+            tb.Attributes.Add("type", "button");
+
+            /*
+            <button id = "@Model.ID-SaveMenuBtn" style = "width:100px;" >< i class="fa fa-save"></i> Save</button>
+            <button type = "button" id="@Model.ID-SavedMenuBtn" style="width:100px; background-color: limegreen; border-color: limegreen; display: none;"><i class="fa fa-save"></i> Saved</button>
+            <button type = "button" onclick="AddRowModal(100)"><i class="fa fa-plus"></i> Add</button>
+            */
+
+            //TagBuilder tbI = new TagBuilder("i");
+            //tbI.AddCssClass("fa fa-save");
+            //tb.InnerHtml.AppendHtml(tbI);
+
+            return tb;
+        }
+    }
+
+    public class IconButtonField : Field, IHtmlElement
+    {
+        private string ImageHtmlPath, AlternativeImageHtmlPath;
+        private ButtonField Button;
+
+        public IconButtonField(string HtmlID, string Tooltip, string ImageHtmlPath, string AlternativeImageHtmlPath) : base("", HtmlID, "button", null)
+        {
+            base.Tooltip = Tooltip;
+            this.ImageHtmlPath = ImageHtmlPath;
+            this.AlternativeImageHtmlPath = AlternativeImageHtmlPath;
+
+        }
+
+        public TagBuilder BuildHtmlTag()
+        {
+            TagBuilder tb = base.BuildBaseHtmlTag();
+            tb.
+
+
+            return tb;
         }
     }
 

@@ -53,6 +53,7 @@ namespace PDMSCore.DataManipulation
         public string HTMLBodyID { get { return ID + "-b"; } }
         //public int RowCount { get { return Data.Count; } }
         public int RowCount { get { return SourceData.Rows.Count; } }
+        public List<Field> Menu { get; set; }
 
         public DataGridField(string ID):base("TODO","GridTable","table", null)
         {
@@ -614,6 +615,12 @@ namespace PDMSCore.DataManipulation
 
             return tb;
         }
+
+        public TagBuilder HtmlTextMenu()
+        {
+            return null;
+        }
+
 
         //public string GetPresentableStringFromID(string id)
         //{

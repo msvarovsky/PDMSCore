@@ -149,6 +149,11 @@ namespace PDMSCore.Models
             DataGrid.Columns[3].Type = ColumnType.Text;
 
             DataGrid.InitAddDialog();
+
+            //DataGrid.Menu.Add(new B)
+
+
+
         }
        
         public TagBuilder HtmlText()
