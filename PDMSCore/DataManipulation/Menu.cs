@@ -237,6 +237,7 @@ namespace PDMSCore.DataManipulation
         public bool Udane { get; set; }
         public int NavID { get; set; }
         public string Label { get; set; }
+        public int LabelID { get; set; }
         public string Url { get; set; }
         public int ParentNavID { get; set; }
         public List<string> ChildrenNavIDs { get; set; }

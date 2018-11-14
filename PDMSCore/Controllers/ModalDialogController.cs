@@ -51,7 +51,7 @@ namespace PDMSCore.Controllers
             else
             {
                 ModalDialog md = new ModalDialog(DialogID + "-D", "en", "Test title");
-                DataGridField d = new DataGridField("DGtest");
+                DataGridField d = new DataGridField("DGtest",null);
                 d.SetHeaderLabels("Jmeno", "Prijmeni", "Aktivni");
 
                 TableRow tr = new TableRow();

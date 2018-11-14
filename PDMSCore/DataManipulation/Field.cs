@@ -285,11 +285,11 @@ namespace PDMSCore.DataManipulation
 
         public TagBuilder BuildHtmlTag()
         {
-            TagBuilder tb = base.BuildBaseHtmlTag();
-            tb.
+            //TagBuilder tb = base.BuildBaseHtmlTag();
+            //tb.
 
 
-            return tb;
+            return null;
         }
     }
 

@@ -24,7 +24,7 @@ namespace PDMSCore.DataManipulation
     public class TableColumn
     {
         public string Label { get; set; }
-        public bool ReadOnly { get; set; } 
+        public bool ReadOnly { get; set; }
         public int MinColumnWidtg { get; set; }
         public bool Visible { get; set; } = true;
         public ColumnType Type { get; set; } = ColumnType.Unknown;
@@ -44,75 +44,49 @@ namespace PDMSCore.DataManipulation
         public int nVisibleRows { get; set; }
         public string FocusControlID { get; set; }
         private DataTable SourceData { get; set; }
+        private bool[] StayAfterFiltering { get; set; }
         public int DbTableUniqueIDColumnNumber { get; set; } = -1;
-        public ModalDialog AddRowDialog { get; set; }
+        //public ModalDialog AddRowDialog { get; set; }
         public List<TableColumn> Columns;
         //private List<TableRow> Data;
         public string ParentControllerAndAction { get; set; }
-        public string HTMLHeaderID{ get { return ID + "-h"; } }
+        public string HTMLHeaderID { get { return ID + "-h"; } }
         public string HTMLBodyID { get { return ID + "-b"; } }
         //public int RowCount { get { return Data.Count; } }
         public int RowCount { get { return SourceData.Rows.Count; } }
-        public List<Field> Menu { get; set; }
+        //public List<Field> Menu { get; set; }
+        public DataGridFieldMenus Menu { get; set; }
 
-        public DataGridField(string ID):base("TODO","GridTable","table", null)
+        public DataGridField(string ID, string ParentControllerAndAction) : base("TODO", "GridTable", "table", null)
         {
-            Init(ID);
+            Init(ID, ParentControllerAndAction);
         }
-        public DataGridField(string ID, DataTable dt) : base("TODO", "GridTable", "table", null)
+        public DataGridField(string ID, string ParentControllerAndAction, DataTable dt) : base("TODO", "GridTable", "table", null)
         {
-            Init(ID);
+            Init(ID, ParentControllerAndAction);
             //SetHeader(dt);
             SourceData = dt;
             //SetData(dt);
             GetColumnInfo();
         }
-        private void Init(string ID)
+        private void Init(string ID, string ParentCtrlAndAction)
         {
             //this.ColumnReadOnly = new bool[ColumnReadOnly.Length];
             //for (int i = 0; i < ColumnReadOnly.Length; i++)
             //    this.ColumnReadOnly[i] = ColumnReadOnly[i];
-            
+
+            ParentControllerAndAction = ParentCtrlAndAction;
             this.ID = ID;
             //HeaderLabels = null;
             Columns = new List<TableColumn>();
             //Data = new List<TableRow>();
             nVisibleRows = 5;
-        }
-
-        public void InitAddDialog()
-        {
-            AddRowDialog = new ModalDialog(ID + "-AddRowModal", "", "Titulek");
-            AddRowDialog.ParentControllerAndAction = this.ParentControllerAndAction;
-            AddRowDialog.OnOk = "ReloadDataGridAndScrollToBottom()";
-
-            //for (int c = 0; c < Columns.Count; c++)
-            //{
-            //    if (c != DbTableUniqueIDColumnNumber)
-            //    {
-            //        string CellID = ID + "-AddRowModal" + "c" + c;
-            //        Field f=null;
-
-            //        switch (Columns[c].Type)
-            //        {
-            //            case ColumnType.Unknown:
-            //            case ColumnType.Text:
-            //                f = new LabelTextBoxField("", CellID, Columns[c].Label, "");
-            //                break;
-            //            case ColumnType.CheckBox:
-            //                f = new LabelCheckBoxFields("", ID + "AD" + CellID,Columns[c].Label);
-            //                ((LabelCheckBoxFields)f).CheckBoxes = new MultiSelectionControl(GroupControlType.CheckBoxes, "", ID + "AD" + CellID + "G");
-            //                break;
-            //            default:
-            //                break;
-            //        }
-            //        if (f != null) 
-            //            AddRowDialog.Fields.Add(f);
-            //    }
-            //}
+            Menu = new DataGridFieldMenus(ID, ParentCtrlAndAction);
 
 
         }
+
+
 
         private void GetColumnInfo()
         {
@@ -235,7 +209,7 @@ namespace PDMSCore.DataManipulation
 
         public static DataGridField GetTestData(int ID)
         {
-            DataGridField d = new DataGridField("test");
+            DataGridField d = new DataGridField("test", null);
             d.ID = ID.ToString();
             d.SetHeaderLabels("Jmeno", "Prijmeni", "Aktivni");
 
@@ -363,6 +337,8 @@ namespace PDMSCore.DataManipulation
         //}
         public void ApplyFilters(string[] filters, FilteringType ft)
         {
+            StayAfterFiltering = new bool[SourceData.Rows.Count];
+
             if (filters.Length == 0)
                 return;
             filters = ToLowerCase(filters);
@@ -371,9 +347,12 @@ namespace PDMSCore.DataManipulation
             {
                 if (!DoesRowComplyWithFilters(SourceData.Rows[r], filters, ft))
                 {
-                    SourceData.Rows.RemoveAt(r);    //  TODO: Toto je mozna velice casove narocne. Take bych nehodici se polozky oznacit jako deactive a potom je nepouzivat.
-                    r--;
+                    StayAfterFiltering[r] = false;
+                    //SourceData.Rows.RemoveAt(r);    //  TODO: Toto je mozna velice casove narocne. Take bych nehodici se polozky oznacit jako deactive a potom je nepouzivat.
+                    //r--;
                 }
+                else
+                    StayAfterFiltering[r] = true;
             }
         }
         public bool DoesRowComplyWithFilters(DataRow dr, string[] filter, FilteringType ft)
@@ -537,8 +516,20 @@ namespace PDMSCore.DataManipulation
             TagBuilder tbTableBody = new TagBuilder("tbody");
             tbTableBody.Attributes.Add("id", this.HTMLBodyID);
 
-            for (int r = 0; r < SourceData.Rows.Count; r++)
-                tbTableBody.InnerHtml.AppendHtml(HtmlTextOfTableBodyRow(SourceData.Rows[r], r));
+
+            if (StayAfterFiltering == null)
+            {
+                for (int r = 0; r < SourceData.Rows.Count; r++)
+                    tbTableBody.InnerHtml.AppendHtml(HtmlTextOfTableBodyRow(SourceData.Rows[r], r));
+            }
+            else
+            {
+                for (int r = 0; r < SourceData.Rows.Count; r++)
+                {
+                    if (StayAfterFiltering[r])
+                        tbTableBody.InnerHtml.AppendHtml(HtmlTextOfTableBodyRow(SourceData.Rows[r], r));
+                }
+            }
 
             return tbTableBody;
         }
@@ -621,7 +612,6 @@ namespace PDMSCore.DataManipulation
             return null;
         }
 
-
         //public string GetPresentableStringFromID(string id)
         //{
         //    int iid;
@@ -632,6 +622,204 @@ namespace PDMSCore.DataManipulation
         //    }
         //    return null;
         //}
+    }
+
+
+
+    public abstract class DataGridFieldMenuItem
+    {
+        abstract public TagBuilder BuildHtmlMenuButton(string ID);
+        abstract public TagBuilder BuildHtmlMenuDialog(string ID, string ParentControllerAndAction);
+        abstract public ModalDialog GetModalDialogObject();
+        abstract public void UpdateID(string id);
+        virtual public string WebName { get; set; }
+        virtual public string ID { get; set; }
+    }
+
+    public class DataGridFieldAddMenuItem: DataGridFieldMenuItem
+    {
+        public ModalDialog AddRowDialog { get; set; }
+
+        public DataGridFieldAddMenuItem(string DialogTitle, string DialogDescription)
+        {
+            Init();
+            AddRowDialog = new ModalDialog(ID + "-" + WebName, "no need", DialogTitle, DialogDescription);
+        }
+
+        public DataGridFieldAddMenuItem()
+        {
+            Init();
+            AddRowDialog = new ModalDialog(ID + "-" + WebName);
+        }
+
+        private void Init()
+        {
+            WebName = "AddMenu";
+        }
+
+        public override TagBuilder BuildHtmlMenuButton(string ID)
+        {
+            // <button type = "button" onclick = "AddRowModal(100)" >< i class="fa fa-plus"></i> Add</button>
+            //< button type = "button" title = "New label" >< img src = "~/images/Plus2-24x24.png" alt = "Save" /></ button >
+            
+
+            TagBuilder tbButton = new TagBuilder("button");
+            tbButton.Attributes.Add("type", "button");
+            tbButton.Attributes.Add("onclick", "AddRowModal(100)");
+
+            TagBuilder tbImg = new TagBuilder("img");
+            tbImg.Attributes.Add("src", "/images/Plus2-24x24.png");
+            tbImg.Attributes.Add("alt", "Add");
+            tbButton.InnerHtml.AppendHtml(tbImg);
+
+            //TagBuilder tbI = new TagBuilder("i");
+            //tbI.AddCssClass("fa fa-plus");
+            //tbButton.InnerHtml.AppendHtml(tbI);
+
+            return tbButton;
+        }
+
+        public override TagBuilder BuildHtmlMenuDialog(string ID, string ParentControllerAndAction)
+        {
+            AddRowDialog = new ModalDialog(ID + "-AddRowModal", "", "Titulek");
+            AddRowDialog.ParentControllerAndAction = ParentControllerAndAction;
+            AddRowDialog.OnOk = "ReloadDataGridAndScrollToBottom()";
+            return AddRowDialog.BuildDialogContent();
+        }
+
+        public override ModalDialog GetModalDialogObject()
+        {
+            return AddRowDialog;
+        }
+
+        public override void UpdateID(string id)
+        {
+            ID = id;
+            AddRowDialog.ID = id + "-" + WebName;
+        }
+    }
+
+    public class DataGridFieldSaveMenuItem : DataGridFieldMenuItem
+    {
+        public DataGridFieldSaveMenuItem()
+        {
+            WebName = "SaveMenu";
+        }
+
+        public override TagBuilder BuildHtmlMenuButton(string ID)
+        {
+            //< button type = "button" title = "New label" >< img src = "~/images/Plus2-24x24.png" alt = "Save" /></ button >
+
+            TagBuilder tb = new TagBuilder("span");
+
+            TagBuilder tbButtonSave = new TagBuilder("button");
+            tbButtonSave.Attributes.Add("id", ID + "-SaveMenuBtn");
+            tbButtonSave.Attributes.Add("title","Save");
+
+
+            TagBuilder tbImgSave = new TagBuilder("img");
+            tbImgSave.Attributes.Add("src", "/images/Save-24x24.png");
+            tbImgSave.Attributes.Add("alt", "Save");
+            tbButtonSave.InnerHtml.AppendHtml(tbImgSave);
+
+
+            //<button type = "button" id="@Model.ID-SavedMenuBtn" style="width:100px; background-color: limegreen; border-color: limegreen; display: none;"><i class="fa fa-save"></i> Saved</button>
+            TagBuilder tbButtonSaved = new TagBuilder("button");
+            tbButtonSaved.Attributes.Add("type", "button");
+            tbButtonSaved.Attributes.Add("id", ID + "-SavedMenuBtn");
+            tbButtonSaved.Attributes.Add("style", "display: none;");
+
+            TagBuilder tbImgSaved = new TagBuilder("img");
+            tbImgSaved.Attributes.Add("src", "/images/Saved-24x24.png");
+            tbImgSaved.Attributes.Add("alt", "Save");
+            tbButtonSaved.InnerHtml.AppendHtml(tbImgSaved);
+
+
+            tb.InnerHtml.AppendHtml(tbButtonSave);
+            tb.InnerHtml.AppendHtml(tbButtonSaved);
+
+            return tb;
+        }
+
+        public override TagBuilder BuildHtmlMenuDialog(string ID, string ParentControllerAndAction)
+        {
+            return null;
+        }
+
+        public override ModalDialog GetModalDialogObject()
+        {
+            return null;
+        }
+
+        public override void UpdateID(string id)
+        {
+            ID = id;
+        }
+    }
+
+
+    public class DataGridFieldMenus
+    {
+        public string DataGridID { get; set; }
+        public string DataGridParentControllerAndAction { get; set; }
+
+        private List<DataGridFieldMenuItem> items;
+        
+        public DataGridFieldMenus(string ID, string ParentControllerAndAction)
+        {
+            DataGridID = ID;
+            DataGridParentControllerAndAction = ParentControllerAndAction;
+            items = new List<DataGridFieldMenuItem>();
+        }
+
+        public void AddMenu(DataGridFieldMenuItem item)
+        {
+            item.UpdateID(DataGridID);
+            items.Add(item);
+        }
+
+        public ModalDialog GetModalDialog(string LookingFor)
+        {
+            for (int i = 0; i < items.Count; i++)
+            {
+                if (items[i].WebName.ToLower() == LookingFor.ToLower())
+                    return items[i].GetModalDialogObject();
+            }
+            return null;
+        }
+
+        public bool Exists(string LookingFor)
+        {
+            for (int i = 0; i < items.Count; i++)
+            {
+                if (items[i].WebName == LookingFor)
+                    return true;
+            }
+            return false;
+        }
+
+        public TagBuilder BuildHtmlMenuButtons()
+        {
+            TagBuilder tb = new TagBuilder("span");
+
+            for (int i = 0; i < items.Count; i++)
+            {
+                //tb.InnerHtml.AppendHtml(items[i].BuildHtmlMenuButtons(DataGridID, DataGridParentControllerAndAction));
+                tb.InnerHtml.AppendHtml(items[i].BuildHtmlMenuButton(DataGridID));
+            }
+
+            return tb;
+        }
+        public TagBuilder BuildHtmlMenuDialogs()
+        {
+            TagBuilder tb = new TagBuilder("div");
+            for (int i = 0; i < items.Count; i++)
+            {
+                tb.InnerHtml.AppendHtml(items[i].BuildHtmlMenuDialog(DataGridID, DataGridParentControllerAndAction));
+            }
+
+            return tb;
+        }
     }
 
     public enum FilteringType

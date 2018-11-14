@@ -526,7 +526,7 @@ ALTER PROCEDURE GetGlobalMenu
 	@LanguageID varchar(5)
 AS
 BEGIN
-	SELECT	n.NavID, l.Label, n.Icon, n.ChildrenNavIDs, n.[Type], n.[URL]
+	SELECT	n.NavID, l.Label, n.Icon, n.ChildrenNavIDs, n.[Type], n.[URL], l.LabelID
 	FROM	Navigation n
 	LEFT OUTER JOIN Labels l	ON (n.LabelID = l.LabelID AND l.LanguageID = @LanguageID )
 	WHERE	n.RetailerID = @RetailerID

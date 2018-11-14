@@ -2,8 +2,10 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
-    <StartupObject>PDMSCore.Program</StartupObject>
+    <StartupObject></StartupObject>
     <PublishWithAspNetCoreTargetManifest>false</PublishWithAspNetCoreTargetManifest>
+    <ApplicationIcon />
+    <OutputType>Exe</OutputType>
   </PropertyGroup>
 
   <Target Name="CreateLogsFolder" AfterTargets="Publish">

@@ -89,11 +89,17 @@ namespace PDMSCore.Models
 
         private TagBuilder ProcessNewLabelSuggestions(DataTable dt)
         {
+            DataGridFieldAddMenuItem dgfAddItem = null;
             if (dt.Rows.Count > 1)
             {
                 int NewSuggestedLabelID = DBUtil.GetInt(dt.Rows[0], 1);
                 LabelTextBoxField lb = new LabelTextBoxField(ID, "NewLabelID", "Suggested LabelID", NewSuggestedLabelID.ToString());
-                DataGrid.AddRowDialog.AddField(lb);
+
+                //dgfAddItem = new DataGridFieldAddMenuItem(ID);
+                dgfAddItem = new DataGridFieldAddMenuItem();
+                DataGrid.Menu.AddMenu(dgfAddItem);
+
+                dgfAddItem.AddRowDialog.AddField(lb);
 
                 LabelCheckBoxFields lcb = new LabelCheckBoxFields(ID, "NameID", "Available languages");
                 for (int r = 0; r < dt.Rows.Count; r++)
@@ -101,11 +107,14 @@ namespace PDMSCore.Models
                     string LangID = DBUtil.GetString(dt.Rows[r], 0);
                     lcb.CheckBoxes.AddItem(LangID, LangID, true);
                 }
+
                 if (lcb.CheckBoxes.Count > 0)
-                    DataGrid.AddRowDialog.AddField(lcb);
+                    dgfAddItem.AddRowDialog.AddField(lcb);
+                    //DataGrid.AddRowDialog.AddField(lcb);
             }
 
-            return DataGrid.AddRowDialog.BuildDialogContent();
+            return dgfAddItem.AddRowDialog.BuildDialogContent();
+            //return null;
 
             //TagBuilder tb = new TagBuilder("div");
             //if (dt.Rows.Count > 1)
@@ -129,12 +138,10 @@ namespace PDMSCore.Models
         private void ProcessLabels(DataTable dt)
         {
             if (ID == null || ID == "")
-                DataGrid = new DataGridField("Dg" + DateTime.Now.Millisecond, dt);
+                DataGrid = new DataGridField("Dg" + DateTime.Now.Millisecond, "Configuration/LabelAction", dt);
             else
-                DataGrid = new DataGridField(ID, dt);
-            DataGrid.ParentControllerAndAction = "Configuration/LabelAction";
-
-
+                DataGrid = new DataGridField(ID, "Configuration/LabelAction", dt);
+            
             DataGrid.DbTableUniqueIDColumnNumber = 0;
             DataGrid.Columns[0].ReadOnly = true;
             DataGrid.Columns[0].Visible = false;
@@ -148,12 +155,9 @@ namespace PDMSCore.Models
 
             DataGrid.Columns[3].Type = ColumnType.Text;
 
-            DataGrid.InitAddDialog();
 
-            //DataGrid.Menu.Add(new B)
-
-
-
+            DataGrid.Menu.AddMenu(new DataGridFieldAddMenuItem("New label", "Enter your new label."));
+            DataGrid.Menu.AddMenu(new DataGridFieldSaveMenuItem());
         }
        
         public TagBuilder HtmlText()
@@ -165,17 +169,8 @@ namespace PDMSCore.Models
         {
             LoadLabelsFromDB();
             TagBuilder tbDiv = new TagBuilder("div");
-            return DataGrid.AddRowDialog.BuildDialogContent();
-
-            //for (int c = 0; c < DataGrid.Columns.Count; c++)
-            //{
-            //    LabelTextBoxField t = new LabelTextBoxField("ParentID", -1, DataGrid.Columns[c].Label, "");
-            //    tbDiv.InnerHtml.AppendHtml(t.BuildHtmlTag());
-            //}
-
-            //TagBuilder tbRet = WebStuffHelper.ModalDialog(ID, "Add new row", "Description to label row add.", tbDiv,true);
-
-            //return tbRet;
+            //return DataGrid.AddRowDialog.BuildDialogContent();
+            return null;
         }
 
 
@@ -222,7 +217,7 @@ namespace PDMSCore.Models
                     }
                 }
             }
-            else if (What == "AddRowModal")
+            else if (What == "AddMenu")
             {
                 return WebStuffHelper.GetString(GetNewLabelSuggestions());
             }

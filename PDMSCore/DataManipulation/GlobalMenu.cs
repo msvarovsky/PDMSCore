@@ -12,15 +12,17 @@ namespace PDMSCore.DataManipulation
     public class GlobalMenuItem
     {
         public string Label { get; set; }
+        public int LabelID { get; set; }
         public int ID { get; set; }
         public List<GlobalMenuItem> Children { get; set; }
         public int Level { get; set; }
         public string Url { get; set; }
 
-        public GlobalMenuItem(int id, string label, int level, string url, List<GlobalMenuItem> l = null)
+        public GlobalMenuItem(int id, string label, int labelID, int level, string url, List<GlobalMenuItem> l = null)
         {
             ID = id;
             Label = label;
+            LabelID = labelID;
             Level = level;
             Url = url;
             if (l == null)
@@ -39,7 +41,7 @@ namespace PDMSCore.DataManipulation
                     NavItemFromDB ni = nav.GetNavID(ChildID);
                     if (ni != null)
                     {
-                        GlobalMenuItem ChildItem = new GlobalMenuItem(ChildID, ni.Label, this.Level + 1, ni.Url);
+                        GlobalMenuItem ChildItem = new GlobalMenuItem(ChildID, ni.Label, ni.LabelID, this.Level + 1, ni.Url);
                         ChildItem.Populate(nav, ni.ChildrenNavIDs);
                         Children.Add(ChildItem);
                     }
@@ -68,6 +70,7 @@ namespace PDMSCore.DataManipulation
                 TagBuilder tbDiv = new TagBuilder("div");
                 TagBuilder tbLabelDiv = new TagBuilder("div");
                 tbLabelDiv.InnerHtml.AppendHtml(Label);
+                tbLabelDiv.Attributes.Add("lid", LabelID.ToString());
 
                 tbDiv.InnerHtml.AppendHtml(tbLabelDiv);
                 if (Children.Count > 0)
@@ -131,10 +134,12 @@ namespace PDMSCore.DataManipulation
                 ni.SetChildrenNavIDs(DBUtil.GetString(dt.Rows[r], 3));
                 ni.Type = DBUtil.GetString(dt.Rows[r], 4);
                 ni.Url = DBUtil.GetString(dt.Rows[r], 5);
+                ni.LabelID = DBUtil.GetInt(dt.Rows[r], 6);
+
                 nav.navs.Add(ni);
             }
 
-            GlobalMenuItem root = new GlobalMenuItem(0, "", 0, "");
+            GlobalMenuItem root = new GlobalMenuItem(0, "",-1, 0, "");
             root.Populate(nav, nav.GetRootChildren("gm-root"));
             return root;
         }

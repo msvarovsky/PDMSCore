@@ -193,7 +193,8 @@ tr:last-child td {
 }
 
 th {
-    background: rgb(63, 182, 255);
+    /*background: rgb(63, 182, 255);*/
+    background: var(--TopFixedFirstRowColour);
     color: white;
     font-weight: 900;
 }

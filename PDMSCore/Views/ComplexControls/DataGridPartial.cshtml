@@ -1,17 +1,16 @@
 ﻿@model PDMSCore.DataManipulation.DataGridField
-
 @*<form id="@Model.ID-save" method="post">*@
 <form id="@Model.ID-Form">
     <div class="TableWrapper" id="@Model.ID">
-        <div>
-            <button id="@Model.ID-SaveMenuBtn" style="width:100px;"><i class="fa fa-save"></i> Save</button>
-            <button type="button" id="@Model.ID-SavedMenuBtn" style="width:100px; background-color: limegreen; border-color: limegreen; display: none;"><i class="fa fa-save"></i> Saved</button>
-            <button type="button" onclick="AddRowModal(100)"><i class="fa fa-plus"></i> Add</button>
+        <div class="DataGridMenu">
+            @Model.Menu.BuildHtmlMenuButtons()
 
-            <button type="button" title="New label"><img src="~/images/Plus2-24x24.png" alt="Save" /></button>
-            <button type="button" title="Save!!!" disabled><img src="~/images/Save-24x24.png" alt="Save" /></button>
+            @*<button id="@Model.ID-SaveMenuBtn" style="width:100px;"><i class="fa fa-save"></i> Save</button>
+                <button type="button" id="@Model.ID-SavedMenuBtn" style="width:100px; background-color: limegreen; border-color: limegreen; display: none;"><i class="fa fa-save"></i> Saved</button>*@
+            @*<button type="button" onclick="AddRowModal(100)"><i class="fa fa-plus"></i> Add</button>*@
+            @*<button type="button" title="New label"><img src="~/images/Plus2-24x24.png" alt="Save" /></button>*@
+            @*<img src="~/images/Delete24x24.png" alt="Sample Photo" />*@
 
-            <img src="~/images/Delete24x24.png" alt="Sample Photo" />
         </div>
 
         <div class="tbl-header">
@@ -55,19 +54,33 @@
     </div>
 </form>
 
-@if (Model.AddRowDialog != null)
+@if (Model.Menu != null)
+{
+
+    @if (Model.Menu.Exists("AddMenu"))
+    {
+        <div id="@Model.ID-AddMenu" class="Modal" style="display: none;">
+            @await Html.PartialAsync("~/Views/ModalDialog/ModalPartial.cshtml", Model.Menu.GetModalDialog("addmenu"))
+        </div>
+    }
+
+
+}
+
+@*@if (Model.AddRowDialog != null)
 {
     <div id="@Model.ID-AddRowModal" class="Modal" style="display: none;">
         @await Html.PartialAsync("~/Views/ModalDialog/ModalPartial.cshtml", Model.AddRowDialog)
     </div>
-}
+}*@
 
 @*<div id="@Model.ID-AddRowModal" class="Modal" style="display: none;">
     <div class="ModalBody">
     </div>
 </div>*@
 
-<script>
+
+    <script>
     $("#@Model.ID-SaveMenuBtn").on("click", function (event) {
         console.log("AjaxSave");
         var frmValues = $("#@Model.ID-Form").serialize();
@@ -82,7 +95,7 @@
                     console.log("AjaxSave:Success");
                     ElementHideShow("@Model.ID-SaveMenuBtn", "@Model.ID-SavedMenuBtn", 'h')
                     setTimeout(ElementHideShow, 2000, "@Model.ID-SaveMenuBtn", "@Model.ID-SavedMenuBtn", 's');
-                    
+
                 }
                 else {
                     //TODO
@@ -110,26 +123,26 @@
     }
 
     function AddRowModal() {
-        console.log("AddRowModal");
+        console.log("AddMenu");
         var TargetURL = "/" + "@Model.ParentControllerAndAction" + "/";
 
         $.ajax({
             url: TargetURL,
             type: "GET",
-            //data: { DataGridID: "@Model.ID"},
-            data: { ID: "@Model.ID", What: "AddRowModal", Data: ""},
+            data: { ID: "@Model.ID", What: "AddMenu", Data: ""},
 
             success: function (partialViewResult) {
                 if (partialViewResult.length > 0) {
-                    $("#" + "@Model.ID-AddRowModal-Body-Form-C").html(partialViewResult);
+                    $("#" + "@Model.ID-AddMenu-Body-Form-C").html(partialViewResult);
                 }
             },
+
             error: function (result) {
                 $("#" + dialogTagID).html("<div class=\"ModalBody\">\r\n<span class=\"CloseModal\">&times;</span>\r\n<p>Ajax failed...</p>\r\n</div>");
-                console.log("AddRowModal-error");
+                console.log("AddMenu-error");
             }
         });
-        document.getElementById("@Model.ID-AddRowModal").style.display = "block";
+        document.getElementById("@Model.ID-AddMenu").style.display = "block";
     };
 
 
@@ -371,4 +384,4 @@
         ReloadDataGrid();
     };
 
-</script>
+    </script>
