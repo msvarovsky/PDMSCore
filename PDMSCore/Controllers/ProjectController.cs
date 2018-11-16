@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
+using PDMSCore.Models;
 
 namespace PDMSCore.Controllers
 {
@@ -26,6 +27,21 @@ namespace PDMSCore.Controllers
             return View();
             //return this.RedirectToAction("ShowProject", "Project");
 
+        }
+        public ActionResult NewProject(string NavID)
+        //public ContentResult NewProject(string ID, string What, string Data)                                          //  AddLabel
+        {
+            if (NavID == null)
+                return Content("ko");
+            Labels l = new Labels(NavID).LoadLabelsFromDB();
+
+            //NewProject np = new NewProject().LoadLabelsFromDB();
+
+            return null; 
+
+            //ViewData["gsi"] = JsonConvert.SerializeObject(new GeneralSessionInfo(1, 1, "en"));
+            //Labels l = new Labels("").LoadLabelsFromDB();
+            //return View(l);
         }
 
         [HttpGet]

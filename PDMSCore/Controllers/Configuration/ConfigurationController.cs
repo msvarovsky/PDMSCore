@@ -34,7 +34,6 @@ namespace PDMSCore.Controllers
         {
             ViewData["gsi"] = JsonConvert.SerializeObject(new GeneralSessionInfo(1, 1, "en"));
             Labels l = new Labels("").LoadLabelsFromDB();
-            //return View(GetLabels());
             return View(l);
         }
 

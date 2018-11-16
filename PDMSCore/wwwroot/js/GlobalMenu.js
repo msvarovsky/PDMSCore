@@ -1,11 +1,12 @@
 ﻿
-function OnGlobalMenuItemClick(target, TypeOfNavItem, URL, data) {
+function OnGlobalMenuItemClick(target, TypeOfNavItem, URL, NavID) {
     event.stopPropagation();
 
-    console.log("O nGlobalMenuItemClick: URL = " + URL);
+    console.log("OnGlobalMenuItemClick: URL = " + URL);
 
     if (URL !== undefined && URL != "")
-        window.location.href = "/" + URL;
+        //window.location.href = "/" + URL;
+        window.location.href = "/" + URL + "?NavID=" + NavID;
 
 
     return;

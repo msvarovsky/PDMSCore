@@ -65,7 +65,7 @@ namespace PDMSCore.DataManipulation
             {
                 TagBuilder tbLI = new TagBuilder("li");
                 tbLI.Attributes.Add("id", ID.ToString());
-                tbLI.Attributes.Add(WebStuffHelper.CreateJSParameter("onclick", "OnGlobalMenuItemClick", "this", "LI", Url, "dalsi data"));
+                tbLI.Attributes.Add(WebStuffHelper.CreateJSParameter("onclick", "OnGlobalMenuItemClick", "this", "LI", Url, ID.ToString()));
 
                 TagBuilder tbDiv = new TagBuilder("div");
                 TagBuilder tbLabelDiv = new TagBuilder("div");
