@@ -31,13 +31,16 @@ namespace PDMSCore.Controllers
         public ActionResult NewProject(string NavID)
         //public ContentResult NewProject(string ID, string What, string Data)                                          //  AddLabel
         {
+            ViewData["gsi"] = JsonConvert.SerializeObject(new GeneralSessionInfo(1, 1, "en"));
+
             if (NavID == null)
                 return Content("ko");
-            Labels l = new Labels(NavID).LoadLabelsFromDB();
+            //Labels l = new Labels(NavID).LoadLabelsFromDB();
 
-            //NewProject np = new NewProject().LoadLabelsFromDB();
 
-            return null; 
+            NewProject np = new NewProject().LoadNewPageFromDB(2, NavID, "en");
+
+            return View("PageBody",np.page);
 
             //ViewData["gsi"] = JsonConvert.SerializeObject(new GeneralSessionInfo(1, 1, "en"));
             //Labels l = new Labels("").LoadLabelsFromDB();

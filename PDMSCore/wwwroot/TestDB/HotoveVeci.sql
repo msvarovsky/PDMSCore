@@ -623,3 +623,41 @@ BEGIN
 	FROM	Labels l
 END
 ------------------------------------------------------------------------------------------------------------------------
+
+exec GetPageContent 2, 6, 'en'
+---------------------------------------
+ALTER PROCEDURE GetPageContent
+	@RetailerID int,
+	@NavID int,
+   	@LanguageID varchar(5)
+AS
+BEGIN
+	SELECT a.PanelID, a.FieldID, a.LabelID, l.Label, a.FieldType, a.PredecessorFieldID,a.ParentFieldID
+	FROM
+	(
+		SELECT	pc.PanelID, pc.FieldID, pc.FieldType, pc.LabelID, pc.PredecessorFieldID, NULL as [ParentFieldID]
+		FROM    PanelsContent pc
+		WHERE   pc.RetailerID = @RetailerID 
+		AND		pc.NavID = @NavID
+														UNION
+		SELECT  '-1' as [PanelID], ms.ItemID as [FieldID], f.FieldType, f.LabelID, ms.PredecessorItemID, ms.ParentFieldID
+		FROM    MultiSelection ms
+		LEFT OUTER JOIN Fields f ON ms.ItemID = f.FieldID
+		WHERE ms.ParentFieldID in
+				(
+					SELECT pc.FieldID
+					FROM    PanelsContent pc
+					WHERE pc.RetailerID = @RetailerID
+					AND pc.NavID = @NavID
+				)
+	) as a
+	LEFT OUTER JOIN Labels l ON a.LabelID = l.LabelID
+	WHERE   (@LanguageID = '' OR l.LanguageID = @LanguageID)
+END;
+------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+

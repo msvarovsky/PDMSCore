@@ -16,7 +16,8 @@
         {
             //To nize mozna neni nutne. Toto take funguje:      @Html.Partial("PartialPanel", @Model.PanelList[i])
             //@await Html.PartialAsync("PartialPanel", @Model.PanelList[i])
-            @await Html.PartialAsync("PartialPanel", @Model.Page.Panels.PanelList[i], new ViewDataDictionary(this.ViewData))
+            
+            @*@await Html.PartialAsync("PartialPanel", @Model.Page.Panels.PanelList[i], new ViewDataDictionary(this.ViewData))*@
         }
     </form>
 

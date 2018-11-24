@@ -52,6 +52,43 @@ namespace PDMSCore.BusinessObjects
             }
         }
 
+        public void ProcessFieldsInfo2(DataTable dt)
+        {   //  ...., FieldID, LabelID, Label, FieldType, PredecessorFieldID, ParentFieldID
+            for (int r = 0; r < dt.Rows.Count; r++)
+            {
+                DataRow dr = dt.Rows[r];
+                int PanelID = DBUtil.GetInt(dr, 0);
+
+                Panel p = GetPanel(PanelID);
+                if (p == null)
+                    continue;
+                else
+                {
+                    int FieldID = DBUtil.GetInt(dr, 1);
+                    int FieldLabelID = DBUtil.GetInt(dr, 2);
+                    string FieldLabel = DBUtil.GetString(dr, 3);
+                    string FieldType = DBUtil.GetString(dr, 4);
+                    int PredecessorFieldID = DBUtil.GetInt(dr, 5);
+                    int ParentFieldID= DBUtil.GetInt(dr, 6);
+
+                    //string StringValue = DBUtil.GetString(dr, 6);
+                    //string FileValue = DBUtil.GetString(dr, 7);
+                    //string OtherRef = DBUtil.GetString(dr, 8);
+                    //string SelectedItemsIDs= DBUtil.GetString(dr, 9);
+
+                    string StringValue = "";
+                    string FileValue = "";
+                    string OtherRef = "";
+                    string SelectedItemsIDs = "";
+
+
+                    p.ProcessFields2(FieldID, FieldLabelID, FieldLabel, FieldType, PredecessorFieldID, ParentFieldID, StringValue, FileValue, OtherRef, SelectedItemsIDs);
+                }
+            }
+            for (int i = 0; i < PanelList.Count; i++)
+                PanelList[i].AssignMultiSelectItemsToControls();
+        }
+
         public void ProcessFieldsInfo(DataTable dt)
         {
             for (int r = 0; r < dt.Rows.Count; r++)

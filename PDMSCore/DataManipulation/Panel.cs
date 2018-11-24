@@ -63,6 +63,58 @@ namespace PDMSCore.DataManipulation
             }
         }
 
+        //public void ProcessFields2(DataRow dr, int col)
+        public void ProcessFields2( int FieldID, int FieldLabelID, string FieldLabel, string FieldType, int PredecessorFieldID, int ParentFieldID,
+                                    string StringValue, string FileValue, string OtherRef, string SelectedItemsIDs)
+        {
+            try
+            {
+                Field f = null;
+
+                switch (FieldType)
+                {
+                    case "tb":
+                        f = new LabelTextBoxField(PanelIDString, FieldID, FieldLabel, StringValue);
+                        break;
+                    case "rb":
+                        f = new LabelRadioButtonFields(PanelIDString, FieldID.ToString(), FieldLabel);
+                        ((LabelRadioButtonFields)f).RadioButtons.SetSelectedItems(SelectedItemsIDs);
+                        break;
+                    case "cb":
+                        f = new LabelCheckBoxFields(PanelIDString, FieldID.ToString(), FieldLabel);
+                        ((LabelCheckBoxFields)f).CheckBoxes.SetSelectedItems(SelectedItemsIDs);
+                        break;
+                    case "ddlb":
+                        f = new LabelDropDownListBox(PanelIDString, FieldID.ToString(), FieldLabel);
+                        ((LabelDropDownListBox)f).DropDown.SetSelectedItems(SelectedItemsIDs);
+                        break;
+                    case "rb-item":
+                    case "cb-item":
+                    case "ddlb-item":
+                        TempMultiSelectItem tmsi = new TempMultiSelectItem();
+                        tmsi.StringValue = FieldLabel;
+                        //tmsi.OtherRef = DBUtil.GetInt(dr, col + 8);
+                        tmsi.ParentFieldID = ParentFieldID.ToString();
+                        tmsi.MultiSelectItemID = FieldID.ToString();
+
+                        AllMultiSelectItem.Add(tmsi);
+                        break;
+
+                    default:
+                        break;
+                }
+                if (f != null)
+                {
+                    Fields.Add(f);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.Out.WriteLine(e.ToString());
+            }
+
+        }
+
         public void ProcessFields(DataRow dr, int col)
         {
             try

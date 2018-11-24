@@ -12,7 +12,9 @@ namespace PDMSCore.Controllers
     {
         public IActionResult Index()
         {
-            return this.RedirectToAction("Labels", "Configuration");
+
+            return this.RedirectToAction("NewProject", "Project", new { NavID = 21 });
+            //return this.RedirectToAction("Labels", "Configuration");
 
             //return this.RedirectToAction("CreateNewProject", "Project");
             ////return this.RedirectToAction("ShowProject", "Project");

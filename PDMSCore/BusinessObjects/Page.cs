@@ -6,6 +6,9 @@ namespace PDMSCore.BusinessObjects
     public class Page
     {
         public Menu SideMenu { get; set; }
+        public ButtonMenu PageMenu { get; set; }
+
+
         public Panels Panels { get; set; }
         public string Title { get; set; }
         public string url { get; set; }     //  Zatim nevim, jestli bude toto k necemu vubec uzitecne.
@@ -14,6 +17,7 @@ namespace PDMSCore.BusinessObjects
         {
             SideMenu = new Menu();
             Panels = new Panels();
+            PageMenu = new ButtonMenu("ID: tra", "ParentControllerAndAction");
         }
 
         public void ProcessPageInfo(DataTable dt)
@@ -33,6 +37,12 @@ namespace PDMSCore.BusinessObjects
         {
             Panels.ProcessPanelsInfo(dt);
         }
+        public void ProcessPage(DataTable dt)
+        {
+            Panels.ProcessFieldsInfo2(dt);
+
+
+        }
 
         public void ProcessFieldsInfo(DataTable dt)
         {
@@ -40,4 +50,8 @@ namespace PDMSCore.BusinessObjects
         }
 
     }
+
+
+    
+
 }

@@ -65,12 +65,12 @@ namespace PDMSCore.BusinessObjects
         public int ProjectID { get; set; }
         public string Name { get; set; }
         public Page Page { get; set; }
-        public PageMenu PageMenu{ get; set; }
+        public ButtonMenu PageMenu{ get; set; }
         //public Menu SideMenu { get; set; }
 
         public Project(int? ProjectID)
         {
-            PageMenu = new PageMenu();
+            PageMenu = new ButtonMenu("ID:todo","ParentControllerAndAction");
 
             if (ProjectID == null)
                 this.ProjectID = -1;
