@@ -17,10 +17,14 @@ namespace PDMSCore
             BuildWebHost(args).Run();
         }
 
+        int a = -1;
+        
+
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
                 .UseIISIntegration()
                 .Build();
+
     }
 }
