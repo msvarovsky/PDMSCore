@@ -16,8 +16,6 @@ namespace PDMSCore
         {
             BuildWebHost(args).Run();
         }
-
-        int a = -1;
         
 
         public static IWebHost BuildWebHost(string[] args) =>
@@ -25,6 +23,5 @@ namespace PDMSCore
                 .UseStartup<Startup>()
                 .UseIISIntegration()
                 .Build();
-
     }
 }
